@@ -1,0 +1,27 @@
+/* ============================================================
+   Fettle — Spacing tokens
+   A short, deliberate scale. Consistency comes from re-using
+   these, not adding more. Roughly a 4px base, loosening as it
+   grows to give the boutique layouts room to breathe.
+   ============================================================ */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 56px;
+  --space-16: 64px;
+  --space-20: 88px;   /* section rhythm on marketing pages */
+  --space-24: 100px;  /* cover / hero breathing room */
+
+  /* Semantic aliases */
+  --gap-inline: var(--space-3);   /* chips, badges, button rows */
+  --pad-control: 12px 24px;       /* default button padding */
+  --pad-field: 11px 13px;         /* input padding */
+  --pad-card: 28px 32px;          /* context card padding */
+  --section-gap: var(--space-20);
+}

@@ -1,0 +1,55 @@
+/* ============================================================
+   Fettle — Color tokens
+   Five colors, used deliberately. Rust carries the brand and
+   drives action; ink and cream do the heavy lifting for text
+   and background; sage and brick are accents, not workhorses.
+   ============================================================ */
+:root {
+  /* --- Base palette --- */
+  --rust: #B34426;   /* primary — buttons, links, brand mark, active states */
+  --brick: #97381E;  /* hover/pressed, dark accents, emphasis text */
+  --sage: #6E8A6B;   /* secondary accent — success, confirmation, calm */
+  --cream: #F1E8D8;  /* page background — never used for text */
+  --ink: #2B2723;    /* headings, body text, dark UI surfaces */
+  --white: #FFFFFF;  /* surfaces (cards, forms, nav) */
+
+  /* --- Tints (soft backgrounds) --- */
+  --tan-pill: #E7DCC6;  /* default badge fill */
+  --sage-tint: #E7EDE4; /* success / confirm surfaces */
+  --rust-tint: #F6E4DC; /* attention / rust surfaces */
+
+  /* --- Ink alphas (text, borders, dividers) --- */
+  --ink-60: rgba(43, 39, 35, 0.62); /* secondary text */
+  --ink-40: rgba(43, 39, 35, 0.40); /* tertiary text, placeholders */
+  --ink-12: rgba(43, 39, 35, 0.12); /* borders, hairlines */
+  --ink-08: rgba(43, 39, 35, 0.08); /* subtle hover fills */
+
+  /* ============================================================
+     Semantic aliases — reference these in product code
+     ============================================================ */
+  --bg-page: var(--cream);
+  --surface-card: var(--white);
+  --surface-sunken: var(--cream);     /* filled form fields on white cards */
+  --surface-pill: var(--tan-pill);
+
+  --text-heading: var(--ink);
+  --text-body: var(--ink);
+  --text-muted: var(--ink-60);
+  --text-faint: var(--ink-40);
+  --text-on-rust: var(--white);
+  --text-eyebrow: var(--rust);
+
+  --action: var(--rust);
+  --action-hover: var(--brick);
+  --action-text: var(--white);
+
+  --border-default: var(--ink-12);
+  --border-strong: var(--ink);
+  --focus-ring: var(--rust);
+
+  --status-confirm: var(--sage);
+  --status-confirm-surface: var(--sage-tint);
+  --status-attention: var(--rust);
+  --status-attention-surface: var(--rust-tint);
+  --status-note-surface: var(--white);
+}

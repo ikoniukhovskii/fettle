@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fettle — Boutique home care, London</title>
+
+  <!-- Design system tokens + styles -->
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/radius-shadow.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/styles.css">
+
+  <!-- The one monospace utility face — used ONLY for blueprint annotations -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+  <style>
+    :root {
+      --font-annot: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Keyboard focus — always the rust ring, generously visible */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--rust);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    @keyframes fettleFade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* Responsive: collapse asymmetric grids on small screens */
+    @media (max-width: 860px) {
+      .fettle-hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+      .fettle-index-row { grid-template-columns: 32px 1fr !important; }
+      .fettle-index-row > ul { grid-column: 1 / -1; }
+      .fettle-nav-links { gap: 16px !important; }
+    }
+    @media (max-width: 560px) {
+      .fettle-shell-pad { padding-left: 20px !important; padding-right: 20px !important; }
+      .fettle-nav-links button:not(:last-child) { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { animation: none !important; }
+    }
+  </style>
+
+  <template id="__bundler_thumbnail">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="#F1E8D8"/>
+      <rect x="34" y="34" width="32" height="32" rx="8" fill="#B34426"/>
+      <path d="M42 51 L50 44 L58 51" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M44 50 V58 H56 V50" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </template>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Design system component bundle -->
+  <script src="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/_ds_bundle.js"></script>
+
+  <!-- Tweaks + page parts -->
+  <script type="text/babel" src="fettle/tweaks-panel.jsx"></script>
+  <script type="text/babel" src="fettle/blueprint.jsx"></script>
+  <script type="text/babel" src="fettle/postcode.jsx"></script>
+  <script type="text/babel" src="fettle/sections.jsx"></script>
+  <script type="text/babel" src="fettle/app.jsx"></script>
+</body>
+</html>

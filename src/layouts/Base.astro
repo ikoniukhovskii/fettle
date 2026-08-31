@@ -1,0 +1,36 @@
+---
+import '../styles/ds.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'A small London team, keeping a short list of homes in good working order. By recommendation, mostly.' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://fettle.london');
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

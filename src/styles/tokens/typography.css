@@ -1,0 +1,46 @@
+/* ============================================================
+   Fettle — Typography tokens
+   Bricolage Grotesque carries personality in headlines;
+   Work Sans stays plain-spoken underneath it.
+   Never swap the two roles.
+   ============================================================ */
+:root {
+  /* --- Families --- */
+  --font-display: 'Bricolage Grotesque', Georgia, serif;
+  --font-body: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* --- Weights --- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* --- Type scale (role tokens: family / weight / size / line-height) --- */
+  /* Display XL — hero */
+  --display-xl-size: 52px;
+  --display-xl-line: 1.05; /* @kind other */
+  --display-xl-weight: 800;
+  /* Display L — H1 */
+  --display-lg-size: 36px;
+  --display-lg-line: 1.1; /* @kind other */
+  --display-lg-weight: 700;
+  /* Display M — H2 / H3 */
+  --display-md-size: 26px;
+  --display-md-line: 1.2; /* @kind other */
+  --display-md-weight: 700;
+
+  /* Body */
+  --body-size: 17px;
+  --body-line: 1.6; /* @kind other */
+  --body-weight: 400;
+  /* Body small / UI label */
+  --body-sm-size: 14px;
+  --body-sm-line: 1.5; /* @kind other */
+  --body-sm-weight: 500;
+  /* Eyebrow */
+  --eyebrow-size: 12px;
+  --eyebrow-weight: 700;
+  --eyebrow-tracking: 0.14em;
+}

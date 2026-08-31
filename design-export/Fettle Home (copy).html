@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fettle — Homes kept in good order, London</title>
+
+  <!-- Fettle design system tokens + styles -->
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/tokens/radius-shadow.css">
+  <link rel="stylesheet" href="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/styles.css">
+
+  <style>
+    :root {
+      /* the palette, applied quietly — desaturated rust for the few accents */
+      --rust-muted: oklch(0.55 0.09 40);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--rust-muted);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* ── background-animation tweak layers (off by default) ── */
+    @keyframes heroFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes kenburns {
+      from { transform: scale(1.04); }
+      to { transform: scale(1.14); }
+    }
+    @keyframes bloomA {
+      0%   { transform: translate(-12%, -8%) scale(1); }
+      100% { transform: translate(10%, 12%) scale(1.15); }
+    }
+    @keyframes bloomB {
+      0%   { transform: translate(15%, 10%) scale(1.1); }
+      100% { transform: translate(-8%, -12%) scale(1); }
+    }
+    @keyframes grainShift {
+      0%   { transform: translate(0, 0); }
+      100% { transform: translate(-3%, 4%); }
+    }
+    .bg-bloom {
+      position: absolute;
+      width: 70vmax;
+      height: 70vmax;
+      border-radius: 50%;
+      filter: blur(80px);
+      will-change: transform;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+    }
+    .bg-bloom-a { top: -20vmax; left: -15vmax; background: radial-gradient(circle, rgba(231,220,198,0.7) 0%, rgba(231,220,198,0) 70%); animation-name: bloomA; }
+    .bg-bloom-b { bottom: -20vmax; right: -15vmax; background: radial-gradient(circle, rgba(246,228,220,0.65) 0%, rgba(246,228,220,0) 70%); animation-name: bloomB; }
+    .bg-grain {
+      position: fixed;
+      inset: -6%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.5;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      will-change: transform;
+      animation-name: grainShift;
+      animation-timing-function: steps(4);
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+    }
+
+    /* ── Floating header: full-width bar over hero, morphs into a pill
+       that follows you as you scroll ── */
+    .fettle-header-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .fettle-header {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: clamp(18px, 3vw, 36px);
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0;
+      padding: clamp(20px, 3vw, 34px) clamp(22px, 4vw, 48px);
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      will-change: max-width, padding, background-color, border-radius;
+    }
+    .hbrand {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      color: var(--hdr-fg, var(--cream));
+    }
+    .hlinks {
+      display: flex;
+      align-items: center;
+      gap: clamp(18px, 3vw, 36px);
+    }
+    .hlink {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 10px 2px;
+      white-space: nowrap;
+      color: var(--hdr-fg, rgba(241, 232, 216, 0.95));
+    }
+    .hlink:hover, .hbrand:hover { color: var(--rust-muted); }
+
+    /* quiet underlined text links */
+    .quiet-link {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+      transition: color .3s ease;
+    }
+    .quiet-link:hover { color: var(--rust-muted) !important; }
+
+    .quiet-check-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 14px 4px;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
+      transition: color .3s ease;
+    }
+    .quiet-check-btn:hover { color: var(--rust-muted); }
+
+    /* ── Site footer grid ── */
+    .foot-top-grid {
+      display: grid;
+      --brand-col: auto;
+      grid-template-columns: minmax(220px, 1.1fr) repeat(3, minmax(140px, 0.9fr));
+      gap: clamp(28px, 4vw, 56px);
+      padding-bottom: clamp(40px, 5vw, 60px);
+    }
+    @media (max-width: 860px) {
+      .foot-top-grid { grid-template-columns: 1fr 1fr; --brand-col: 1 / -1; }
+    }
+    @media (max-width: 480px) {
+      .foot-top-grid { grid-template-columns: 1fr; }
+    }
+    .foot-link { transition: color .15s ease; }
+    [role="slider"] { outline: none; }
+    [role="slider"]:focus-visible { outline: 3px solid var(--rust); outline-offset: 3px; border-radius: 3px; }
+    .foot-link:hover { color: var(--rust) !important; }
+    .foot-social-btn { transition: color .15s ease, border-color .15s ease; }
+    .foot-social-btn:hover { color: var(--cream) !important; border-color: rgba(241,232,216,0.55) !important; }
+
+    @media (max-width: 640px) {
+      .nav-optional { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+
+  <template id="__bundler_thumbnail">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="#2B2723"/>
+      <text x="50" y="62" text-anchor="middle" font-family="Georgia, serif" font-weight="800" font-size="26" fill="#F1E8D8">FETTLE</text>
+    </svg>
+  </template>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Design system component bundle -->
+  <script src="_ds/fettle-design-system-b6c43b1a-44aa-4bec-8db6-081b15530e61/_ds_bundle.js"></script>
+
+  <script type="text/babel" src="editorial-copy/tweaks-panel.jsx"></script>
+  <script type="text/babel" src="editorial-copy/home.jsx"></script>
+</body>
+</html>

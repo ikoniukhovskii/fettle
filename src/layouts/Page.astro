@@ -1,0 +1,104 @@
+---
+/* Shared chrome for the content pages. Replaces design-export/pages/chrome.js,
+   which injected this markup with innerHTML after load. */
+import Base from './Base.astro';
+import '../styles/site.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description } = Astro.props;
+const path = Astro.url.pathname;
+
+const nav = [
+  { label: 'What we fix', href: '/services' },
+  { label: 'How it works', href: '/how-it-works' },
+  { label: 'About', href: '/about' },
+];
+
+const footerCols = [
+  {
+    heading: 'Company',
+    links: [
+      { label: 'About Fettle', href: '/about' },
+      { label: 'Testimonials', href: '/testimonials' },
+      { label: 'Contact', href: '/contact' },
+    ],
+  },
+  {
+    heading: 'Services',
+    links: [
+      { label: 'What we fix', href: '/services' },
+      { label: 'How it works', href: '/how-it-works' },
+    ],
+  },
+  {
+    heading: 'Legal',
+    links: [
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms of use', href: '/terms' },
+      { label: 'Cookies', href: '/cookies' },
+    ],
+  },
+];
+---
+
+<Base title={title} description={description}>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="bar">
+        <a class="brand" href="/">Fettle</a>
+        <nav aria-label="Primary">
+          {nav.map((l) => (
+            <a class="hide-sm" href={l.href} aria-current={path === l.href ? 'page' : undefined}>
+              {l.label}
+            </a>
+          ))}
+          <a class="cta" href="/#availability">Check availability</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="foot-inner">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a class="foot-logo" href="/">Fettle</a>
+          <p class="foot-tag">London home care with efficiency, transparency and a tidy finish.</p>
+        </div>
+        {footerCols.map((col) => (
+          <div class="foot-col">
+            <h4>{col.heading}</h4>
+            {col.links.map((l) => (
+              <a href={l.href} aria-current={path === l.href ? 'page' : undefined}>{l.label}</a>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div class="foot-bottom">
+        <span class="copy">&copy; {new Date().getFullYear()} Fettle. All rights reserved.</span>
+        <div class="foot-social">
+          <a href="/" aria-label="Fettle on LinkedIn">In</a>
+          <a href="/" aria-label="Fettle on Instagram">Ig</a>
+        </div>
+      </div>
+    </div>
+    <button class="foot-totop" type="button" aria-label="Back to top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path>
+      </svg>
+    </button>
+  </footer>
+
+  <script>
+    document.querySelector('.foot-totop')?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</Base>

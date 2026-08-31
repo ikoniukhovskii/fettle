@@ -1,0 +1,21 @@
+/* ============================================================
+   Fettle — Radius, border & shadow tokens
+   Rounding steps up with the size of the surface: tight on
+   badges/inputs, medium on buttons, generous on cards & nav.
+   One soft, warm card shadow — never harsh, never neon.
+   ============================================================ */
+:root {
+  /* Radius */
+  --radius-sm: 6px;    /* badges, inputs, small chips */
+  --radius-md: 10px;   /* buttons, swatches */
+  --radius-lg: 16px;   /* cards, nav, larger surfaces */
+  --radius-pill: 20px; /* pill badges, tags */
+
+  /* Borders */
+  --border-width: 1px;
+  --border-width-control: 1.5px; /* buttons & fields carry a slightly heavier edge */
+
+  /* Shadows — warm ink, layered soft */
+  --shadow-card: 0 8px 24px rgba(43, 39, 35, 0.10), 0 2px 6px rgba(43, 39, 35, 0.06);
+  --shadow-raised: 0 16px 40px rgba(43, 39, 35, 0.14), 0 4px 10px rgba(43, 39, 35, 0.08);
+}

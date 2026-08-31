@@ -1,0 +1,5 @@
+/* Fettle webfonts — Bricolage Grotesque (display) + Work Sans (body/UI)
+   Both are Google Fonts; served via Google's own @font-face closure.
+   If you need self-hosted binaries, drop them in assets/fonts and replace
+   this import with local @font-face rules. */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Work+Sans:wght@400;500;600;700&display=swap');

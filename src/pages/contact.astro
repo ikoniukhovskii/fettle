@@ -1,0 +1,114 @@
+---
+import Page from '../layouts/Page.astro';
+---
+
+<Page title="Contact Fettle — London" description="If you&rsquo;ve something that needs doing, drop us a line. We&rsquo;ll answer plainly, and if there&rsquo;s room on the list near you, we&rsquo;ll say so.">
+    <section class="page-hero">
+      <div class="wrap">
+        <p class="eyebrow">Contact</p>
+        <h1>Let&rsquo;s talk about your home.</h1>
+        <p class="lede">If you&rsquo;ve something that needs doing, drop us a line. We&rsquo;ll answer plainly, and if there&rsquo;s room on the list near you, we&rsquo;ll say so.</p>
+      </div>
+    </section>
+
+    <section class="page-body">
+      <div class="wrap">
+        <div class="contact-grid">
+          <div class="form-card">
+            <form id="contact-form" novalidate>
+              <div class="field">
+                <label for="cf-name">Full name</label>
+                <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="Francis Drake" required />
+              </div>
+              <div class="field">
+                <label for="cf-email">Email</label>
+                <input id="cf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+              </div>
+              <div class="field">
+                <label for="cf-postcode">Postcode</label>
+                <input id="cf-postcode" name="postcode" type="text" autocomplete="postal-code" placeholder="e.g. N6 4AB" />
+              </div>
+              <div class="field">
+                <label for="cf-topic">Topic</label>
+                <input id="cf-topic" name="topic" type="text" placeholder="A wonky fence, a fresh coat of paint&hellip;" />
+              </div>
+              <div class="field">
+                <label for="cf-message">How can we help?</label>
+                <textarea id="cf-message" name="message" placeholder="Tell us what needs doing."></textarea>
+              </div>
+              <button class="btn primary" type="submit">
+                Send message
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"></path>
+                  <path d="M13 6l6 6-6 6"></path>
+                </svg>
+              </button>
+              <div class="form-ok" id="form-ok" role="status">
+                <span class="tick" aria-hidden="true">&#10003;</span>
+                <p>Thanks. We&rsquo;ve got it, and a person &mdash; not a bot &mdash; will be in touch shortly.</p>
+              </div>
+            </form>
+          </div>
+
+          <div class="info-stack">
+            <div class="info-card">
+              <div class="head">
+                <span class="ic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </span>
+                <h3>Local team, same faces</h3>
+              </div>
+              <p>A small permanent team does the day-to-day work, so it&rsquo;s the same faces each visit. People who know where the stopcock is.</p>
+            </div>
+
+            <div class="info-card">
+              <div class="head">
+                <span class="ic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                </span>
+                <h3>Vetted specialists</h3>
+              </div>
+              <p>Licensed trades, plumbing, rendering, tree surgery, go to specialists we know by name and have used before.</p>
+            </div>
+
+            <div class="info-card">
+              <div class="head">
+                <span class="ic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg>
+                </span>
+                <h3>Seasonal upkeep</h3>
+              </div>
+              <p>The once-a-season look-over that stops small things becoming big ones.</p>
+            </div>
+
+            <div class="info-card">
+              <div class="head">
+                <span class="ic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </span>
+                <h3>Rather just call?</h3>
+              </div>
+              <p><a href="tel:+447361854124">+44 7361 854124</a> &middot; <a href="https://wa.me/447361854124">WhatsApp</a><br />Weekdays, 8am&ndash;6pm. N5, N6, NW3 and around.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<script>
+  /* Recovered from design-export/pages/contact.html. This only fakes a
+     success state — the form posts nowhere yet. See README "Not wired up". */
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const ok = document.getElementById('form-ok');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('cf-name') as HTMLInputElement;
+    const email = document.getElementById('cf-email') as HTMLInputElement;
+    if (!name.value.trim()) return name.focus();
+    if (!email.value.trim()) return email.focus();
+    ok?.classList.add('show');
+    const submit = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    submit.disabled = true;
+  });
+</script>
+</Page>

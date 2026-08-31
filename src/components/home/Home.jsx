@@ -568,49 +568,45 @@ function Hero({ t }) {
   );
 }
 
-/* ---------- Availability strip ---------- */
-function Availability({ t, m }) {
+/* ---------- What we do ---------- */
+function WhatWeDo({ t, m }) {
   const sf = t.sectionSpacing / 100;
   return (
     <section
-      id="availability"
-      data-screen-label="Availability check"
-      style={{ padding: `calc(clamp(72px, 11vw, 130px) * ${sf}) 24px`, position: 'relative', zIndex: 1 }}
+      id="what-we-do"
+      data-screen-label="What we do"
+      style={{ padding: `calc(clamp(72px, 11vw, 130px) * ${sf}) 24px calc(clamp(60px, 9vw, 110px) * ${sf})`, position: 'relative', zIndex: 1 }}
     >
       <Reveal m={m}>
-        <div style={{ textAlign: 'center', marginBottom: 22 }}>
-          <h2
-            style={{
-              display: 'inline-block',
-              margin: 0,
-              fontFamily: 'var(--font-body)',
-              fontWeight: 600,
-              fontSize: 11.5,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: 'var(--rust)',
-              background: 'var(--tan-pill)',
-              padding: '8px 16px',
-              borderRadius: 'var(--radius-pill)',
-            }}
-          >
-            Book a consultation
-          </h2>
-        </div>
+        <h2
+          style={{
+            margin: '0 auto 20px',
+            maxWidth: 640,
+            textAlign: 'center',
+            fontFamily: 'var(--font-display)',
+            fontWeight: 800,
+            fontSize: `calc(clamp(32px, 4.4vw, 52px) * ${t.headingScale / 100})`,
+            lineHeight: 1.1,
+            letterSpacing: '-0.01em',
+            color: 'var(--ink)',
+            textWrap: 'balance',
+          }}
+        >
+          What we do
+        </h2>
         <p
           style={{
-            margin: '0 auto 30px',
-            maxWidth: 520,
+            margin: '0 auto',
+            maxWidth: 560,
             textAlign: 'center',
             fontFamily: 'var(--font-body)',
-            fontSize: 17.5 * (t.bodyScale / 100),
+            fontSize: 19 * (t.bodyScale / 100),
             lineHeight: 1.65,
             color: 'var(--ink-60)',
           }}
         >
-          We take on a few more homes each season, postcode by postcode.
+          One team for the whole house &mdash; painting, plastering, plumbing, fences, floors, and the odd jobs in between.
         </p>
-        <QuietPostcode id="postcode-top" t={t} />
       </Reveal>
     </section>
   );
@@ -945,7 +941,7 @@ function Close({ t, m }) {
   const cw = t.contentWidth;
   const sf = t.sectionSpacing / 100;
   return (
-    <section id="closing" data-screen-label="Close" style={{ position: 'relative', zIndex: 1 }}>
+    <section id="availability" data-screen-label="Close" style={{ position: 'relative', zIndex: 1 }}>
       <div style={{ padding: `calc(clamp(90px, 13vw, 170px) * ${sf}) 24px calc(clamp(80px, 10vw, 120px) * ${sf})` }}>
         <Reveal m={m}>
           <h2
@@ -1533,7 +1529,7 @@ export default function Home() {
       <Background t={t} />
       <Header />
       <Hero t={t} />
-      <Availability t={t} m={m} />
+      <WhatWeDo t={t} m={m} />
       <Story t={t} m={m} pcfg={pcfg} />
       <Close t={t} m={m} />
       <FAQ t={t} m={m} />

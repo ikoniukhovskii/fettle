@@ -1159,6 +1159,15 @@ function Close({ t, m }) {
     <section id="availability" data-screen-label="Close" style={{ position: 'relative', zIndex: 1 }}>
       <div style={{ padding: `calc(clamp(90px, 13vw, 170px) * ${sf}) 24px calc(clamp(80px, 10vw, 120px) * ${sf})` }}>
         <Reveal m={m}>
+          <div
+            style={{
+              maxWidth: 760,
+              margin: '0 auto',
+              background: 'var(--tan-pill)',
+              borderRadius: 'var(--radius-lg)',
+              padding: 'clamp(40px, 6vw, 72px) clamp(24px, 5vw, 56px)',
+            }}
+          >
           <p
             style={{
               margin: '0 auto 40px',
@@ -1218,6 +1227,7 @@ function Close({ t, m }) {
             A visit and quote is £30, counted toward the work if you go ahead.
           </p>
           <QuietPostcode id="postcode-close" t={t} />
+          </div>
         </Reveal>
       </div>
 

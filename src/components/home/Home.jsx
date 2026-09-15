@@ -371,19 +371,19 @@ function firstCheckMessage(area) {
 function repeatCheckMessage(area) {
   const season = currentSeason();
   return pick([
-    `We’ve already got a home in ${area} on the books this ${season}.`,
-    `${area}’s no stranger to us – we’ve worked there this ${season}.`,
+    `We have already got a home in ${area} on the books this ${season}.`,
+    `${area}’s no stranger to us – we have worked there this ${season}.`,
     `We already look after a home nearby in ${area}.`,
-    `We’ve done work in ${area} this ${season}, and there may be room for more.`,
+    `We have done work in ${area} this ${season}, and there may be room for more.`,
   ]);
 }
 
 function popularAreaMessage(area) {
   return pick([
-    `${area} is one of our busier postcodes – we’ve done numerous jobs there.`,
-    `We know ${area} well by now – we’ve worked there many times.`,
-    `${area} keeps us busy. We’ve done plenty of work in the area.`,
-    `We’ve built up plenty of experience in ${area} over time.`,
+    `${area} is one of our busier postcodes – we have done numerous jobs there.`,
+    `We know ${area} well by now – we have worked there many times.`,
+    `${area} keeps us busy. We have done plenty of work in the area.`,
+    `We have built up plenty of experience in ${area} over time.`,
   ]);
 }
 
@@ -1212,7 +1212,7 @@ function Close({ t, m }) {
               color: 'var(--ink-60)',
             }}
           >
-            One postcode is all it takes. If we&rsquo;ve room near you, we&rsquo;ll say so plainly.
+            One postcode is all it takes. If we have room near you, we&rsquo;ll say so plainly.
           </p>
           <p
             style={{

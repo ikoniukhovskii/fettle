@@ -715,28 +715,28 @@ function Hero({ t }) {
         }}
       />
 
-      <p
+      <div
         style={{
           position: 'absolute',
           left: '50%',
           bottom: 'clamp(19vh, 24vh, 26vh)',
           transform: 'translateX(-50%)',
           zIndex: 2,
-          margin: 0,
           padding: '0 24px',
-          maxWidth: 560,
+          maxWidth: 760,
           textAlign: 'center',
           fontFamily: 'var(--font-body)',
           fontWeight: 500,
           fontSize: 12.5,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
-          lineHeight: 2,
+          lineHeight: 1.7,
           color: 'rgba(241,232,216,0.92)',
         }}
       >
-        A small London team, keeping a short list of homes in good working order. By recommendation, mostly.
-      </p>
+        <p style={{ margin: 0 }}>A small London team, keeping a short list of homes in good working order.</p>
+        <p style={{ margin: 0, marginTop: 22 }}>By recommendation, mostly.</p>
+      </div>
 
       <h1
         aria-label="Fettle"

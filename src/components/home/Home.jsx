@@ -1157,7 +1157,7 @@ function Close({ t, m }) {
   const sf = t.sectionSpacing / 100;
   return (
     <section id="availability" data-screen-label="Close" style={{ position: 'relative', zIndex: 1 }}>
-      <div style={{ padding: `calc(clamp(90px, 13vw, 170px) * ${sf}) 24px calc(clamp(80px, 10vw, 120px) * ${sf})` }}>
+      <div style={{ padding: `calc(clamp(32px, 4vw, 64px) * ${sf}) 24px calc(clamp(80px, 10vw, 120px) * ${sf})` }}>
         <Reveal m={m}>
           <div
             style={{
@@ -1620,7 +1620,7 @@ function Carousel({ t, m }) {
 
   return (
     <section id="a-look-inside" data-screen-label="A look inside" style={{ position: 'relative', zIndex: 1 }}>
-      <div style={{ padding: `calc(clamp(56px, 8vw, 96px) * ${sf}) 24px calc(clamp(40px, 6vw, 72px) * ${sf})` }}>
+      <div style={{ padding: `calc(clamp(24px, 3vw, 48px) * ${sf}) 24px calc(clamp(40px, 6vw, 72px) * ${sf})` }}>
         <Reveal m={m}>
           <div
             style={{

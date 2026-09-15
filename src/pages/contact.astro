@@ -107,6 +107,14 @@ import Page from '../layouts/Page.astro';
   const form = document.getElementById('contact-form') as HTMLFormElement | null;
   const ok = document.getElementById('form-ok');
 
+  const prefillPostcode = new URLSearchParams(window.location.search).get('postcode');
+  if (prefillPostcode) {
+    const postcodeField = document.getElementById('cf-postcode') as HTMLInputElement | null;
+    if (postcodeField) postcodeField.value = prefillPostcode;
+    const nameField = document.getElementById('cf-name') as HTMLInputElement | null;
+    nameField?.focus();
+  }
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('cf-name') as HTMLInputElement;

@@ -293,7 +293,7 @@ function parsePostcode(raw) {
   if (!compact) return null;
   // Outward (area + district) followed by the full inward code (digit + 2 letters), e.g. "SE3 9FL".
   const full = compact.match(/^([A-Z]{1,2}\d[A-Z\d]?)(\d[A-Z]{2})$/);
-  if (full) return { outward: full[1] };
+  if (full) return { outward: full[1], postcode: `${full[1]} ${full[2]}` };
   // Outward only, e.g. "SE3" — a real area, but we need the full postcode to check properly.
   const outwardOnly = compact.match(/^([A-Z]{1,2}\d[A-Z\d]?)$/);
   if (outwardOnly) return { invalid: true, reason: 'incomplete' };
@@ -397,7 +397,7 @@ function QuietPostcode({ id, t }) {
     }
     const area = parsed.outward;
     if (!SERVICE_AREA_LETTERS.has(areaLetters(area))) {
-      setResult({ area, covered: false, message: outOfAreaMessage(area) });
+      setResult({ area, postcode: parsed.postcode, covered: false, message: outOfAreaMessage(area) });
       return;
     }
     setChecking(true);
@@ -414,7 +414,7 @@ function QuietPostcode({ id, t }) {
         : previousCount < POPULAR_AREA_THRESHOLD
           ? repeatCheckMessage(area)
           : popularAreaMessage(area);
-    setResult({ area, covered: true, message });
+    setResult({ area, postcode: parsed.postcode, covered: true, message });
   };
 
   return (
@@ -481,15 +481,36 @@ function QuietPostcode({ id, t }) {
           >
             {result.covered && <span style={{ color: 'var(--sage)', marginRight: 8 }}>✓</span>}
             {result.message}
-            <span style={{ display: 'block', marginTop: 6, color: 'var(--ink-40)', fontSize: 15 * bs }}>
+            <span style={{ display: 'block', marginTop: 16 }}>
+              <a
+                href={`/contact${result.postcode ? `?postcode=${encodeURIComponent(result.postcode)}` : ''}`}
+                style={{
+                  display: 'inline-block',
+                  padding: '11px 26px',
+                  borderRadius: 999,
+                  background: 'var(--rust)',
+                  color: 'var(--cream)',
+                  fontWeight: 600,
+                  fontSize: 14 * bs,
+                  textDecoration: 'none',
+                  transition: 'background .15s ease',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--brick)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--rust)')}
+              >
+                Get in touch
+              </a>
+            </span>
+            <span style={{ display: 'block', marginTop: 10, color: 'var(--ink-40)', fontSize: 15 * bs }}>
+              Or{' '}
               <a href={`tel:${EDIT_PHONE}`} className="quiet-link" style={{ color: 'inherit' }}>
-                Call {EDIT_PHONE_DISPLAY}
+                call {EDIT_PHONE_DISPLAY}
               </a>{' '}
-              or{' '}
+              /{' '}
               <a href={`https://wa.me/${EDIT_PHONE.replace('+', '')}`} className="quiet-link" style={{ color: 'inherit' }}>
-                WhatsApp us
-              </a>{' '}
-              and we&rsquo;ll arrange a first visit.
+                WhatsApp
+              </a>
+              .
             </span>
           </p>
         )}

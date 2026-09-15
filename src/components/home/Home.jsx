@@ -287,26 +287,32 @@ function Background({ t }) {
 }
 
 /* ---------- Quiet postcode check ---------- */
-function outward(raw) {
-  const s = (raw || '').toUpperCase().replace(/\s+/g, '');
-  const m = s.match(/^([A-Z]{1,2}\d[A-Z\d]?)/);
-  return m ? m[1] : s.slice(0, 4);
+function parsePostcode(raw) {
+  const compact = (raw || '').trim().toUpperCase().replace(/\s+/g, '');
+  if (!compact) return null;
+  // Outward (area + district) followed by the full inward code (digit + 2 letters), e.g. "SE3 9FL".
+  const full = compact.match(/^([A-Z]{1,2}\d[A-Z\d]?)(\d[A-Z]{2})$/);
+  if (full) return { outward: full[1], display: `${full[1]} ${full[2]}` };
+  // Outward only, e.g. "SE3".
+  const outwardOnly = compact.match(/^([A-Z]{1,2}\d[A-Z\d]?)$/);
+  if (outwardOnly) return { outward: outwardOnly[1], display: outwardOnly[1] };
+  return { invalid: true };
 }
 
 function QuietPostcode({ id, t }) {
   const [value, setValue] = React.useState('');
-  const [code, setCode] = React.useState(null);
+  const [result, setResult] = React.useState(null);
   const [focused, setFocused] = React.useState(false);
   const inputRef = React.useRef(null);
   const bs = t.bodyScale / 100;
 
   const check = () => {
-    const c = outward(value);
-    if (!c) {
+    const parsed = parsePostcode(value);
+    if (!parsed) {
       inputRef.current && inputRef.current.focus();
       return;
     }
-    setCode(c);
+    setResult(parsed);
   };
 
   return (
@@ -322,7 +328,7 @@ function QuietPostcode({ id, t }) {
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
-            if (code) setCode(null);
+            if (result) setResult(null);
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -353,7 +359,7 @@ function QuietPostcode({ id, t }) {
         </button>
       </div>
       <div aria-live="polite">
-        {code && (
+        {result && !result.invalid && (
           <p
             style={{
               margin: '22px auto 0',
@@ -366,7 +372,7 @@ function QuietPostcode({ id, t }) {
             }}
           >
             <span style={{ color: 'var(--sage)', marginRight: 8 }}>✓</span>
-            We&rsquo;re taking on two more homes in {code} this summer.
+            We&rsquo;re taking on two more homes in {result.display} this summer.
             <span style={{ display: 'block', marginTop: 6, color: 'var(--ink-40)', fontSize: 15 * bs }}>
               <a href={`tel:${EDIT_PHONE}`} className="quiet-link" style={{ color: 'inherit' }}>
                 Call {EDIT_PHONE_DISPLAY}
@@ -377,6 +383,21 @@ function QuietPostcode({ id, t }) {
               </a>{' '}
               and we&rsquo;ll arrange a first visit.
             </span>
+          </p>
+        )}
+        {result && result.invalid && (
+          <p
+            style={{
+              margin: '22px auto 0',
+              maxWidth: 460,
+              fontFamily: 'var(--font-body)',
+              fontSize: 16.5 * bs,
+              lineHeight: 1.6,
+              color: 'var(--brick)',
+              textAlign: 'center',
+            }}
+          >
+            That doesn&rsquo;t look like a postcode &ndash; check it and try again.
           </p>
         )}
       </div>

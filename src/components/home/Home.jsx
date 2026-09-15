@@ -709,9 +709,8 @@ function Hero({ t }) {
         style={{
           position: 'absolute',
           inset: 0,
-          background: `linear-gradient(to bottom, rgba(28,24,20,0.38) 0%, rgba(28,24,20,0) 22%, rgba(28,24,20,0) 55%, rgba(28,24,20,${(
-            t.heroScrim / 100
-          ).toFixed(2)}) 100%)`,
+          background:
+            'linear-gradient(to bottom, rgba(28,24,20,0.38) 0%, rgba(28,24,20,0) 22%, rgba(28,24,20,0) 42%, rgba(28,24,20,0.55) 66%, rgba(28,24,20,0.82) 100%)',
         }}
       />
 

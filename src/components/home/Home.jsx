@@ -1414,6 +1414,7 @@ function Carousel({ t, m }) {
               height: 'clamp(380px, 46vw, 600px)',
               marginTop: 'clamp(28px, 4vw, 48px)',
               perspective: '1700px',
+              overflow: 'hidden',
             }}
           >
             <button

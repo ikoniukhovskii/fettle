@@ -96,19 +96,47 @@ import Page from '../layouts/Page.astro';
     </section>
 
 <script>
-  /* Recovered from design-export/pages/contact.html. This only fakes a
-     success state — the form posts nowhere yet. See README "Not wired up". */
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
   const form = document.getElementById('contact-form') as HTMLFormElement | null;
   const ok = document.getElementById('form-ok');
-  form?.addEventListener('submit', (e) => {
+
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('cf-name') as HTMLInputElement;
     const email = document.getElementById('cf-email') as HTMLInputElement;
+    const postcode = document.getElementById('cf-postcode') as HTMLInputElement;
+    const topic = document.getElementById('cf-topic') as HTMLInputElement;
+    const message = document.getElementById('cf-message') as HTMLTextAreaElement;
+
     if (!name.value.trim()) return name.focus();
     if (!email.value.trim()) return email.focus();
-    ok?.classList.add('show');
+
     const submit = form.querySelector('button[type="submit"]') as HTMLButtonElement;
     submit.disabled = true;
+
+    const { error } = await supabase.from('contact_submissions').insert({
+      full_name: name.value.trim(),
+      email: email.value.trim(),
+      postcode: postcode.value.trim(),
+      topic: topic.value.trim(),
+      message: message.value.trim(),
+    });
+
+    if (error) {
+      console.error('Form submission failed:', error);
+      submit.disabled = false;
+      alert("Sorry, something went wrong sending your message. Please try again, or call/WhatsApp us instead.");
+      return;
+    }
+
+    ok?.classList.add('show');
+    form.reset();
   });
 </script>
 </Page>

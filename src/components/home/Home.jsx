@@ -447,7 +447,7 @@ function QuietPostcode({ id, t }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 18, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, flexWrap: 'wrap' }}>
         <input
           id={id}
           ref={inputRef}
@@ -488,8 +488,25 @@ function QuietPostcode({ id, t }) {
           type="button"
           onClick={check}
           disabled={checking}
-          className="quiet-check-btn"
-          style={{ color: 'var(--ink)', opacity: checking ? 0.5 : 1, cursor: checking ? 'default' : 'pointer' }}
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 600,
+            fontSize: 13 * bs,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            padding: '13px 26px',
+            borderRadius: 999,
+            border: 'none',
+            background: 'var(--rust)',
+            color: 'var(--cream)',
+            opacity: checking ? 0.6 : 1,
+            cursor: checking ? 'default' : 'pointer',
+            transition: 'background .15s ease',
+          }}
+          onMouseEnter={(e) => {
+            if (!checking) e.currentTarget.style.background = 'var(--brick)';
+          }}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--rust)')}
         >
           {checking ? 'Checking…' : 'Check'}
         </button>

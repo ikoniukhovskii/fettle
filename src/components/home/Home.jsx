@@ -704,15 +704,7 @@ function Hero({ t }) {
           animation: heroAnim,
         }}
       />
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background:
-            'linear-gradient(to bottom, rgba(28,24,20,0.38) 0%, rgba(28,24,20,0) 22%, rgba(28,24,20,0) 42%, rgba(28,24,20,0.55) 66%, rgba(28,24,20,0.82) 100%)',
-        }}
-      />
+      <div aria-hidden="true" className="hero-scrim" style={{ position: 'absolute', inset: 0 }} />
 
       <div
         style={{

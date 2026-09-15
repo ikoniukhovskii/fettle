@@ -665,11 +665,11 @@ function Header() {
           <button className="hlink nav-optional" onClick={() => jump('a-look-inside')}>
             Our work
           </button>
-          <button className="hlink nav-optional" onClick={() => { window.location.href = '/contact'; }}>
-            Contact
-          </button>
-          <button className="hlink" onClick={() => jump('availability')}>
+          <button className="hlink nav-optional" onClick={() => jump('availability')}>
             Check availability
+          </button>
+          <button className="hlink-cta" onClick={() => { window.location.href = '/contact'; }}>
+            Contact
           </button>
         </div>
       </nav>

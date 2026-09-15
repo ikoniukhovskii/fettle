@@ -130,6 +130,23 @@ input:focus-visible {
 }
 .hlink:hover, .hbrand:hover { color: var(--rust-muted); }
 
+.hlink-cta {
+  background: var(--rust);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 11px 20px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  color: var(--cream) !important;
+  transition: background .15s ease;
+}
+.hlink-cta:hover { background: var(--brick); color: var(--cream) !important; }
+
 /* quiet underlined text links */
 .quiet-link {
   text-decoration: underline;

@@ -752,6 +752,9 @@ function Hero({ t }) {
       >
         Fettle
       </h1>
+      <p className="hero-script-tagline" aria-hidden="true">
+        your home, in fine
+      </p>
     </header>
   );
 }

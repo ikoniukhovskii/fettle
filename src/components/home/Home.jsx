@@ -804,6 +804,24 @@ function WhatWeDo({ t, m }) {
         >
           One team for the whole house &ndash; painting, plastering, plumbing, fences, floors, and the odd jobs in between.
         </p>
+        <p style={{ margin: '18px auto 0', textAlign: 'center' }}>
+          <span
+            style={{
+              display: 'inline-block',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 600,
+              fontSize: 11.5,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--rust)',
+              background: 'var(--tan-pill)',
+              padding: '8px 16px',
+              borderRadius: 'var(--radius-pill)',
+            }}
+          >
+            A visit and quote is £90 &ndash; counted toward the work if you go ahead
+          </span>
+        </p>
       </Reveal>
     </section>
   );
@@ -1182,7 +1200,7 @@ function Close({ t, m }) {
 const FAQS = [
   {
     q: 'How much does a visit cost?',
-    a: 'A half-day starts at £140, a full day at £260, materials on top at cost. No call-out fee, and you will know the price before we lift a tool. Licensed trades are quoted job by job once we have seen the work.',
+    a: 'A visit to see the job and give you a price is £90. If you go ahead with the work that same visit, it comes straight off the cost, so there is no call-out fee on top. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Licensed trades are quoted job by job once we have seen the work.',
   },
   {
     q: 'What sort of jobs do you take on?',
@@ -1198,7 +1216,7 @@ const FAQS = [
   },
   {
     q: 'What happens on the first visit?',
-    a: 'We come and take a proper look, note what needs doing, and get to know the house. Then you get a plain price, half-day or full-day, with no surprises. Dust sheets down, shoes off, radio low, and everything left tidy.',
+    a: 'The visit itself is £90 – we come and take a proper look, note what needs doing, and get to know the house. Then you get a plain price, half-day or full-day, with no surprises, and the £90 counts toward it if you go ahead there and then. Dust sheets down, shoes off, radio low, and everything left tidy.',
   },
 ];
 

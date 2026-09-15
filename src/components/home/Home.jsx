@@ -299,6 +299,72 @@ function parsePostcode(raw) {
   return { invalid: true, reason: 'malformed' };
 }
 
+// North, northwest, west, southwest, a little south, and Richmond (TW) — the broad patch we cover.
+const SERVICE_AREA_LETTERS = new Set(['N', 'NW', 'W', 'SW', 'SE', 'TW']);
+
+function areaLetters(outward) {
+  const m = outward.match(/^[A-Z]{1,2}/);
+  return m ? m[0] : '';
+}
+
+function currentSeason() {
+  const month = new Date().getMonth(); // 0 = Jan
+  if (month === 11 || month <= 1) return 'winter';
+  if (month <= 4) return 'spring';
+  if (month <= 7) return 'summer';
+  return 'autumn';
+}
+
+function pick(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+const SEEN_AREAS_KEY = 'fettle_checked_areas';
+
+function hasCheckedArea(area) {
+  try {
+    const seen = JSON.parse(window.localStorage.getItem(SEEN_AREAS_KEY) || '[]');
+    return seen.includes(area);
+  } catch {
+    return false;
+  }
+}
+
+function rememberCheckedArea(area) {
+  try {
+    const seen = JSON.parse(window.localStorage.getItem(SEEN_AREAS_KEY) || '[]');
+    if (!seen.includes(area)) {
+      seen.push(area);
+      window.localStorage.setItem(SEEN_AREAS_KEY, JSON.stringify(seen));
+    }
+  } catch {
+    /* private browsing or storage blocked — fine, just won't remember */
+  }
+}
+
+function firstCheckMessage(area) {
+  return pick([
+    `We work across ${area} – get in touch and we’ll tell you if there’s room on the list.`,
+    `${area} is within our patch. Drop us a line and we’ll take a look.`,
+    `Good news – we cover ${area}. Get in touch and we’ll see what we can do.`,
+    `We’re active around ${area}. Reach out and we’ll take it from there.`,
+  ]);
+}
+
+function repeatCheckMessage(area) {
+  const season = currentSeason();
+  return pick([
+    `We’ve already got a home in ${area} on the books this ${season}.`,
+    `${area}’s no stranger to us – we’ve worked there this ${season}.`,
+    `We already look after a home nearby in ${area}.`,
+    `We’ve done work in ${area} this ${season}, and there may be room for more.`,
+  ]);
+}
+
+function outOfAreaMessage(area) {
+  return `We don’t currently cover ${area}, but get in touch and we’ll see what we can do.`;
+}
+
 function QuietPostcode({ id, t }) {
   const [value, setValue] = React.useState('');
   const [result, setResult] = React.useState(null);
@@ -312,7 +378,22 @@ function QuietPostcode({ id, t }) {
       inputRef.current && inputRef.current.focus();
       return;
     }
-    setResult(parsed);
+    if (parsed.invalid) {
+      setResult(parsed);
+      return;
+    }
+    const area = parsed.outward;
+    if (!SERVICE_AREA_LETTERS.has(areaLetters(area))) {
+      setResult({ area, covered: false, message: outOfAreaMessage(area) });
+      return;
+    }
+    const seenBefore = hasCheckedArea(area);
+    rememberCheckedArea(area);
+    setResult({
+      area,
+      covered: true,
+      message: seenBefore ? repeatCheckMessage(area) : firstCheckMessage(area),
+    });
   };
 
   return (
@@ -371,8 +452,8 @@ function QuietPostcode({ id, t }) {
               textAlign: 'center',
             }}
           >
-            <span style={{ color: 'var(--sage)', marginRight: 8 }}>✓</span>
-            We&rsquo;re taking on two more homes in {result.outward} this summer.
+            {result.covered && <span style={{ color: 'var(--sage)', marginRight: 8 }}>✓</span>}
+            {result.message}
             <span style={{ display: 'block', marginTop: 6, color: 'var(--ink-40)', fontSize: 15 * bs }}>
               <a href={`tel:${EDIT_PHONE}`} className="quiet-link" style={{ color: 'inherit' }}>
                 Call {EDIT_PHONE_DISPLAY}

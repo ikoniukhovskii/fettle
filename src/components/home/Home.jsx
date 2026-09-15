@@ -819,7 +819,7 @@ function WhatWeDo({ t, m }) {
               borderRadius: 'var(--radius-pill)',
             }}
           >
-            A visit and quote is £90 &ndash; counted toward the work if you go ahead
+            A visit and quote is £30 &ndash; counted toward the work if you go ahead
           </span>
         </p>
       </Reveal>
@@ -1159,6 +1159,23 @@ function Close({ t, m }) {
     <section id="availability" data-screen-label="Close" style={{ position: 'relative', zIndex: 1 }}>
       <div style={{ padding: `calc(clamp(90px, 13vw, 170px) * ${sf}) 24px calc(clamp(80px, 10vw, 120px) * ${sf})` }}>
         <Reveal m={m}>
+          <p
+            style={{
+              margin: '0 auto 40px',
+              maxWidth: 480,
+              textAlign: 'center',
+              fontFamily: 'var(--font-body)',
+              fontStyle: 'italic',
+              fontSize: 16.5 * (t.bodyScale / 100),
+              lineHeight: 1.6,
+              color: 'var(--ink-60)',
+            }}
+          >
+            &ldquo;They knew where our stopcock was before we did. Three winters in and it is the same two faces every time, which is rather the whole point.&rdquo;
+            <span style={{ display: 'block', marginTop: 8, fontStyle: 'normal', fontSize: 13, letterSpacing: '0.04em', color: 'var(--ink-40)' }}>
+              Sarah M. &middot; Plimsoll Road, Highbury
+            </span>
+          </p>
           <h2
             style={{
               margin: '0 auto 16px',
@@ -1177,7 +1194,7 @@ function Close({ t, m }) {
           </h2>
           <p
             style={{
-              margin: '0 auto 36px',
+              margin: '0 auto 12px',
               maxWidth: 440,
               textAlign: 'center',
               fontFamily: 'var(--font-body)',
@@ -1187,6 +1204,18 @@ function Close({ t, m }) {
             }}
           >
             One postcode is all it takes. If we&rsquo;ve room near you, we&rsquo;ll say so plainly.
+          </p>
+          <p
+            style={{
+              margin: '0 auto 36px',
+              textAlign: 'center',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 13.5 * (t.bodyScale / 100),
+              color: 'var(--ink-40)',
+            }}
+          >
+            A visit and quote is £30, counted toward the work if you go ahead.
           </p>
           <QuietPostcode id="postcode-close" t={t} />
         </Reveal>
@@ -1200,7 +1229,7 @@ function Close({ t, m }) {
 const FAQS = [
   {
     q: 'How much does a visit cost?',
-    a: 'A visit to see the job and give you a price is £90. If you go ahead with the work that same visit, it comes straight off the cost, so there is no call-out fee on top. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Licensed trades are quoted job by job once we have seen the work.',
+    a: 'A visit to see the job and give you a price is £30. If you go ahead with the work that same visit, it comes straight off the cost, so there is no call-out fee on top. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Licensed trades are quoted job by job once we have seen the work.',
   },
   {
     q: 'What sort of jobs do you take on?',
@@ -1216,7 +1245,7 @@ const FAQS = [
   },
   {
     q: 'What happens on the first visit?',
-    a: 'The visit itself is £90 – we come and take a proper look, note what needs doing, and get to know the house. Then you get a plain price, half-day or full-day, with no surprises, and the £90 counts toward it if you go ahead there and then. Dust sheets down, shoes off, radio low, and everything left tidy.',
+    a: 'The visit itself is £30 – we come and take a proper look, note what needs doing, and get to know the house. Then you get a plain price, half-day or full-day, with no surprises, and the £30 counts toward it if you go ahead there and then. Dust sheets down, shoes off, radio low, and everything left tidy.',
   },
 ];
 

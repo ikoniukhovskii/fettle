@@ -294,10 +294,24 @@ function parsePostcode(raw) {
   // Outward (area + district) followed by the full inward code (digit + 2 letters), e.g. "SE3 9FL".
   const full = compact.match(/^([A-Z]{1,2}\d[A-Z\d]?)(\d[A-Z]{2})$/);
   if (full) return { outward: full[1], postcode: `${full[1]} ${full[2]}` };
-  // Outward only, e.g. "SE3" — a real area, but we need the full postcode to check properly.
+  // Outward only, e.g. "SW10" — a real area on its own is a fine input too.
   const outwardOnly = compact.match(/^([A-Z]{1,2}\d[A-Z\d]?)$/);
-  if (outwardOnly) return { invalid: true, reason: 'incomplete' };
+  if (outwardOnly) return { outward: outwardOnly[1], postcode: null };
   return { invalid: true, reason: 'malformed' };
+}
+
+// Real-postcode lookup via postcodes.io — a free, open UK postcode API (no key needed) — so a
+// well-formed but made-up postcode (right shape, wrong place) gets caught before we say anything.
+async function fullPostcodeExists(postcode) {
+  const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}/validate`);
+  if (!res.ok) return false;
+  const json = await res.json();
+  return !!json.result;
+}
+
+async function outcodeExists(outward) {
+  const res = await fetch(`https://api.postcodes.io/outcodes/${encodeURIComponent(outward)}`);
+  return res.ok;
 }
 
 // North, northwest, west, southwest, a little south, and Richmond (TW) — the broad patch we cover.
@@ -396,11 +410,25 @@ function QuietPostcode({ id, t }) {
       return;
     }
     const area = parsed.outward;
+
+    setChecking(true);
+    let exists = true;
+    try {
+      exists = parsed.postcode ? await fullPostcodeExists(parsed.postcode) : await outcodeExists(area);
+    } catch {
+      exists = true; // lookup unreachable — don't block the visitor over an outage
+    }
+    if (!exists) {
+      setChecking(false);
+      setResult({ invalid: true, reason: 'nonexistent' });
+      return;
+    }
+
     if (!SERVICE_AREA_LETTERS.has(areaLetters(area))) {
+      setChecking(false);
       setResult({ area, postcode: parsed.postcode, covered: false, message: outOfAreaMessage(area) });
       return;
     }
-    setChecking(true);
     let previousCount = 0;
     try {
       previousCount = await bumpAreaCheckCount(area);
@@ -483,7 +511,7 @@ function QuietPostcode({ id, t }) {
             {result.message}
             <span style={{ display: 'block', marginTop: 16 }}>
               <a
-                href={`/contact${result.postcode ? `?postcode=${encodeURIComponent(result.postcode)}` : ''}`}
+                href={`/contact?postcode=${encodeURIComponent(result.postcode || result.area)}`}
                 style={{
                   display: 'inline-block',
                   padding: '11px 26px',
@@ -526,8 +554,8 @@ function QuietPostcode({ id, t }) {
               textAlign: 'center',
             }}
           >
-            {result.reason === 'incomplete'
-              ? 'That’s just the area – enter your full postcode (e.g. SE3 9FL) so we can check properly.'
+            {result.reason === 'nonexistent'
+              ? 'That postcode doesn’t look right – please double-check it.'
               : 'That doesn’t look like a postcode – check it and try again.'}
           </p>
         )}

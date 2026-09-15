@@ -605,7 +605,7 @@ function WhatWeDo({ t, m }) {
             color: 'var(--ink-60)',
           }}
         >
-          One team for the whole house &mdash; painting, plastering, plumbing, fences, floors, and the odd jobs in between.
+          One team for the whole house &ndash; painting, plastering, plumbing, fences, floors, and the odd jobs in between.
         </p>
       </Reveal>
     </section>
@@ -903,8 +903,8 @@ const BEFORE_AFTERS = [
   {
     before: beforeAfterBefore,
     after: beforeAfterAfter,
-    beforeAlt: '42 — the garden and driveway before: overgrown beds, weeds through the paving',
-    afterAlt: '42 — the garden and driveway after Fettle’s work: clipped hedges, fresh planting, tidy paving',
+    beforeAlt: '42 – the garden and driveway before: overgrown beds, weeds through the paving',
+    afterAlt: '42 – the garden and driveway after Fettle’s work: clipped hedges, fresh planting, tidy paving',
     quote: 'Same house, N6. Drag to see the difference a season of upkeep makes.',
     caption: 'Bishopswood Road, Highgate · N6',
   },

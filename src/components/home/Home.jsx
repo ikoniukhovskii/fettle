@@ -314,8 +314,8 @@ async function outcodeExists(outward) {
   return res.ok;
 }
 
-// North, northwest, west, southwest, a little south, and Richmond (TW) — the broad patch we cover.
-const SERVICE_AREA_LETTERS = new Set(['N', 'NW', 'W', 'SW', 'SE', 'TW']);
+// North, northwest, west, southwest, a little south, central (EC/WC), and Richmond (TW) — the broad patch we cover.
+const SERVICE_AREA_LETTERS = new Set(['N', 'NW', 'W', 'SW', 'SE', 'TW', 'EC', 'WC']);
 // From this many prior checks on an area, we start calling it "busy" instead of naming a count.
 const POPULAR_AREA_THRESHOLD = 5;
 
@@ -1173,7 +1173,7 @@ const FAQS = [
   },
   {
     q: 'Do you have room for my home?',
-    a: 'We take on a few more homes each season, postcode by postcode, so we can keep doing right by the ones already on the list. Give us your postcode and we will tell you plainly whether there is room near you. We work across north, northwest, west, southwest, and south London.',
+    a: 'We take on a few more homes each season, postcode by postcode, so we can keep doing right by the ones already on the list. Give us your postcode and we will tell you plainly whether there is room near you. We work across north, northwest, west, southwest, south, and central London.',
   },
   {
     q: 'Will it be the same people each time?',

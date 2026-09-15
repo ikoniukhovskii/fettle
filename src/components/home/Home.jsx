@@ -1,4 +1,5 @@
 import React from 'react';
+import { createClient } from '@supabase/supabase-js';
 import heroDrawingRoomAsset from '../../assets/img/hero-drawing-room.webp';
 const heroDrawingRoom = heroDrawingRoomAsset.src;
 import kitchenGardenAsset from '../../assets/img/kitchen-garden.webp';
@@ -301,6 +302,14 @@ function parsePostcode(raw) {
 
 // North, northwest, west, southwest, a little south, and Richmond (TW) — the broad patch we cover.
 const SERVICE_AREA_LETTERS = new Set(['N', 'NW', 'W', 'SW', 'SE', 'TW']);
+// From this many prior checks on an area, we start calling it "busy" instead of naming a count.
+const POPULAR_AREA_THRESHOLD = 5;
+
+const supabase = createClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  { auth: { persistSession: false } }
+);
 
 function areaLetters(outward) {
   const m = outward.match(/^[A-Z]{1,2}/);
@@ -319,27 +328,21 @@ function pick(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
-const SEEN_AREAS_KEY = 'fettle_checked_areas';
-
-function hasCheckedArea(area) {
-  try {
-    const seen = JSON.parse(window.localStorage.getItem(SEEN_AREAS_KEY) || '[]');
-    return seen.includes(area);
-  } catch {
-    return false;
+// Reads the shared check count for an area and bumps it by one, atomically enough for this
+// cosmetic counter. Returns how many times it had been checked *before* this call (by anyone).
+async function bumpAreaCheckCount(area) {
+  const { data: existing } = await supabase
+    .from('postcode_checks')
+    .select('check_count')
+    .eq('area', area)
+    .maybeSingle();
+  const previousCount = existing?.check_count ?? 0;
+  if (existing) {
+    await supabase.from('postcode_checks').update({ check_count: previousCount + 1 }).eq('area', area);
+  } else {
+    await supabase.from('postcode_checks').insert({ area, check_count: 1 });
   }
-}
-
-function rememberCheckedArea(area) {
-  try {
-    const seen = JSON.parse(window.localStorage.getItem(SEEN_AREAS_KEY) || '[]');
-    if (!seen.includes(area)) {
-      seen.push(area);
-      window.localStorage.setItem(SEEN_AREAS_KEY, JSON.stringify(seen));
-    }
-  } catch {
-    /* private browsing or storage blocked — fine, just won't remember */
-  }
+  return previousCount;
 }
 
 function firstCheckMessage(area) {
@@ -361,6 +364,15 @@ function repeatCheckMessage(area) {
   ]);
 }
 
+function popularAreaMessage(area) {
+  return pick([
+    `${area} is one of our busier postcodes – we’ve done numerous jobs there.`,
+    `We know ${area} well by now – we’ve worked there many times.`,
+    `${area} keeps us busy. We’ve done plenty of work in the area.`,
+    `We’ve built up plenty of experience in ${area} over time.`,
+  ]);
+}
+
 function outOfAreaMessage(area) {
   return `We don’t currently cover ${area}, but get in touch and we’ll see what we can do.`;
 }
@@ -368,11 +380,12 @@ function outOfAreaMessage(area) {
 function QuietPostcode({ id, t }) {
   const [value, setValue] = React.useState('');
   const [result, setResult] = React.useState(null);
+  const [checking, setChecking] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
   const inputRef = React.useRef(null);
   const bs = t.bodyScale / 100;
 
-  const check = () => {
+  const check = async () => {
     const parsed = parsePostcode(value);
     if (!parsed) {
       inputRef.current && inputRef.current.focus();
@@ -387,13 +400,21 @@ function QuietPostcode({ id, t }) {
       setResult({ area, covered: false, message: outOfAreaMessage(area) });
       return;
     }
-    const seenBefore = hasCheckedArea(area);
-    rememberCheckedArea(area);
-    setResult({
-      area,
-      covered: true,
-      message: seenBefore ? repeatCheckMessage(area) : firstCheckMessage(area),
-    });
+    setChecking(true);
+    let previousCount = 0;
+    try {
+      previousCount = await bumpAreaCheckCount(area);
+    } catch {
+      previousCount = 0; // can't reach the shared count — still show a friendly result
+    }
+    setChecking(false);
+    const message =
+      previousCount === 0
+        ? firstCheckMessage(area)
+        : previousCount < POPULAR_AREA_THRESHOLD
+          ? repeatCheckMessage(area)
+          : popularAreaMessage(area);
+    setResult({ area, covered: true, message });
   };
 
   return (
@@ -435,8 +456,14 @@ function QuietPostcode({ id, t }) {
             borderRadius: 0,
           }}
         />
-        <button type="button" onClick={check} className="quiet-check-btn" style={{ color: 'var(--ink)' }}>
-          Check
+        <button
+          type="button"
+          onClick={check}
+          disabled={checking}
+          className="quiet-check-btn"
+          style={{ color: 'var(--ink)', opacity: checking ? 0.5 : 1, cursor: checking ? 'default' : 'pointer' }}
+        >
+          {checking ? 'Checking…' : 'Check'}
         </button>
       </div>
       <div aria-live="polite">
@@ -1097,7 +1124,7 @@ const FAQS = [
   },
   {
     q: 'Do you have room for my home?',
-    a: 'We take on a few more homes each season, postcode by postcode, so we can keep doing right by the ones already on the list. Give us your postcode and we will tell you plainly whether there is room near you. We work across N5, N6, NW3 and around.',
+    a: 'We take on a few more homes each season, postcode by postcode, so we can keep doing right by the ones already on the list. Give us your postcode and we will tell you plainly whether there is room near you. We work across north, northwest, west, southwest, and south London.',
   },
   {
     q: 'Will it be the same people each time?',

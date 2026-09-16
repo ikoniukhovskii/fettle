@@ -904,7 +904,7 @@ function Team({ t, m }) {
                   }}
                 >
                   {person.photo ? (
-                    <img src={person.photo} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <img src={person.photo} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }} />
                   ) : (
                     <PersonIcon />
                   )}

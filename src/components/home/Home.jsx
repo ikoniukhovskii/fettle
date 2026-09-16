@@ -1233,7 +1233,7 @@ function Close({ t, m }) {
 const FAQS = [
   {
     q: 'How much does a visit cost?',
-    a: 'A visit to see the job and give you a price is £30. If you go ahead with the work that same visit, it comes straight off the cost, so there is no call-out fee on top. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Licensed trades are quoted job by job once we have seen the work.',
+    a: 'A visit to see the job and give you a price is £30. If you go ahead with the work that same visit, it comes straight off the cost, so there is no call-out fee on top. As an introductory rate for our first clients, a half-day starts at £90, a full day at £160, materials on top at cost. You will know the price before we lift a tool. Licensed trades are quoted job by job once we have seen the work.',
   },
   {
     q: 'What sort of jobs do you take on?',

@@ -26,6 +26,8 @@ import carouselDrawingRoomAsset from '../../assets/img/carousel-drawing-room.web
 const carouselDrawingRoom = carouselDrawingRoomAsset.src;
 import carouselKitchenAsset from '../../assets/img/carousel-kitchen.webp';
 const carouselKitchen = carouselKitchenAsset.src;
+import teamIliaAsset from '../../assets/img/team-ilia.webp';
+const teamIlia = teamIliaAsset.src;
 
 /* Fettle — photo-led editorial landing page.
    One full-bleed photograph as the entire hero, giant wordmark anchored to
@@ -817,6 +819,130 @@ function WhatWeDo({ t, m }) {
           </span>
         </p>
       </Reveal>
+    </section>
+  );
+}
+
+/* ---------- Team ---------- */
+const TEAM = [
+  { name: 'Ilia', role: 'Founder', note: 'Inspection and quotation.', photo: teamIlia },
+  { placeholder: true },
+  { placeholder: true },
+  { placeholder: true },
+];
+
+function PersonIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+
+function Team({ t, m }) {
+  const sf = t.sectionSpacing / 100;
+  return (
+    <section id="team" data-screen-label="Team" style={{ position: 'relative', zIndex: 1 }}>
+      <div style={{ padding: `calc(clamp(48px, 7vw, 88px) * ${sf}) 24px calc(clamp(56px, 8vw, 100px) * ${sf})` }}>
+        <Reveal m={m}>
+          <h2
+            style={{
+              margin: '0 auto 12px',
+              maxWidth: 640,
+              textAlign: 'center',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 800,
+              fontSize: `calc(clamp(28px, 3.8vw, 44px) * ${t.headingScale / 100})`,
+              lineHeight: 1.1,
+              letterSpacing: '-0.01em',
+              color: 'var(--ink)',
+              textWrap: 'balance',
+            }}
+          >
+            Meet the team
+          </h2>
+          <p
+            style={{
+              margin: '0 auto',
+              maxWidth: 480,
+              textAlign: 'center',
+              fontFamily: 'var(--font-body)',
+              fontSize: 17 * (t.bodyScale / 100),
+              lineHeight: 1.6,
+              color: 'var(--ink-60)',
+            }}
+          >
+            The small permanent team behind every visit.
+          </p>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: 'clamp(28px, 4vw, 44px)',
+              marginTop: 'clamp(32px, 5vw, 48px)',
+              maxWidth: 900,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            {TEAM.map((person, i) => (
+              <div key={i} style={{ width: 180, textAlign: 'center' }}>
+                <div
+                  style={{
+                    width: 140,
+                    height: 140,
+                    margin: '0 auto 16px',
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    background: 'var(--tan-pill)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--ink-40)',
+                  }}
+                >
+                  {person.photo ? (
+                    <img src={person.photo} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  ) : (
+                    <PersonIcon />
+                  )}
+                </div>
+                <p
+                  style={{
+                    margin: 0,
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 700,
+                    fontSize: 17,
+                    color: person.placeholder ? 'var(--ink-40)' : 'var(--ink)',
+                  }}
+                >
+                  {person.name || 'Name'}
+                </p>
+                <p
+                  style={{
+                    margin: '4px 0 0',
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 500,
+                    fontSize: 12.5,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    color: 'var(--ink-40)',
+                  }}
+                >
+                  {person.role || 'Role'}
+                </p>
+                {person.note && (
+                  <p style={{ margin: '8px 0 0', fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.5, color: 'var(--ink-60)' }}>
+                    {person.note}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </div>
     </section>
   );
 }
@@ -1781,6 +1907,7 @@ export default function Home() {
       <WhatWeDo t={t} m={m} />
       <Story t={t} m={m} pcfg={pcfg} />
       <Close t={t} m={m} />
+      <Team t={t} m={m} />
       <FAQ t={t} m={m} />
       <SiteFooter />
     </React.Fragment>

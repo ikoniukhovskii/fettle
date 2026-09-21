@@ -29,6 +29,35 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://fettle.lond
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "HandymanService",
+      "name": "Fettle",
+      "description": "A small permanent team keeping a short list of London homes in good working order.",
+      "url": "https://fettle.london",
+      "telephone": "+447361854124",
+      "priceRange": "\u00a330\u2013\u00a3260",
+      "areaServed": [
+        "North London",
+        "Northwest London",
+        "West London",
+        "Southwest London",
+        "South London",
+        "Central London"
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "London",
+        "addressCountry": "GB"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "08:00",
+        "closes": "18:00"
+      }
+    })} />
+
     <slot name="head" />
   </head>
   <body>

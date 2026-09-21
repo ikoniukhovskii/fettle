@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fettle.london/sitemap-index.xml

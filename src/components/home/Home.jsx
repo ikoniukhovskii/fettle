@@ -829,10 +829,10 @@ function WhatWeDo({ t, m }) {
 
 /* ---------- Team ---------- */
 const TEAM = [
-  { name: 'Ilia', role: 'Founder', note: 'Inspection and quotation.', photo: teamIlia },
-  { name: 'Leo', role: 'Co-founder', note: 'Maintenance, painting, plastering, and decoration.', photo: teamLeo },
-  { name: 'Sergio', role: 'Plumber', note: 'Plumbing and general repairs.', photo: teamSergio },
-  { placeholder: true },
+  { name: 'Ilia', role: 'Worker', note: 'Inspection and quotation.', photo: teamIlia },
+  { name: 'Leo', role: 'Worker', note: 'Maintenance, painting, plastering, and decoration.', photo: teamLeo },
+  { name: 'Sergio', role: 'Worker', note: 'Plumbing and general repairs.', photo: teamSergio },
+  { placeholder: true, note: 'Growing the team.' },
 ];
 
 function PersonIcon() {

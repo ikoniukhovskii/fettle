@@ -28,6 +28,10 @@ import carouselKitchenAsset from '../../assets/img/carousel-kitchen.webp';
 const carouselKitchen = carouselKitchenAsset.src;
 import teamIliaAsset from '../../assets/img/team-ilia.webp';
 const teamIlia = teamIliaAsset.src;
+import teamLeoAsset from '../../assets/img/team-leo.webp';
+const teamLeo = teamLeoAsset.src;
+import teamSergioAsset from '../../assets/img/team-sergio.webp';
+const teamSergio = teamSergioAsset.src;
 
 /* Fettle — photo-led editorial landing page.
    One full-bleed photograph as the entire hero, giant wordmark anchored to
@@ -826,8 +830,8 @@ function WhatWeDo({ t, m }) {
 /* ---------- Team ---------- */
 const TEAM = [
   { name: 'Ilia', role: 'Founder', note: 'Inspection and quotation.', photo: teamIlia },
-  { placeholder: true },
-  { placeholder: true },
+  { name: 'Leo', role: 'Co-founder', note: 'Maintenance, painting, plastering, and decoration.', photo: teamLeo },
+  { name: 'Sergio', role: 'Plumber', note: 'Plumbing and general repairs.', photo: teamSergio },
   { placeholder: true },
 ];
 
@@ -918,21 +922,23 @@ function Team({ t, m }) {
                     color: person.placeholder ? 'var(--ink-40)' : 'var(--ink)',
                   }}
                 >
-                  {person.name || 'Name'}
+                  {person.placeholder ? 'Coming soon' : person.name}
                 </p>
-                <p
-                  style={{
-                    margin: '4px 0 0',
-                    fontFamily: 'var(--font-body)',
-                    fontWeight: 500,
-                    fontSize: 12.5,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                    color: 'var(--ink-40)',
-                  }}
-                >
-                  {person.role || 'Role'}
-                </p>
+                {!person.placeholder && (
+                  <p
+                    style={{
+                      margin: '4px 0 0',
+                      fontFamily: 'var(--font-body)',
+                      fontWeight: 500,
+                      fontSize: 12.5,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      color: 'var(--ink-40)',
+                    }}
+                  >
+                    {person.role}
+                  </p>
+                )}
                 {person.note && (
                   <p style={{ margin: '8px 0 0', fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.5, color: 'var(--ink-60)' }}>
                     {person.note}

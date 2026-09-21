@@ -2,6 +2,10 @@
 import Page from '../layouts/Page.astro';
 import teamIliaAsset from '../assets/img/team-ilia.webp';
 const teamIlia = teamIliaAsset.src;
+import teamLeoAsset from '../assets/img/team-leo.webp';
+const teamLeo = teamLeoAsset.src;
+import teamSergioAsset from '../assets/img/team-sergio.webp';
+const teamSergio = teamSergioAsset.src;
 ---
 
 <Page title="About Fettle – Homes kept in good order, London" description="A small permanent team, a short list of homes, and a simple promise – the same faces each visit, honest work, and a tidy finish. By recommendation, mostly.">
@@ -26,26 +30,27 @@ const teamIlia = teamIliaAsset.src;
             <p class="team-role">Founder</p>
             <p class="team-note">Inspection and quotation.</p>
           </div>
-          <div class="team-card is-placeholder">
+          <div class="team-card">
             <div class="team-photo">
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"></path></svg>
+              <img src={teamLeo} alt="Leo" />
             </div>
-            <p class="team-name">Name</p>
-            <p class="team-role">Role</p>
+            <p class="team-name">Leo</p>
+            <p class="team-role">Co-founder</p>
+            <p class="team-note">Maintenance, painting, plastering, and decoration.</p>
+          </div>
+          <div class="team-card">
+            <div class="team-photo">
+              <img src={teamSergio} alt="Sergio" />
+            </div>
+            <p class="team-name">Sergio</p>
+            <p class="team-role">Plumber</p>
+            <p class="team-note">Plumbing and general repairs.</p>
           </div>
           <div class="team-card is-placeholder">
             <div class="team-photo">
               <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"></path></svg>
             </div>
-            <p class="team-name">Name</p>
-            <p class="team-role">Role</p>
-          </div>
-          <div class="team-card is-placeholder">
-            <div class="team-photo">
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"></path></svg>
-            </div>
-            <p class="team-name">Name</p>
-            <p class="team-role">Role</p>
+            <p class="team-name">Coming soon</p>
           </div>
         </div>
 

@@ -835,11 +835,10 @@ const TEAM = [
   { placeholder: true, note: 'Growing the team.' },
 ];
 
-function PersonIcon() {
+function PlusIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" />
+    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 5v14M5 12h14" />
     </svg>
   );
 }
@@ -895,8 +894,8 @@ function Team({ t, m }) {
               <div key={i} style={{ width: 180, textAlign: 'center' }}>
                 <div
                   style={{
-                    width: 140,
-                    height: 140,
+                    width: person.placeholder ? 122 : 140,
+                    height: person.placeholder ? 122 : 140,
                     margin: '0 auto 16px',
                     borderRadius: '50%',
                     overflow: 'hidden',
@@ -910,7 +909,7 @@ function Team({ t, m }) {
                   {person.photo ? (
                     <img src={person.photo} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }} />
                   ) : (
-                    <PersonIcon />
+                    <PlusIcon />
                   )}
                 </div>
                 <p

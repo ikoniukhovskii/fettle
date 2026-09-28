@@ -1243,8 +1243,8 @@ const BEFORE_AFTERS = [
   {
     before: beforeAfterBefore,
     after: beforeAfterAfter,
-    beforeAlt: '42 – the garden and driveway before: overgrown beds, weeds through the paving',
-    afterAlt: '42 – the garden and driveway after Fettle’s work: clipped hedges, fresh planting, tidy paving',
+    beforeAlt: 'The garden and driveway before: overgrown beds, weeds through the paving',
+    afterAlt: 'The garden and driveway after Fettle’s work: clipped hedges, fresh planting, tidy paving',
     quote: 'Same house, N6. Drag to see the difference a season of upkeep makes.',
     caption: 'Bishopswood Road, Highgate · N6',
   },
@@ -1253,7 +1253,7 @@ const BEFORE_AFTERS = [
     after: beforeAfter2After,
     beforeAlt: 'A period dining room before: tired dark walls, bare boards, worn furniture',
     afterAlt: 'The same dining room after Fettle’s work: fresh paint, restored cornice, warm and finished',
-    quote: 'Same room, N6. Drag to see what a proper going-over does.',
+    quote: 'Same room, NW3. Drag to see what a proper going-over does.',
     caption: 'Lambolle Road, Belsize Park · NW3',
   },
 ];
@@ -1658,7 +1658,7 @@ function SiteFooter() {
 
 /* ---------- Coverflow carousel (header) ---------- */
 const CAROUSEL = [
-  { img: beforeAfter2After, caption: 'Bishopswood Road, Highgate · N6' },
+  { img: beforeAfter2After, caption: 'Lambolle Road, Belsize Park · NW3' },
   { img: carouselGreenLiving, caption: 'Plimsoll Road, Highbury · N5' },
   { img: carouselBlueLiving, caption: 'Church Crescent, Muswell Hill · N10' },
   { img: carouselHallway, caption: 'Fitzjohn’s Avenue, Hampstead · NW3' },

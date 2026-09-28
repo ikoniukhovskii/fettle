@@ -1364,7 +1364,7 @@ function Close({ t, m }) {
 const FAQS = [
   {
     q: 'How much does a visit cost?',
-    a: 'A visit to see the job and give you a price is £30. If you go ahead with the work that same visit, it comes straight off the cost, so there is no call-out fee on top. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or tree surgery, is quoted job by job once we have seen it.',
+    a: 'A visit to see the job and give you a price is £30. Whenever you go ahead with the work, it comes straight off the cost, and if it turns out not to be a job for us, you don’t pay it. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or tree surgery, is quoted job by job once we have seen it.',
   },
   {
     q: 'What sort of jobs do you take on?',
@@ -1380,7 +1380,7 @@ const FAQS = [
   },
   {
     q: 'What happens on the first visit?',
-    a: 'The visit itself is £30 – we come and take a proper look, note what needs doing, and get to know the house. Then you get a plain price, half-day or full-day, with no surprises, and the £30 counts toward it if you go ahead there and then. Dust sheets down, shoes off, radio low, and everything left tidy.',
+    a: 'The visit itself is £30 – we come and take a proper look, note what needs doing, and get to know the house. Then you get a plain price, half-day or full-day, with no surprises, and the £30 counts toward it whenever you go ahead. Dust sheets down, shoes off, radio low, and everything left tidy.',
   },
 ];
 

@@ -1307,7 +1307,7 @@ function Close({ t, m }) {
           >
             &ldquo;They knew where our stopcock was before we did. Three winters in and it is the same two faces every time, which is rather the whole point.&rdquo;
             <span style={{ display: 'block', marginTop: 8, fontStyle: 'normal', fontSize: 13, letterSpacing: '0.04em', color: 'var(--ink-40)' }}>
-              Sarah M. &middot; Plimsoll Road, Highbury
+              Sarah M. &middot; Plimsoll Road, Highbury &middot; Client since 2023
             </span>
           </p>
           <h2
@@ -1587,7 +1587,7 @@ function SiteFooter() {
               Fettle
             </a>
             <p style={{ margin: '16px 0 0', maxWidth: '32ch', fontSize: 14.5, lineHeight: 1.6, color: cream + '0.62)' }}>
-              London home care with efficiency, transparency and a tidy finish.
+              London home care with efficiency, transparency and a tidy finish. Since 2023.
             </p>
           </div>
           {FOOT_COLS.map((col) => (

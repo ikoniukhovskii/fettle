@@ -1548,19 +1548,25 @@ function FAQ({ t, m }) {
 /* ---------- Site footer (three columns, matches sub-pages) ---------- */
 const FOOT_COLS = [
   {
+    head: 'Services',
+    links: [
+      { label: 'What we fix', href: '/services' },
+      ...SERVICES.slice(0, 4).map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
+    ],
+  },
+  {
+    head: 'More services',
+    links: [
+      ...SERVICES.slice(4).map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
+      { label: 'How it works', href: '/how-it-works' },
+    ],
+  },
+  {
     head: 'Company',
     links: [
       { label: 'About Fettle', href: '/about' },
       { label: 'Testimonials', href: '/testimonials' },
       { label: 'Contact', href: '/contact' },
-    ],
-  },
-  {
-    head: 'Services',
-    links: [
-      { label: 'What we fix', href: '/services' },
-      ...SERVICES.map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
-      { label: 'How it works', href: '/how-it-works' },
     ],
   },
   {

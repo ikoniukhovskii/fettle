@@ -380,15 +380,15 @@ textarea:focus-visible {
 }
 .foot-top {
   display: grid;
-  grid-template-columns: minmax(220px, 1.1fr) repeat(3, minmax(140px, 0.9fr));
-  gap: clamp(28px, 4vw, 56px);
+  grid-template-columns: minmax(200px, 1.1fr) repeat(4, minmax(120px, 0.85fr));
+  gap: clamp(24px, 3.2vw, 48px);
   padding-bottom: clamp(40px, 5vw, 60px);
 }
 @media (max-width: 860px) {
   .foot-top { grid-template-columns: 1fr 1fr; }
   .foot-brand { grid-column: 1 / -1; }
 }
-@media (max-width: 480px) { .foot-top { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .foot-top { column-gap: 20px; row-gap: 32px; } }
 
 .foot-logo {
   display: inline-block;

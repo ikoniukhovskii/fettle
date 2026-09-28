@@ -32,6 +32,7 @@ import teamLeoAsset from '../../assets/img/team-leo.webp';
 const teamLeo = teamLeoAsset.src;
 import teamSergioAsset from '../../assets/img/team-sergio.webp';
 const teamSergio = teamSergioAsset.src;
+import { SERVICES } from '../../data/services';
 
 /* Fettle — photo-led editorial landing page.
    One full-bleed photograph as the entire hero, giant wordmark anchored to
@@ -1558,6 +1559,7 @@ const FOOT_COLS = [
     head: 'Services',
     links: [
       { label: 'What we fix', href: '/services' },
+      ...SERVICES.map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
       { label: 'How it works', href: '/how-it-works' },
     ],
   },

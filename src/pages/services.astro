@@ -1,8 +1,9 @@
 ---
 import Page from '../layouts/Page.astro';
+import { SERVICES } from '../data/services';
 ---
 
-<Page title="What we fix – Fettle, London" description="From a wonky fence to a fresh coat of paint, one team does the lot – and for rendering or tree surgery, specialists we know by name.">
+<Page title="Handyman Services in London – What We Fix | Fettle" description="From a wonky fence to a fresh coat of paint, one team does the lot – and for rendering or tree surgery, specialists we know by name.">
     <section class="page-hero">
       <div class="wrap">
         <p class="eyebrow">Services</p>
@@ -14,30 +15,13 @@ import Page from '../layouts/Page.astro';
     <section class="page-body">
       <div class="wrap">
         <div class="grid three">
-          <div class="card">
-            <h3>Painting &amp; plastering</h3>
-            <p>Fresh coats, patched walls, made-good ceilings. Neat lines, no mess left behind.</p>
-          </div>
-          <div class="card">
-            <h3>Plumbing</h3>
-            <p>Dripping taps, running loos and small leaks. New taps, sinks and toilets fitted, washing machines plumbed in, radiators bled, blockages and showers sorted. Done by Sergio, our own plumber.</p>
-          </div>
-          <div class="card">
-            <h3>Floors &amp; joinery</h3>
-            <p>Creaky boards, worn thresholds, shelves that sit straight. Careful work on period detail.</p>
-          </div>
-          <div class="card">
-            <h3>Fences &amp; gardens</h3>
-            <p>A wonky fence set right, gates rehung, the outside kept as tidy as the in.</p>
-          </div>
-          <div class="card">
-            <h3>Odd jobs</h3>
-            <p>The list on the fridge. Pictures hung, doors eased, the small things that never quite get done.</p>
-          </div>
-          <div class="card">
-            <h3>Seasonal upkeep</h3>
-            <p>Gutters, damp-watching, the once-a-season look-over that stops small things becoming big ones.</p>
-          </div>
+          {SERVICES.map((s) => (
+            <a class="card" href={`/services/${s.slug}`} style="text-decoration:none; color:inherit">
+              <h3>{s.name}</h3>
+              <p>{s.lede}</p>
+              <p style="margin-top:12px; color:var(--brick)">More &rarr;</p>
+            </a>
+          ))}
         </div>
 
         <hr class="divider" />

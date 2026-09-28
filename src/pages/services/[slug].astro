@@ -1,0 +1,65 @@
+---
+import Page from '../../layouts/Page.astro';
+import { SERVICES, AREAS } from '../../data/services';
+
+export function getStaticPaths() {
+  return SERVICES.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+const { service } = Astro.props;
+const others = SERVICES.filter((s) => s.slug !== service.slug);
+---
+
+<Page title={service.title} description={service.description}>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow"><a href="/services">Services</a></p>
+      <h1>{service.h1}</h1>
+      <p class="lede">{service.lede}</p>
+    </div>
+  </section>
+
+  <section class="page-body">
+    <div class="wrap">
+      <div class="grid three">
+        {service.jobs.map((job) => (
+          <div class="card">
+            <h3>{job.title}</h3>
+            <p>{job.text}</p>
+          </div>
+        ))}
+      </div>
+
+      <hr class="divider" />
+
+      <div class="prose">
+        {service.note && <p class="muted">{service.note}</p>}
+        <h2>What it costs</h2>
+        <p>A visit to see the job and give you a price is £30, and it comes off the cost whenever you go ahead. A half-day starts at £140 and a full day at £260, materials on top at cost. You’ll know the price before we lift a tool.</p>
+        <div class="badge-row">
+          <span class="pill"><span class="dot"></span>Visit and quote · £30</span>
+          <span class="pill"><span class="dot"></span>Half-day · from £140</span>
+          <span class="pill"><span class="dot"></span>Same faces each visit</span>
+          <span class="pill"><span class="dot"></span>Insured</span>
+        </div>
+
+        <h2 style="margin-top:40px">Areas we cover</h2>
+        <ul>
+          {AREAS.map((a) => (
+            <li><strong>{a.region}:</strong> {a.places}</li>
+          ))}
+        </ul>
+        <p class="muted">Not sure if you’re on our patch? Get in touch and we’ll tell you plainly.</p>
+
+        <p style="margin-top:24px"><a class="btn primary" href="/contact">Get a quote</a> &nbsp; <a class="btn secondary" href="/how-it-works">How it works</a></p>
+
+        <h2 style="margin-top:48px">Other things we do</h2>
+        <ul>
+          {others.map((s) => (
+            <li><a href={`/services/${s.slug}`}>{s.name}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+</Page>

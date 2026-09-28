@@ -829,10 +829,10 @@ function WhatWeDo({ t, m }) {
 
 /* ---------- Team ---------- */
 const TEAM = [
-  { name: 'Ilia', role: 'Worker', note: 'Inspection and quotation.', photo: teamIlia },
-  { name: 'Leo', role: 'Worker', note: 'Maintenance, painting, plastering, and decoration.', photo: teamLeo },
-  { name: 'Sergio', role: 'Worker', note: 'Plumbing and general repairs.', photo: teamSergio },
-  { placeholder: true, note: 'Growing the team.' },
+  { name: 'Ilia', role: 'Founder · Surveys & quotes', note: 'Inspection and quotation.', photo: teamIlia },
+  { name: 'Leo', role: 'Maintenance & decorating', note: 'Maintenance, painting, plastering, and decoration.', photo: teamLeo },
+  { name: 'Sergio', role: 'Plumber & repairs', note: 'Plumbing and general repairs.', photo: teamSergio },
+  { placeholder: true, note: 'Good hands wanted – get in touch.', href: '/contact' },
 ];
 
 function PlusIcon() {
@@ -921,7 +921,7 @@ function Team({ t, m }) {
                     color: person.placeholder ? 'var(--ink-40)' : 'var(--ink)',
                   }}
                 >
-                  {person.placeholder ? 'Coming soon' : person.name}
+                  {person.placeholder ? 'Hiring' : person.name}
                 </p>
                 {!person.placeholder && (
                   <p
@@ -940,7 +940,9 @@ function Team({ t, m }) {
                 )}
                 {person.note && (
                   <p style={{ margin: '8px 0 0', fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.5, color: 'var(--ink-60)' }}>
-                    {person.note}
+                    {person.href ? (
+                      <a href={person.href} style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{person.note}</a>
+                    ) : person.note}
                   </p>
                 )}
               </div>

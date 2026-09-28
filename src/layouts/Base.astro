@@ -7,7 +7,9 @@ interface Props {
 }
 
 const { title, description = 'A small London team, keeping a short list of homes in good working order. By recommendation, mostly.' } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://fettle.london');
+// One canonical home: https://www.fettlelondon.com, no trailing slash (except the root).
+const path = Astro.url.pathname.replace(/\/index(\.html)?$/, '/').replace(/\.html$/, '').replace(/(.)\/+$/, '$1');
+const canonical = new URL(path, Astro.site ?? 'https://www.fettlelondon.com').href;
 ---
 
 <!doctype html>
@@ -34,7 +36,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://fettle.lond
       "@type": "HandymanService",
       "name": "Fettle",
       "description": "A small permanent team keeping a short list of London homes in good working order.",
-      "url": "https://fettle.london",
+      "url": "https://www.fettlelondon.com",
       "telephone": "+447361854124",
       "priceRange": "\u00a330\u2013\u00a3260",
       "areaServed": [

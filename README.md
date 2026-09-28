@@ -68,8 +68,8 @@ HTML, so it reads correctly with JS disabled and to crawlers.
   same as the export did. Needs a real endpoint or a form service.
 - **`living-room.webp` is an animated WebP** (206 KB) converted from a GIF. A
   short muted MP4/WebM would be smaller still.
-- **No `site` set** in `astro.config.mjs` — canonical URLs currently fall back to
-  `https://fettle.london`. Set the real domain before launch.
+- **Canonical domain** is `https://www.fettlelondon.com` (no trailing slash), set via
+  `site` + `trailingSlash: 'never'` in `astro.config.mjs`.
 - `design-export/uploads/` duplicates `design-export/editorial/img/` and is
   ~40 MB of the repo. Safe to delete once you're happy with the port.
 

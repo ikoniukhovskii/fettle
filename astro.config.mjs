@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://fettle.london',
+  site: 'https://www.fettlelondon.com',
+  trailingSlash: 'never',
   integrations: [react(), sitemap()]
 });

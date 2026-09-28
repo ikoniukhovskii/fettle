@@ -958,7 +958,7 @@ const STORY = [
     img: kitchenGarden,
     alt: 'A bright kitchen extension opening onto a London garden',
     caption: 'Plimsoll Road, Highbury · N5',
-    line: 'From a wonky fence to a fresh coat of paint, one team does the lot painting, plastering, plumbing, fences, floors, odd jobs.',
+    line: 'From a wonky fence to a fresh coat of paint.',
     wide: true,
   },
   {

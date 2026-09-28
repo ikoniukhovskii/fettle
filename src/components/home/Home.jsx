@@ -1364,11 +1364,11 @@ function Close({ t, m }) {
 const FAQS = [
   {
     q: 'How much does a visit cost?',
-    a: 'A visit to see the job and give you a price is £30. If you go ahead with the work that same visit, it comes straight off the cost, so there is no call-out fee on top. As an introductory rate for our first clients, a half-day starts at £90, a full day at £160, materials on top at cost. You will know the price before we lift a tool. Licensed trades are quoted job by job once we have seen the work.',
+    a: 'A visit to see the job and give you a price is £30. If you go ahead with the work that same visit, it comes straight off the cost, so there is no call-out fee on top. As an introductory rate for our first clients, a half-day starts at £90, a full day at £160, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or tree surgery, is quoted job by job once we have seen it.',
   },
   {
     q: 'What sort of jobs do you take on?',
-    a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, floors, fences, and the odd jobs that never quite get done. Anything that needs a licence, plumbing, rendering, tree surgery, goes to a specialist we know by name and have used before.',
+    a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, floors, fences, and the odd jobs that never quite get done. Specialist work, such as rendering or tree surgery, goes to someone we know by name and have used before.',
   },
   {
     q: 'Do you have room for my home?',

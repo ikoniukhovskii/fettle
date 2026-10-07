@@ -28,7 +28,7 @@ import Page from '../layouts/Page.astro';
               </div>
               <div class="field">
                 <label for="cf-postcode">Postcode</label>
-                <input id="cf-postcode" name="postcode" type="text" autocomplete="postal-code" placeholder="e.g. N6 4AB" />
+                <input id="cf-postcode" name="postcode" type="text" autocomplete="postal-code" placeholder="e.g. N6 4AB" required />
                 <p class="field-error" id="cf-postcode-error" hidden></p>
               </div>
               <div class="field">
@@ -140,6 +140,14 @@ import Page from '../layouts/Page.astro';
     return `${compact.slice(0, -3)} ${compact.slice(-3)}`;
   }
 
+  // Postcode areas covering Greater London: the central eight plus the outer-borough areas.
+  const LONDON_AREAS = ['E', 'EC', 'N', 'NW', 'SE', 'SW', 'W', 'WC', 'BR', 'CR', 'EN', 'HA', 'IG', 'KT', 'RM', 'SM', 'TW', 'UB'];
+
+  function isLondon(postcode: string): boolean {
+    const area = postcode.match(/^[A-Z]+/)?.[0] ?? '';
+    return LONDON_AREAS.includes(area);
+  }
+
   function setFieldError(field: HTMLInputElement, message: string | null) {
     const note = document.getElementById(`${field.id}-error`);
     field.closest('.field')?.classList.toggle('has-error', !!message);
@@ -211,10 +219,12 @@ import Page from '../layouts/Page.astro';
     else if (!EMAIL_RE.test(emailValue)) problems.push([email, 'Your email looks incomplete. It needs an @ and a domain, like name@example.co.uk.']);
 
     const postcodeValue = postcode.value.trim();
-    if (postcodeValue) {
-      const normalised = normalisePostcode(postcodeValue);
-      if (normalised) postcode.value = normalised;
-      else problems.push([postcode, 'That doesn’t look like a UK postcode. Try something like N6\u00A04AB.']);
+    const normalised = postcodeValue ? normalisePostcode(postcodeValue) : null;
+    if (!postcodeValue) problems.push([postcode, 'We’ll need your postcode to check we cover your area.']);
+    else if (!normalised) problems.push([postcode, 'That doesn’t look like a UK postcode. Try something like N6\u00A04AB.']);
+    else {
+      postcode.value = normalised;
+      if (!isLondon(normalised)) problems.push([postcode, `Sorry, we’re not working around ${normalised.split(' ')[0]} – we only cover London for now.`]);
     }
 
     if (problems.length) return showErrors(problems);

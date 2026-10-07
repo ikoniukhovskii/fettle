@@ -19,14 +19,17 @@ import Page from '../layouts/Page.astro';
               <div class="field">
                 <label for="cf-name">Full name</label>
                 <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="Francis Drake" required />
+                <p class="field-error" id="cf-name-error" hidden></p>
               </div>
               <div class="field">
                 <label for="cf-email">Email</label>
                 <input id="cf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+                <p class="field-error" id="cf-email-error" hidden></p>
               </div>
               <div class="field">
                 <label for="cf-postcode">Postcode</label>
                 <input id="cf-postcode" name="postcode" type="text" autocomplete="postal-code" placeholder="e.g. N6 4AB" />
+                <p class="field-error" id="cf-postcode-error" hidden></p>
               </div>
               <div class="field">
                 <label for="cf-topic">Topic</label>
@@ -43,6 +46,13 @@ import Page from '../layouts/Page.astro';
                   <path d="M13 6l6 6-6 6"></path>
                 </svg>
               </button>
+              <div class="form-err" id="form-err" role="alert" tabindex="-1">
+                <span class="bang" aria-hidden="true">!</span>
+                <div>
+                  <p>Nearly there &ndash; just a couple of things to fix before we can send it:</p>
+                  <ul id="form-err-list"></ul>
+                </div>
+              </div>
               <div class="form-ok" id="form-ok" role="status">
                 <span class="tick" aria-hidden="true">&#10003;</span>
                 <p>Thanks. We&rsquo;ve got it, and a person &ndash; not a bot &ndash; will be in touch shortly.</p>
@@ -116,6 +126,63 @@ import Page from '../layouts/Page.astro';
 
   const form = document.getElementById('contact-form') as HTMLFormElement | null;
   const ok = document.getElementById('form-ok');
+  const err = document.getElementById('form-err');
+  const errList = document.getElementById('form-err-list');
+
+  // Something@something.something – enough to catch a half-typed address.
+  const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i;
+  // Royal Mail format: outward code (e.g. N6, SW1A, EC1V) then inward code (e.g. 4AB).
+  const POSTCODE_RE = /^(GIR0AA|[A-PR-UWYZ]([0-9]{1,2}|[A-HK-Y][0-9]{1,2}|[0-9][A-HJKPSTUW]|[A-HK-Y][0-9][ABEHMNPRVWXY])[0-9][ABD-HJLNP-UW-Z]{2})$/;
+
+  function normalisePostcode(value: string): string | null {
+    const compact = value.replace(/\s+/g, '').toUpperCase();
+    if (!POSTCODE_RE.test(compact)) return null;
+    return `${compact.slice(0, -3)} ${compact.slice(-3)}`;
+  }
+
+  function setFieldError(field: HTMLInputElement, message: string | null) {
+    const note = document.getElementById(`${field.id}-error`);
+    field.closest('.field')?.classList.toggle('has-error', !!message);
+    if (message) {
+      field.setAttribute('aria-invalid', 'true');
+      field.setAttribute('aria-describedby', `${field.id}-error`);
+    } else {
+      field.removeAttribute('aria-invalid');
+      field.removeAttribute('aria-describedby');
+    }
+    if (note) {
+      note.textContent = message ?? '';
+      note.hidden = !message;
+    }
+  }
+
+  function clearErrors() {
+    form?.querySelectorAll<HTMLInputElement>('[aria-invalid]').forEach((f) => setFieldError(f, null));
+    err?.classList.remove('show');
+  }
+
+  function showErrors(problems: [HTMLInputElement, string][]) {
+    if (errList) errList.replaceChildren();
+    for (const [field, message] of problems) {
+      setFieldError(field, message);
+      const item = document.createElement('li');
+      item.textContent = message;
+      item.dataset.field = field.id;
+      errList?.append(item);
+    }
+    err?.classList.add('show');
+    problems[0][0].focus();
+  }
+
+  // Clear a field's error as soon as it's edited.
+  form?.addEventListener('input', (e) => {
+    const field = e.target as HTMLInputElement;
+    if (field.getAttribute('aria-invalid')) {
+      setFieldError(field, null);
+      errList?.querySelector(`[data-field="${field.id}"]`)?.remove();
+    }
+    if (!form.querySelector('[aria-invalid]')) err?.classList.remove('show');
+  });
 
   const prefillPostcode = new URLSearchParams(window.location.search).get('postcode');
   if (prefillPostcode) {
@@ -133,8 +200,24 @@ import Page from '../layouts/Page.astro';
     const topic = document.getElementById('cf-topic') as HTMLInputElement;
     const message = document.getElementById('cf-message') as HTMLTextAreaElement;
 
-    if (!name.value.trim()) return name.focus();
-    if (!email.value.trim()) return email.focus();
+    clearErrors();
+    ok?.classList.remove('show');
+
+    const problems: [HTMLInputElement, string][] = [];
+    if (!name.value.trim()) problems.push([name, 'We’ll need a name to put to the job.']);
+
+    const emailValue = email.value.trim();
+    if (!emailValue) problems.push([email, 'We’ll need an email address to reply to.']);
+    else if (!EMAIL_RE.test(emailValue)) problems.push([email, 'Your email looks incomplete. It needs an @ and a domain, like name@example.co.uk.']);
+
+    const postcodeValue = postcode.value.trim();
+    if (postcodeValue) {
+      const normalised = normalisePostcode(postcodeValue);
+      if (normalised) postcode.value = normalised;
+      else problems.push([postcode, 'That doesn’t look like a UK postcode. Try something like N6\u00A04AB.']);
+    }
+
+    if (problems.length) return showErrors(problems);
 
     const submit = form.querySelector('button[type="submit"]') as HTMLButtonElement;
     submit.disabled = true;

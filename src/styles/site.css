@@ -269,6 +269,32 @@ textarea:focus-visible {
 .field textarea::placeholder { color: var(--ink-40); }
 .field input:focus,
 .field textarea:focus { outline: none; border-color: var(--rust); }
+.field.has-error input,
+.field.has-error textarea { border-color: var(--status-attention); background: var(--rust-tint); }
+.field-error { margin: 0; font-size: 14px; line-height: 1.45; color: var(--brick); }
+.form-err {
+  display: none;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 16px 18px;
+  background: var(--status-attention-surface);
+  border-radius: var(--radius-md);
+}
+.form-err.show { display: flex; }
+.form-err:focus { outline: none; }
+.form-err .bang {
+  flex: 0 0 auto;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--status-attention);
+  color: var(--white);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+}
+.form-err p { margin: 0; font-size: 15px; color: var(--ink); }
+.form-err ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; color: var(--brick); }
+.form-err li + li { margin-top: 2px; }
 .form-ok {
   display: none;
   align-items: flex-start;

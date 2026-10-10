@@ -35,13 +35,24 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
       <div class="prose">
         {service.note && <p class="muted">{service.note}</p>}
         <h2>What it costs</h2>
-        <p>A visit to see the job and give you a price is £30, and it comes off the cost whenever you go ahead. A half-day starts at £140 and a full day at £260, materials on top at cost. You’ll know the price before we lift a tool.</p>
-        <div class="badge-row">
-          <span class="pill"><span class="dot"></span>Visit and quote · £30</span>
-          <span class="pill"><span class="dot"></span>Half-day · from £140</span>
-          <span class="pill"><span class="dot"></span>Same faces each visit</span>
-          <span class="pill"><span class="dot"></span>Insured</span>
-        </div>
+        {service.pricing ? (
+          <>
+            <p>{service.pricing.text}</p>
+            <div class="badge-row">
+              {service.pricing.pills.map((pill) => <span class="pill"><span class="dot"></span>{pill}</span>)}
+            </div>
+          </>
+        ) : (
+          <>
+            <p>A visit to see the job and give you a price is £30, and it comes off the cost whenever you go ahead. A half-day starts at £140 and a full day at £260, materials on top at cost. You’ll know the price before we lift a tool.</p>
+            <div class="badge-row">
+              <span class="pill"><span class="dot"></span>Visit and quote · £30</span>
+              <span class="pill"><span class="dot"></span>Half-day · from £140</span>
+              <span class="pill"><span class="dot"></span>Same faces each visit</span>
+              <span class="pill"><span class="dot"></span>Insured</span>
+            </div>
+          </>
+        )}
 
         <h2 style="margin-top:40px">Areas we cover</h2>
         <ul>

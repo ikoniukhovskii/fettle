@@ -803,7 +803,7 @@ function WhatWeDo({ t, m }) {
             color: 'var(--ink-60)',
           }}
         >
-          One team for the whole house &ndash; painting, plastering, plumbing, fences, floors, and the odd jobs in between.
+          One team for the whole house &ndash; painting, plastering, plumbing, cleaning, fences, floors, and the odd jobs in between.
         </p>
         <p style={{ margin: '18px auto 0', textAlign: 'center' }}>
           <span
@@ -877,7 +877,7 @@ function Team({ t, m }) {
               color: 'var(--ink-60)',
             }}
           >
-            The small permanent team behind every visit.
+            The small permanent team behind every visit &ndash; repairs, decorating, plumbing and cleaning.
           </p>
           <div
             style={{
@@ -1371,7 +1371,7 @@ const FAQS = [
   },
   {
     q: 'What sort of jobs do you take on?',
-    a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, floors, fences, and the odd jobs that never quite get done. Specialist work, such as rendering or tree surgery, goes to someone we know by name and have used before.',
+    a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, floors, fences, carpet cleaning, end of tenancy cleans, and the odd jobs that never quite get done. Specialist work, such as rendering or tree surgery, goes to someone we know by name and have used before.',
   },
   {
     q: 'Do you have room for my home?',
@@ -1551,13 +1551,13 @@ const FOOT_COLS = [
     head: 'Services',
     links: [
       { label: 'What we fix', href: '/services' },
-      ...SERVICES.slice(0, 4).map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
+      ...SERVICES.slice(0, 5).map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
     ],
   },
   {
     head: 'More services',
     links: [
-      ...SERVICES.slice(4).map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
+      ...SERVICES.slice(5).map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
       { label: 'How it works', href: '/how-it-works' },
     ],
   },

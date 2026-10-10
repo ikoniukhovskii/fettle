@@ -9,6 +9,7 @@ export interface Service {
   lede: string;
   jobs: { title: string; text: string }[];
   note?: string;
+  pricing?: { text: string; pills: string[] }; // overrides the default half-day / full-day pricing block
 }
 
 export const AREAS: { region: string; places: string }[] = [
@@ -85,6 +86,46 @@ export const SERVICES: Service[] = [
       { title: 'Showers & sealant', text: 'Shower fixes and tired silicone cut out and resealed.' },
     ],
     note: 'We don’t do gas work or boilers. For those you need a Gas Safe registered engineer.',
+  },
+  {
+    slug: 'end-of-tenancy-cleaning',
+    name: 'End of tenancy cleaning',
+    title: 'End of Tenancy Cleaning London – Deposit-Back Clean | Fettle',
+    description: 'End of tenancy cleaning across London: deep clean, oven, carpets and the small repairs and touch-ups that get your deposit back. Studio from £180.',
+    h1: 'End of tenancy cleaning in London.',
+    lede: 'A top-to-bottom clean plus the small repairs agents look for, so you hand back the keys and get your deposit back.',
+    jobs: [
+      { title: 'Kitchen deep clean', text: 'Oven, hob and extractor degreased, inside cupboards, fridge and appliances wiped out.' },
+      { title: 'Bathrooms', text: 'Limescale removed, tiles, grout and glass cleaned, toilets and sealant left spotless.' },
+      { title: 'Every room', text: 'Skirting, doors, switches, windowsills and inside wardrobes, dusted, wiped and vacuumed.' },
+      { title: 'Carpets included', text: 'Carpets deep cleaned as part of the job, so you don’t need to book anyone else.' },
+      { title: 'Repairs & touch-ups', text: 'Picture-hook holes filled, scuffs painted, loose handles fixed – the things that cost you your deposit.' },
+      { title: 'Re-clean guarantee', text: 'If your agent or landlord flags anything within 48 hours, we come back and put it right at no charge.' },
+    ],
+    pricing: {
+      text: 'Priced by the size of the property: a studio from £180, a one-bed from £220 and a two-bed from £280, with carpets included. Larger homes are quoted after a £30 visit, which comes off the cost when you go ahead. Repairs and touch-ups are agreed and priced with you before we start.',
+      pills: ['Studio · from £180', '1-bed · from £220', '2-bed · from £280', 'Re-clean guarantee'],
+    },
+  },
+  {
+    slug: 'carpet-cleaning',
+    name: 'Carpet cleaning',
+    title: 'Carpet Cleaning London – Deep Clean & Stain Removal | Fettle',
+    description: 'Carpet cleaning across London: deep clean, stain treatment and stairs and hallways, done by the same team every time. From £45 per room.',
+    h1: 'Carpet cleaning in London.',
+    lede: 'Carpets, rugs and stairs deep cleaned and brought back to life, by the same faces who look after the rest of the house.',
+    jobs: [
+      { title: 'Deep clean', text: 'Carpets pre-treated, deep cleaned and left to dry quickly, with furniture moved and put back.' },
+      { title: 'Stain treatment', text: 'Wine, coffee, mud and pet marks treated before the main clean.' },
+      { title: 'Stairs & hallways', text: 'The hardest-wearing carpet in the house, cleaned step by step.' },
+      { title: 'Rugs', text: 'Loose rugs cleaned on site and left to dry.' },
+      { title: 'Moving in or out', text: 'Carpets refreshed for a new home or included in our end of tenancy clean.' },
+      { title: 'Odour refresh', text: 'Deodorising treatment for carpets that need more than a clean.' },
+    ],
+    pricing: {
+      text: 'Carpet cleaning starts from £45 per room, with stairs and hallways priced on the day. Book it with other jobs or an end of tenancy clean and it’s done in the same visit. You’ll know the price before we start.',
+      pills: ['From £45 per room', 'Stain treatment', 'Same faces each visit', 'Insured'],
+    },
   },
   {
     slug: 'fences-gardens',

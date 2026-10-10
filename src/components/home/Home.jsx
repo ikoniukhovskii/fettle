@@ -791,7 +791,7 @@ function WhatWeDo({ t, m }) {
             textWrap: 'balance',
           }}
         >
-          What we do
+          What do we do?
         </h2>
         <p
           style={{

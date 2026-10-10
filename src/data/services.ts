@@ -9,6 +9,8 @@ export interface Service {
   lede: string;
   jobs: { title: string; text: string }[];
   note?: string;
+  homeTitle: string;  // card title on the homepage (uses the phrase people search for)
+  homeLine: string;
   pricing?: { text: string; pills: string[] }; // overrides the default half-day / full-day pricing block
 }
 
@@ -24,6 +26,8 @@ export const AREAS: { region: string; places: string }[] = [
 export const SERVICES: Service[] = [
   {
     slug: 'handyman',
+    homeTitle: 'Handyman services',
+    homeLine: 'Shelves, TV mounting, flat-pack, doors and the odd jobs on your list.',
     name: 'Handyman & odd jobs',
     title: 'Handyman in London – Odd Jobs, Repairs & Fitting | Fettle',
     description: 'A London handyman team for the jobs on the list: shelves, TV mounting, flat-pack, doors, locks, curtain poles and small repairs. Visit and quote £30.',
@@ -40,6 +44,8 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'painting-decorating',
+    homeTitle: 'Painting and decorating',
+    homeLine: 'Walls, ceilings and woodwork, prepped properly and finished neatly.',
     name: 'Painting & decorating',
     title: 'Painter & Decorator in London – Interior Painting | Fettle',
     description: 'Painting and decorating across London: walls, ceilings, woodwork and period rooms, done neatly with dust sheets down and a tidy finish. Visit and quote £30.',
@@ -56,6 +62,8 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'plastering',
+    homeTitle: 'Plastering',
+    homeLine: 'Cracks, holes and tired walls made smooth again, ready for paint.',
     name: 'Plastering',
     title: 'Plasterer in London – Plastering & Wall Repairs | Fettle',
     description: 'Plastering and wall repairs across London: cracks, holes, patching, skimming and making good after other work. Visit and quote £30.',
@@ -72,6 +80,8 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'plumbing',
+    homeTitle: 'Plumbing services',
+    homeLine: 'Taps, toilets, leaks, radiators and new fittings, by our own plumber.',
     name: 'Plumbing',
     title: 'Plumber in London – Taps, Leaks, Toilets & Radiators | Fettle',
     description: 'Everyday plumbing across London by our own plumber: dripping taps, leaks, running toilets, radiators, blockages and new fittings. Visit and quote £30.',
@@ -89,6 +99,8 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'end-of-tenancy-cleaning',
+    homeTitle: 'End of tenancy cleaning',
+    homeLine: 'A deep clean plus the small repairs that get your deposit back.',
     name: 'End of tenancy cleaning',
     title: 'End of Tenancy Cleaning London – Deposit-Back Clean | Fettle',
     description: 'End of tenancy cleaning across London: deep clean, oven, carpets and the small repairs and touch-ups that get your deposit back. Studio from £180.',
@@ -109,6 +121,8 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'carpet-cleaning',
+    homeTitle: 'Carpet cleaning',
+    homeLine: 'Carpets, stairs and rugs deep cleaned and stains treated.',
     name: 'Carpet cleaning',
     title: 'Carpet Cleaning London – Deep Clean & Stain Removal | Fettle',
     description: 'Carpet cleaning across London: deep clean, stain treatment and stairs and hallways, done by the same team every time. From £45 per room.',
@@ -129,6 +143,8 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'fences-gardens',
+    homeTitle: 'Fences, gates & gardens',
+    homeLine: 'Fence repairs, gates, decking, jet washing and garden tidy-ups.',
     name: 'Fences, gates & gardens',
     title: 'Fence Repair & Garden Maintenance in London | Fettle',
     description: 'Fence repairs, gates, decking, jet washing and garden tidy-ups across London. The outside kept as tidy as the in. Visit and quote £30.',
@@ -146,6 +162,8 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'flooring-tiling',
+    homeTitle: 'Flooring & tiling',
+    homeLine: 'Creaky boards, skirting, cracked tiles and fresh sealant.',
     name: 'Flooring & tiling',
     title: 'Flooring & Tiling Repairs in London | Fettle',
     description: 'Floorboards, skirting, thresholds, tiling and resealing across London. Creaks fixed and period detail treated with care. Visit and quote £30.',
@@ -162,6 +180,8 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'home-maintenance',
+    homeTitle: 'Home maintenance services',
+    homeLine: 'Gutters, damp checks and the once-a-season look-over.',
     name: 'Seasonal home maintenance',
     title: 'Home Maintenance Service in London – Seasonal Upkeep | Fettle',
     description: 'Regular home maintenance across London: gutters, damp checks and a once-a-season look-over that stops small things becoming big ones. Visit and quote £30.',

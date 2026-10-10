@@ -9,6 +9,7 @@ interface Props {
 const { title, description = 'A small London team, keeping a short list of homes in good working order. By recommendation, mostly.' } = Astro.props;
 // One canonical home: https://www.fettlelondon.com, no trailing slash (except the root).
 const path = Astro.url.pathname.replace(/\/index(\.html)?$/, '/').replace(/\.html$/, '').replace(/(.)\/+$/, '$1');
+import { BUSINESS_SCHEMA } from '../data/schema';
 const canonical = new URL(path, Astro.site ?? 'https://www.fettlelondon.com').href;
 ---
 
@@ -28,42 +29,69 @@ const canonical = new URL(path, Astro.site ?? 'https://www.fettlelondon.com').hr
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta property="og:site_name" content="Fettle London" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:image" content="https://www.fettlelondon.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
 
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "HandymanService",
-      "name": "Fettle",
-      "description": "A small permanent team keeping a short list of London homes in good working order.",
-      "url": "https://www.fettlelondon.com",
-      "foundingDate": "2023",
-      "telephone": "+447361854124",
-      "priceRange": "\u00a330\u2013\u00a3260",
-      "areaServed": [
-        "North London",
-        "Northwest London",
-        "West London",
-        "Southwest London",
-        "South London",
-        "Central London"
-      ],
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "London",
-        "addressCountry": "GB"
-      },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "opens": "08:00",
-        "closes": "21:00"
-      }
-    })} />
+    <link rel="preload" href="/fonts/bricolage-grotesque-opsz.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/work-sans-400.woff2" as="font" type="font/woff2" crossorigin />
+
+    <script type="application/ld+json" set:html={JSON.stringify(BUSINESS_SCHEMA)} />
 
     <slot name="head" />
   </head>
   <body>
     <slot />
+
+    <a
+      class="wa-fab"
+      href="https://wa.me/447361854124?text=Hi%20Fettle%2C%20I%27d%20like%20a%20quote%20for%20"
+      target="_blank"
+      rel="noopener"
+      aria-label="Message Fettle London on WhatsApp"
+    >
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16.04 3C8.86 3 3.03 8.82 3.03 15.99c0 2.3.6 4.54 1.75 6.52L3 29l6.66-1.74a13 13 0 0 0 6.38 1.63h.01c7.17 0 13-5.83 13-13S23.2 3 16.04 3Zm0 23.7h-.01a10.8 10.8 0 0 1-5.5-1.5l-.4-.24-3.95 1.03 1.06-3.85-.26-.4a10.76 10.76 0 0 1-1.65-5.75c0-5.95 4.85-10.8 10.82-10.8 2.89 0 5.6 1.13 7.64 3.17a10.73 10.73 0 0 1 3.16 7.64c0 5.96-4.85 10.7-10.9 10.7Zm5.93-8.09c-.33-.16-1.93-.95-2.23-1.06-.3-.11-.52-.16-.73.16-.22.33-.84 1.06-1.03 1.27-.19.22-.38.24-.7.08-.33-.16-1.38-.51-2.62-1.62a9.84 9.84 0 0 1-1.82-2.26c-.19-.33-.02-.5.14-.66.15-.15.33-.38.49-.57.16-.19.22-.33.33-.54.1-.22.05-.41-.03-.57-.08-.16-.73-1.76-1-2.41-.27-.63-.54-.55-.73-.56h-.62c-.22 0-.57.08-.87.41-.3.33-1.14 1.11-1.14 2.71s1.17 3.15 1.33 3.36c.16.22 2.3 3.5 5.56 4.9.78.34 1.38.54 1.86.69.78.25 1.49.21 2.05.13.63-.09 1.93-.79 2.2-1.55.27-.76.27-1.41.19-1.55-.08-.13-.3-.21-.62-.37Z"/></svg>
+      <span class="wa-label">WhatsApp us</span>
+    </a>
+
+    <style is:global>
+      .wa-fab {
+        position: fixed;
+        right: clamp(16px, 2.4vw, 28px);
+        bottom: clamp(16px, 2.4vw, 28px);
+        z-index: 60;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        height: 56px;
+        padding: 0 16px;
+        border-radius: 28px;
+        background: var(--rust, #B34426);
+        color: var(--cream, #F1E8D8);
+        font-family: var(--font-body, 'Work Sans', sans-serif);
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.01em;
+        text-decoration: none;
+        box-shadow: 0 10px 28px rgba(43, 39, 35, 0.28);
+        transition: background 0.18s ease, transform 0.18s ease;
+      }
+      .wa-fab:hover { background: var(--brick, #97381E); transform: translateY(-2px); }
+      .wa-fab:focus-visible { outline: 3px solid var(--ink, #2B2723); outline-offset: 3px; }
+      .wa-fab svg { width: 26px; height: 26px; flex: none; }
+      @media (max-width: 640px) {
+        .wa-fab { width: 54px; height: 54px; padding: 0; justify-content: center; }
+        .wa-label { display: none; }
+      }
+      @media print { .wa-fab { display: none; } }
+    </style>
+
+    <script is:inline>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script is:inline defer src="/_vercel/insights/script.js"></script>
   </body>
 </html>

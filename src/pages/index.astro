@@ -1,9 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import Home from '../components/home/Home.jsx';
+import Home, { FAQS } from '../components/home/Home.jsx';
+import { faqSchema } from '../data/schema';
 import '../styles/home.css';
 ---
 
 <Base title="Handyman & Home Maintenance in London | Fettle" description="London handyman and home maintenance: painting, plastering, plumbing, cleaning, fences, floors and odd jobs by one small, permanent team. Visit and quote £30.">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema(FAQS))} />
   <Home client:load />
 </Base>

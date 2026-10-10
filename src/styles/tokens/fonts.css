@@ -1,5 +1,16 @@
 /* Fettle webfonts — Bricolage Grotesque (display) + Work Sans (body/UI) + Allura
-   (script, homepage mobile hero only). All Google Fonts; served via Google's
-   own @font-face closure. If you need self-hosted binaries, drop them in
-   assets/fonts and replace this import with local @font-face rules. */
-@import url('https://fonts.googleapis.com/css2?family=Allura&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Work+Sans:wght@400;500;600;700&display=swap');
+   (script, homepage mobile hero only). Self-hosted from /public/fonts (Latin
+   subset, from Fontsource / SIL Open Font License) so no visitor data goes to a
+   third-party font service. */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url('/fonts/bricolage-grotesque-opsz.woff2') format('woff2-variations');
+}
+@font-face { font-family: 'Work Sans'; font-style: normal; font-display: swap; font-weight: 400; src: url('/fonts/work-sans-400.woff2') format('woff2'); }
+@font-face { font-family: 'Work Sans'; font-style: normal; font-display: swap; font-weight: 500; src: url('/fonts/work-sans-500.woff2') format('woff2'); }
+@font-face { font-family: 'Work Sans'; font-style: normal; font-display: swap; font-weight: 600; src: url('/fonts/work-sans-600.woff2') format('woff2'); }
+@font-face { font-family: 'Work Sans'; font-style: normal; font-display: swap; font-weight: 700; src: url('/fonts/work-sans-700.woff2') format('woff2'); }
+@font-face { font-family: 'Allura'; font-style: normal; font-display: swap; font-weight: 400; src: url('/fonts/allura-400.woff2') format('woff2'); }

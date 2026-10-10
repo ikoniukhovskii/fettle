@@ -233,3 +233,64 @@ input:focus-visible {
   html { scroll-behavior: auto; }
   * { animation: none !important; transition: none !important; }
 }
+
+/* ---------- What we do: service cards ---------- */
+.svc-grid {
+  max-width: 1080px;
+  margin: clamp(40px, 6vw, 64px) auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+@media (max-width: 900px) { .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .svc-grid { grid-template-columns: 1fr; gap: 12px; } }
+.svc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 24px 22px;
+  background: var(--white, #fff);
+  border: 1px solid var(--ink-12);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.svc-card:hover {
+  border-color: var(--rust);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(43, 39, 35, 0.08);
+}
+.svc-card:focus-visible { outline: 3px solid var(--rust); outline-offset: 3px; }
+.svc-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+}
+.svc-line {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-60);
+}
+.svc-more {
+  margin-top: auto;
+  padding-top: 6px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rust);
+}
+.svc-all { margin: 28px auto 0; text-align: center; }
+.svc-all a {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--brick);
+  text-underline-offset: 4px;
+}
+@media (max-width: 560px) { .svc-card { padding: 18px 20px; gap: 6px; } .svc-title { font-size: 18px; } }

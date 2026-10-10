@@ -33,6 +33,7 @@ const teamLeo = teamLeoAsset.src;
 import teamSergioAsset from '../../assets/img/team-sergio.webp';
 const teamSergio = teamSergioAsset.src;
 import { SERVICES } from '../../data/services';
+import { SOCIALS } from '../../data/schema';
 
 /* Fettle — photo-led editorial landing page.
    One full-bleed photograph as the entire hero, giant wordmark anchored to
@@ -803,7 +804,7 @@ function WhatWeDo({ t, m }) {
             color: 'var(--ink-60)',
           }}
         >
-          One team for the whole house &ndash; painting, plastering, plumbing, cleaning, fences, floors, and the odd jobs in between.
+          Handyman services and home maintenance across London. One team for the whole house &ndash; painting and decorating, plastering, plumbing, carpet and end of tenancy cleaning, fences, floors, and the odd jobs in between.
         </p>
         <p style={{ margin: '18px auto 0', textAlign: 'center' }}>
           <span
@@ -822,6 +823,20 @@ function WhatWeDo({ t, m }) {
           >
             A visit and quote is £30 &ndash; counted toward the work if you go ahead
           </span>
+        </p>
+      </Reveal>
+      <Reveal m={m}>
+        <div className="svc-grid">
+          {SERVICES.map((svc) => (
+            <a key={svc.slug} className="svc-card" href={`/services/${svc.slug}`}>
+              <span className="svc-title">{svc.homeTitle}</span>
+              <span className="svc-line">{svc.homeLine}</span>
+              <span className="svc-more" aria-hidden="true">See more &rarr;</span>
+            </a>
+          ))}
+        </div>
+        <p className="svc-all">
+          <a href="/services">All our services and prices</a>
         </p>
       </Reveal>
     </section>
@@ -1364,7 +1379,7 @@ function Close({ t, m }) {
 }
 
 /* ---------- FAQ ---------- */
-const FAQS = [
+export const FAQS = [
   {
     q: 'How much does a visit cost?',
     a: 'A visit to see the job and give you a price is £30. Whenever you go ahead with the work, it comes straight off the cost, and if it turns out not to be a job for us, you don’t pay it. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or tree surgery, is quoted job by job once we have seen it.',
@@ -1372,6 +1387,10 @@ const FAQS = [
   {
     q: 'What sort of jobs do you take on?',
     a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, floors, fences, carpet cleaning, end of tenancy cleans, and the odd jobs that never quite get done. Specialist work, such as rendering or tree surgery, goes to someone we know by name and have used before.',
+  },
+  {
+    q: 'Do you do end of tenancy and carpet cleaning?',
+    a: 'Yes. Our end of tenancy clean covers the whole property, carpets included, plus the small repairs and touch-ups agents check for, with a free re-clean if anything is flagged within 48 hours. A studio starts from £180. Carpet cleaning on its own starts from £45 a room.',
   },
   {
     q: 'Do you have room for my home?',
@@ -1586,7 +1605,7 @@ function SiteFooter() {
       data-screen-label="Footer"
       style={{ position: 'relative', zIndex: 1, background: 'var(--ink)', color: 'var(--cream)' }}
     >
-      <div style={{ width: 'min(1240px, calc(100% - 48px))', margin: '0 auto', padding: 'clamp(48px,6vw,72px) 0 clamp(24px,3vw,32px)' }}>
+      <div style={{ width: 'min(1240px, calc(100% - 48px))', margin: '0 auto', padding: 'clamp(48px,6vw,72px) 0 calc(clamp(24px,3vw,32px) + 76px)' }}>
         <div className="foot-top-grid">
           <div style={{ gridColumn: 'var(--brand-col)' }}>
             <a
@@ -1625,23 +1644,24 @@ function SiteFooter() {
           }}
         >
           <span style={{ fontSize: 13, letterSpacing: '0.02em', color: cream + '0.5)' }}>
-            © 2026 Fettle. All rights reserved.
+            © 2026 Fettle London. All rights reserved.
           </span>
           <div style={{ display: 'flex', gap: 8 }}>
-            {['In', 'Ig'].map((s) => (
+            {SOCIALS.map((s) => (
               <a
-                key={s}
-                href="#"
-                onClick={(e) => e.preventDefault()}
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener"
                 className="foot-social-btn"
-                aria-label={s === 'In' ? 'Fettle on LinkedIn' : 'Fettle on Instagram'}
+                aria-label={`Fettle London on ${s.label}`}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 26,
-                  border: `1px solid ${cream}0.22)`, borderRadius: 'var(--radius-sm)', fontSize: 12,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 28, padding: '0 12px',
+                  border: `1px solid ${cream}0.22)`, borderRadius: 'var(--radius-sm)', fontSize: 12.5,
                   textDecoration: 'none', color: cream + '0.7)',
                 }}
               >
-                {s}
+                {s.label}
               </a>
             ))}
           </div>

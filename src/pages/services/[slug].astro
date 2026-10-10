@@ -1,6 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import { SERVICES, AREAS } from '../../data/services';
+import { serviceSchema } from '../../data/schema';
 
 export function getStaticPaths() {
   return SERVICES.map((service) => ({ params: { slug: service.slug }, props: { service } }));
@@ -11,6 +12,7 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
 ---
 
 <Page title={service.title} description={service.description}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(serviceSchema(service))} />
   <section class="page-hero">
     <div class="wrap">
       <p class="eyebrow"><a href="/services">Services</a></p>

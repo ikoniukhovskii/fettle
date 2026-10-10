@@ -77,7 +77,12 @@ const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPAB
 });
 
 function cors(origin: string | null) {
-  const ok = origin && (ALLOWED_ORIGINS.includes(origin) || /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin));
+  const ok = origin && (
+    ALLOWED_ORIGINS.includes(origin) ||
+    /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin) ||
+    // local testing from a phone on the same Wi-Fi (npm run dev -- --host)
+    /^http:\/\/(192\.168|10)\.\d+\.\d+(\.\d+)?:4321$/.test(origin)
+  );
   return {
     'Access-Control-Allow-Origin': ok ? origin! : ALLOWED_ORIGINS[0],
     'Access-Control-Allow-Methods': 'POST, OPTIONS',

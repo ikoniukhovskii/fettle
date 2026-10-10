@@ -39,3 +39,7 @@ alter table public.chat_telegram_map enable row level security;
 
 -- Tidy-up: chats older than 12 months can be deleted (matches the privacy page).
 -- delete from public.chat_sessions where created_at < now() - interval '12 months';
+
+-- Make sure the edge functions' service role can use the new tables.
+grant all on public.chat_sessions, public.chat_messages, public.chat_telegram_map to service_role;
+grant usage, select on all sequences in schema public to service_role;

@@ -1279,14 +1279,10 @@ const BEFORE_AFTERS = [
 function Story({ t, m, pcfg }) {
   return (
     <section id="our-work" data-screen-label="Our work" style={{ position: 'relative', zIndex: 1 }}>
+      {BEFORE_AFTERS.map((b, j) => <BeforeAfter key={'ba' + j} t={t} m={m} {...b} />)}
       {STORY.map((s, i) => (
         <React.Fragment key={i}>
-          {i === STORY.length - 1 && (
-            <React.Fragment>
-              <Carousel t={t} m={m} />
-              {BEFORE_AFTERS.map((b, j) => <BeforeAfter key={'ba' + j} t={t} m={m} {...b} />)}
-            </React.Fragment>
-          )}
+          {i === STORY.length - 1 && <Carousel t={t} m={m} />}
           <StoryBlock item={s} t={t} m={m} pcfg={pcfg} first={i === 0} />
         </React.Fragment>
       ))}

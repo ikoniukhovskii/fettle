@@ -779,12 +779,12 @@ function WhatWeDo({ t, m }) {
       <Reveal m={m}>
         <h2
           style={{
-            margin: '0 auto 20px',
+            margin: '0 auto 24px',
             maxWidth: 640,
             textAlign: 'center',
             fontFamily: 'var(--font-display)',
             fontWeight: 800,
-            fontSize: `calc(clamp(32px, 4.4vw, 52px) * ${t.headingScale / 100})`,
+            fontSize: `calc(clamp(44px, 7vw, 80px) * ${t.headingScale / 100})`,
             lineHeight: 1.1,
             letterSpacing: '-0.01em',
             color: 'var(--ink)',

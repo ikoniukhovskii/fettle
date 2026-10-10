@@ -1,0 +1,356 @@
+---
+// Fettle website chat: AI answers, hand-off to the team via Telegram.
+// Talks only to the Supabase Edge Function "chat" (see supabase/functions/chat).
+const endpoint = `${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/chat`;
+const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+---
+
+<div id="fchat" class="fchat" data-endpoint={endpoint} data-key={anonKey}>
+  <button class="fchat-launcher" type="button" aria-expanded="false" aria-controls="fchat-panel">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12Z"/></svg>
+    <span class="fchat-launcher-label">Chat with us</span>
+    <span class="fchat-dot" hidden></span>
+  </button>
+
+  <section id="fchat-panel" class="fchat-panel" role="dialog" aria-label="Chat with Fettle London" hidden>
+    <header class="fchat-head">
+      <svg class="fchat-mark" viewBox="12 12 104 104" aria-hidden="true"><rect x="12" y="12" width="104" height="104" rx="24" fill="#B34426"/><rect x="46" y="34" width="14" height="60" fill="#F1E8D8"/><rect x="46" y="34" width="34" height="14" fill="#F1E8D8"/><rect x="46" y="60" width="28" height="14" fill="#F1E8D8"/></svg>
+      <div class="fchat-title">
+        <strong>Fettle London</strong>
+        <span class="fchat-sub">Usually replies in minutes</span>
+      </div>
+      <button class="fchat-close" type="button" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+
+    <div class="fchat-status" hidden></div>
+
+    <div class="fchat-log" aria-live="polite">
+      <div class="fchat-msg fchat-msg--assistant">Hello! I'm Fettle's assistant. Ask me about prices, what we do or whether we cover your area – or ask for a person any time.</div>
+      <div class="fchat-chips">
+        <button type="button" data-q="How much does a visit cost?">How much is a visit?</button>
+        <button type="button" data-q="Do you cover my area?">Do you cover my area?</button>
+        <button type="button" data-q="Tell me about your end of tenancy cleaning.">End of tenancy cleaning</button>
+        <button type="button" data-handoff>Talk to a person</button>
+      </div>
+    </div>
+
+    <form class="fchat-callback" hidden>
+      <p>Leave your details and we'll call you back:</p>
+      <input name="name" type="text" placeholder="Your name" autocomplete="name" required maxlength="80" />
+      <input name="phone" type="tel" placeholder="Phone number" autocomplete="tel" required maxlength="30" />
+      <button type="submit">Request a call back</button>
+    </form>
+
+    <form class="fchat-input">
+      <textarea rows="1" maxlength="800" placeholder="Type your question…" aria-label="Your message"></textarea>
+      <button type="submit" aria-label="Send">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-6 16-3-7-7-1Z" fill="currentColor"/></svg>
+      </button>
+    </form>
+    <footer class="fchat-foot">
+      <button type="button" class="fchat-link" data-handoff>Talk to a person</button>
+      <span aria-hidden="true">·</span>
+      <a class="fchat-link" href="https://wa.me/447361854124?text=Hi%20Fettle%2C%20I%27d%20like%20a%20quote%20for%20" target="_blank" rel="noopener">Prefer WhatsApp?</a>
+      <span aria-hidden="true">·</span>
+      <a class="fchat-link" href="/privacy">Privacy</a>
+    </footer>
+  </section>
+</div>
+
+<style is:global>
+  .fchat { --fc-rust: var(--rust, #B34426); --fc-brick: var(--brick, #97381E); --fc-ink: var(--ink, #2B2723); --fc-cream: var(--cream, #F1E8D8); font-family: var(--font-body, 'Work Sans', sans-serif); }
+  .fchat-launcher {
+    position: fixed; right: clamp(16px, 2.4vw, 28px); bottom: clamp(16px, 2.4vw, 28px); z-index: 70;
+    display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 20px 0 16px;
+    border: 0; border-radius: 28px; background: var(--fc-rust); color: var(--fc-cream); cursor: pointer;
+    font: 600 15px/1 var(--font-body, sans-serif); letter-spacing: .01em;
+    box-shadow: 0 10px 28px rgba(43, 39, 35, .28); transition: background .18s ease, transform .18s ease;
+  }
+  .fchat-launcher:hover { background: var(--fc-brick); transform: translateY(-2px); }
+  .fchat-launcher:focus-visible { outline: 3px solid var(--fc-ink); outline-offset: 3px; }
+  .fchat-launcher svg { width: 24px; height: 24px; }
+  .fchat-dot { position: absolute; top: 6px; right: 8px; width: 11px; height: 11px; border-radius: 50%; background: var(--sage, #6E8A6B); border: 2px solid var(--fc-cream); }
+  .fchat.is-open .fchat-launcher { display: none; }
+
+  .fchat-panel {
+    position: fixed; right: clamp(16px, 2.4vw, 28px); bottom: clamp(16px, 2.4vw, 28px); z-index: 71;
+    width: 380px; height: min(600px, calc(100vh - 48px)); display: flex; flex-direction: column;
+    background: var(--fc-cream); border-radius: 18px; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(43, 39, 35, .32), 0 0 0 1px rgba(43, 39, 35, .08);
+  }
+  .fchat-panel[hidden] { display: none; }
+  .fchat-head { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; background: var(--fc-ink); color: var(--fc-cream); }
+  .fchat-mark { width: 36px; height: 36px; flex: none; }
+  .fchat-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .fchat-title strong { font: 700 17px/1.2 var(--font-display, sans-serif); }
+  .fchat-sub { font-size: 12.5px; color: rgba(241, 232, 216, .7); }
+  .fchat-close { margin-left: auto; width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: var(--fc-cream); cursor: pointer; display: grid; place-items: center; }
+  .fchat-close:hover { background: rgba(241, 232, 216, .12); }
+  .fchat-close svg { width: 20px; height: 20px; }
+
+  .fchat-status { padding: 9px 16px; font-size: 13px; font-weight: 600; color: var(--fc-brick); background: var(--tan-pill, #E7DCC6); display: flex; align-items: center; gap: 8px; }
+  .fchat-status[hidden] { display: none; }
+  .fchat-status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: fchat-pulse 1.4s ease-in-out infinite; }
+  .fchat-status.is-live { color: #4d6a4b; background: var(--sage-tint, #E7EDE4); }
+  .fchat-status.is-live::before { animation: none; }
+
+  .fchat-log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; overscroll-behavior: contain; }
+  .fchat-msg { max-width: 85%; padding: 10px 14px; border-radius: 16px; font-size: 14.5px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fchat-msg a { color: inherit; text-underline-offset: 3px; }
+  .fchat-msg--assistant, .fchat-msg--human { align-self: flex-start; background: #fff; color: var(--fc-ink); border-bottom-left-radius: 4px; box-shadow: 0 1px 0 rgba(43, 39, 35, .06); }
+  .fchat-msg--human { border: 1.5px solid var(--sage, #6E8A6B); }
+  .fchat-who { display: block; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #4d6a4b; margin-bottom: 3px; }
+  .fchat-msg--user { align-self: flex-end; background: var(--fc-rust); color: var(--fc-cream); border-bottom-right-radius: 4px; }
+  .fchat-msg--system { align-self: center; max-width: 90%; text-align: center; font-size: 12.5px; color: rgba(43, 39, 35, .62); background: none; padding: 2px 8px; }
+  .fchat-typing { align-self: flex-start; display: flex; gap: 5px; padding: 14px 16px; background: #fff; border-radius: 16px; border-bottom-left-radius: 4px; }
+  .fchat-typing span { width: 7px; height: 7px; border-radius: 50%; background: rgba(43, 39, 35, .35); animation: fchat-bounce 1.2s infinite; }
+  .fchat-typing span:nth-child(2) { animation-delay: .15s; } .fchat-typing span:nth-child(3) { animation-delay: .3s; }
+
+  .fchat-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fchat-chips button, .fchat-offer {
+    border: 1px solid rgba(43, 39, 35, .18); background: #fff; color: var(--fc-ink); border-radius: 999px;
+    padding: 8px 13px; font: 500 13.5px/1.2 var(--font-body, sans-serif); cursor: pointer; transition: border-color .15s, color .15s;
+  }
+  .fchat-chips button:hover, .fchat-offer:hover { border-color: var(--fc-rust); color: var(--fc-brick); }
+  .fchat-offer { align-self: flex-start; background: var(--fc-rust); color: var(--fc-cream); border-color: var(--fc-rust); font-weight: 600; }
+  .fchat-offer:hover { background: var(--fc-brick); color: var(--fc-cream); }
+
+  .fchat-callback { padding: 12px 16px; display: grid; gap: 8px; background: #fff; border-top: 1px solid rgba(43, 39, 35, .1); }
+  .fchat-callback[hidden] { display: none; }
+  .fchat-callback p { margin: 0; font-size: 13.5px; font-weight: 600; }
+  .fchat-callback input { padding: 10px 12px; border: 1px solid rgba(43, 39, 35, .2); border-radius: 10px; font: 400 14.5px var(--font-body, sans-serif); background: var(--fc-cream); }
+  .fchat-callback button { padding: 11px; border: 0; border-radius: 10px; background: var(--fc-rust); color: var(--fc-cream); font: 600 14.5px var(--font-body, sans-serif); cursor: pointer; }
+
+  .fchat-input { display: flex; align-items: flex-end; gap: 8px; padding: 10px 12px; background: #fff; border-top: 1px solid rgba(43, 39, 35, .1); }
+  .fchat-input textarea { flex: 1; resize: none; border: 0; outline: 0; background: transparent; font: 400 15px/1.45 var(--font-body, sans-serif); color: var(--fc-ink); max-height: 120px; padding: 8px 4px; }
+  .fchat-input textarea:focus, .fchat-input textarea:focus-visible { outline: none; box-shadow: none; }
+  .fchat-input:focus-within { box-shadow: inset 0 2px 0 var(--fc-rust); }
+  .fchat.is-human .fchat-foot [data-handoff], .fchat.is-human .fchat-foot [data-handoff] + span { display: none; }
+  .fchat-input button { width: 40px; height: 40px; flex: none; border: 0; border-radius: 12px; background: var(--fc-rust); color: var(--fc-cream); cursor: pointer; display: grid; place-items: center; }
+  .fchat-input button:disabled { opacity: .45; cursor: default; }
+  .fchat-input button svg { width: 18px; height: 18px; }
+  .fchat-foot { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 8px 12px 10px; background: #fff; font-size: 12.5px; color: rgba(43, 39, 35, .45); }
+  .fchat-link { border: 0; background: none; padding: 0; font: inherit; color: rgba(43, 39, 35, .7); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .fchat-link:hover { color: var(--fc-brick); }
+
+  @keyframes fchat-pulse { 50% { opacity: .35; } }
+  @keyframes fchat-bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) { .fchat-status::before, .fchat-typing span { animation: none; } }
+
+  @media (max-width: 560px) {
+    .fchat-launcher { width: 56px; padding: 0; justify-content: center; }
+    .fchat-launcher-label { display: none; }
+    .fchat-panel { inset: 0; right: 0; bottom: 0; width: 100%; height: 100%; height: 100dvh; border-radius: 0; }
+  }
+  @media print { .fchat { display: none; } }
+</style>
+
+<script>
+  type Msg = { id?: number; role: string; content: string };
+  const root = document.getElementById('fchat') as HTMLElement;
+  const endpoint = root.dataset.endpoint!;
+  const key = root.dataset.key || '';
+  const launcher = root.querySelector('.fchat-launcher') as HTMLButtonElement;
+  const panel = root.querySelector('.fchat-panel') as HTMLElement;
+  const log = root.querySelector('.fchat-log') as HTMLElement;
+  const chips = root.querySelector('.fchat-chips') as HTMLElement;
+  const statusBar = root.querySelector('.fchat-status') as HTMLElement;
+  const form = root.querySelector('.fchat-input') as HTMLFormElement;
+  const input = form.querySelector('textarea') as HTMLTextAreaElement;
+  const sendBtn = form.querySelector('button') as HTMLButtonElement;
+  const callback = root.querySelector('.fchat-callback') as HTMLFormElement;
+  const dot = root.querySelector('.fchat-dot') as HTMLElement;
+
+  const STORE = 'fettle-chat';
+  let sessionId: string | null = null;
+  let lastId = 0;
+  let status = 'ai';
+  let busy = false;
+  let pollTimer: number | undefined;
+  const shown = new Set<number>();
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (saved && Date.now() - saved.t < 24 * 3600 * 1000) sessionId = saved.id;
+  } catch {}
+  const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ id: sessionId, t: Date.now() })); } catch {} };
+
+  async function call(body: Record<string, unknown>) {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ ...body, sessionId }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Something went wrong');
+    return data;
+  }
+
+  function linkify(el: HTMLElement, text: string) {
+    const re = /(https?:\/\/[^\s]+|fettlelondon\.com\/[a-z-/]*|07361 854124)/g;
+    let last = 0;
+    for (const m of text.matchAll(re)) {
+      el.append(text.slice(last, m.index));
+      const a = document.createElement('a');
+      const t = m[0];
+      a.textContent = t;
+      a.href = t.startsWith('07') ? 'tel:+447361854124' : t.startsWith('http') ? t : `/${t.split('/').slice(1).join('/')}`;
+      if (t.startsWith('http')) { a.target = '_blank'; a.rel = 'noopener'; }
+      el.append(a);
+      last = (m.index || 0) + t.length;
+    }
+    el.append(text.slice(last));
+  }
+
+  function scroll() { log.scrollTop = log.scrollHeight; }
+
+  function render(m: Msg) {
+    if (m.id) { if (shown.has(m.id)) return; shown.add(m.id); lastId = Math.max(lastId, m.id); }
+    const el = document.createElement('div');
+    el.className = `fchat-msg fchat-msg--${m.role}`;
+    if (m.role === 'human') {
+      const who = document.createElement('span');
+      who.className = 'fchat-who';
+      who.textContent = 'Fettle team';
+      el.append(who);
+    }
+    linkify(el, m.content);
+    log.append(el);
+    scroll();
+    if (panel.hidden && m.role !== 'user') dot.hidden = false;
+  }
+
+  function typing(on: boolean) {
+    log.querySelector('.fchat-typing')?.remove();
+    if (on) {
+      const t = document.createElement('div');
+      t.className = 'fchat-typing';
+      t.innerHTML = '<span></span><span></span><span></span>';
+      log.append(t);
+      scroll();
+    }
+  }
+
+  function setStatus(s: string) {
+    status = s;
+    const live = ['waiting', 'human', 'callback_wait', 'callback'].includes(s);
+    statusBar.hidden = !live;
+    statusBar.classList.toggle('is-live', s === 'human');
+    statusBar.textContent =
+      s === 'waiting' ? 'Waiting for the team to join…' :
+      s === 'human' ? 'You’re chatting with the Fettle team' :
+      s === 'callback_wait' ? 'Leave your number for a call back' :
+      s === 'callback' ? 'We’ll call you back soon' : '';
+    callback.hidden = s !== 'callback_wait';
+    root.classList.toggle('is-human', live);
+    schedulePoll();
+  }
+
+  function schedulePoll() {
+    clearTimeout(pollTimer);
+    if (!sessionId || !['waiting', 'human', 'callback_wait', 'callback'].includes(status)) return;
+    pollTimer = window.setTimeout(poll, panel.hidden ? 15000 : 3000);
+  }
+
+  async function poll() {
+    if (!sessionId) return;
+    try {
+      const data = await call({ action: 'poll', after: lastId });
+      (data.messages || []).forEach(render);
+      if (data.status && data.status !== status) setStatus(data.status);
+    } catch {}
+    schedulePoll();
+  }
+
+  function offerHandoff() {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'fchat-offer';
+    b.textContent = 'Connect me with the team';
+    b.addEventListener('click', () => { b.remove(); handoff(); });
+    log.append(b);
+    scroll();
+  }
+
+  async function send(text: string) {
+    text = text.trim();
+    if (!text || busy) return;
+    busy = true; sendBtn.disabled = true; chips.remove();
+    const tempUser = { role: 'user', content: text };
+    render(tempUser);
+    const tempEl = log.lastElementChild;
+    if (status === 'ai' || status === 'closed') typing(true);
+    try {
+      const data = await call({ action: 'message', text, page: location.pathname });
+      sessionId = data.sessionId || sessionId; save();
+      tempEl?.remove();
+      (data.messages || []).forEach(render);
+      if (data.limit) render({ role: 'system', content: 'This chat has reached its limit – please call or WhatsApp 07361 854124.' });
+      if (data.offerHandoff) offerHandoff();
+      if (data.status) setStatus(data.status);
+    } catch {
+      render({ role: 'system', content: 'Sorry, the chat isn’t available right now. Call or WhatsApp us on 07361 854124.' });
+    } finally {
+      typing(false); busy = false; sendBtn.disabled = false; input.focus();
+    }
+  }
+
+  async function handoff() {
+    if (!sessionId) {
+      await send('I’d like to talk to a person, please.');
+      if (status === 'ai' && sessionId) await handoff();
+      return;
+    }
+    if (status !== 'ai' && status !== 'closed') return;
+    try {
+      const data = await call({ action: 'handoff' });
+      log.querySelectorAll('.fchat-offer').forEach((el) => el.remove());
+      setStatus(data.status || 'waiting');
+      await poll();
+    } catch {
+      render({ role: 'system', content: 'Sorry, we couldn’t reach the team just now. Call or WhatsApp 07361 854124.' });
+    }
+  }
+
+  function open() {
+    panel.hidden = false; root.classList.add('is-open'); launcher.setAttribute('aria-expanded', 'true'); dot.hidden = true;
+    input.focus(); scroll(); schedulePoll();
+  }
+  function close() {
+    panel.hidden = true; root.classList.remove('is-open'); launcher.setAttribute('aria-expanded', 'false'); launcher.focus(); schedulePoll();
+  }
+
+  launcher.addEventListener('click', open);
+  root.querySelector('.fchat-close')!.addEventListener('click', close);
+  panel.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  form.addEventListener('submit', (e) => { e.preventDefault(); const t = input.value; input.value = ''; input.style.height = ''; send(t); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
+  input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 120) + 'px'; });
+  root.querySelectorAll<HTMLButtonElement>('[data-q]').forEach((b) => b.addEventListener('click', () => send(b.dataset.q!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-handoff]').forEach((b) => b.addEventListener('click', () => { chips.remove(); handoff(); }));
+  callback.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(callback);
+    try {
+      const data = await call({ action: 'details', name: fd.get('name'), phone: fd.get('phone') });
+      (data.messages || []).forEach(render);
+      setStatus(data.status);
+    } catch (err) {
+      render({ role: 'system', content: (err as Error).message });
+    }
+  });
+
+  // Restore an ongoing chat after a page change or reload.
+  if (sessionId) {
+    call({ action: 'poll', after: 0 })
+      .then((data) => {
+        if ((data.messages || []).length) chips.remove();
+        (data.messages || []).forEach(render);
+        dot.hidden = true;
+        setStatus(data.status || 'ai');
+      })
+      .catch(() => { sessionId = null; });
+  }
+</script>

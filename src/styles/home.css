@@ -299,3 +299,29 @@ input:focus-visible {
   .mem-teaser { grid-template-columns: 1fr !important; }
   .mem-teaser-months { grid-template-columns: repeat(6, 1fr) !important; }
 }
+
+/* Membership – the "precious" header button: deep espresso with a warm hairline */
+.hlink-mem {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #4A3027 0%, #2E1F19 100%);
+  box-shadow: inset 0 0 0 1px rgba(233, 165, 142, .45), 0 6px 18px -8px rgba(46, 31, 25, .7);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 11px 18px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  text-decoration: none;
+  color: #F6E9D6 !important;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.hlink-mem:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px rgba(233, 165, 142, .8), 0 10px 22px -8px rgba(46, 31, 25, .8); }
+.mem-spark { color: #E9A58E; font-size: 11px; letter-spacing: 0; }
+@media (max-width: 480px) {
+  .hlink-mem, .hlink-cta { padding: 10px 12px; font-size: 11.5px; letter-spacing: .1em; }
+  .hlink-mem .mem-spark { display: none; }
+}

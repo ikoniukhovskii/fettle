@@ -685,6 +685,9 @@ function Header() {
           <button className="hlink nav-optional" onClick={() => jump('availability')}>
             Check availability
           </button>
+          <a className="hlink-mem" href="/membership">
+            <span className="mem-spark" aria-hidden="true">✦</span>Membership
+          </a>
           <button className="hlink-cta" onClick={() => { window.location.href = '/contact'; }}>
             Contact
           </button>

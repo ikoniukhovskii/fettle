@@ -6,6 +6,8 @@ import teamLeoAsset from '../assets/img/team-leo.webp';
 const teamLeo = teamLeoAsset.src;
 import teamSergioAsset from '../assets/img/team-sergio.webp';
 const teamSergio = teamSergioAsset.src;
+// Meet the team is temporarily hidden (Oct 2026). Set to true to bring it back exactly as it was.
+const SHOW_TEAM = false;
 ---
 
 <Page title="About Fettle – London Handyman & Home Maintenance Team" description="A small permanent team, a short list of homes, and a simple promise – the same faces each visit, honest work, and a tidy finish. By recommendation, mostly.">
@@ -19,6 +21,8 @@ const teamSergio = teamSergioAsset.src;
 
     <section class="page-body">
       <div class="wrap">
+        {SHOW_TEAM && (
+          <Fragment>
         <h2 class="prose" style="margin-top:0">Meet the team</h2>
         <p class="prose" style="color:var(--ink-60); margin-top:-8px">The small permanent team behind every visit &ndash; repairs, decorating, plumbing and cleaning.</p>
         <div class="grid four" style="margin-top:28px">
@@ -56,6 +60,8 @@ const teamSergio = teamSergioAsset.src;
         </div>
 
         <hr class="divider" />
+          </Fragment>
+        )}
 
         <div class="badge-row">
           <span class="pill"><span class="dot"></span>Local team</span>

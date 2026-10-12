@@ -856,6 +856,9 @@ function WhatWeDo({ t, m }) {
 }
 
 /* ---------- Team ---------- */
+// Meet the team is temporarily hidden (Oct 2026). Set to true to bring it back exactly as it was.
+const SHOW_TEAM = false;
+
 const TEAM = [
   { name: 'Ilia', role: 'Founder · Surveys & quotes', note: 'Inspection and quotation.', photo: teamIlia },
   { name: 'Leo', role: 'Maintenance & decorating', note: 'Maintenance, painting, plastering, and decoration.', photo: teamLeo },
@@ -2012,7 +2015,7 @@ export default function Home() {
       <Story t={t} m={m} pcfg={pcfg} />
       <MembershipTeaser t={t} m={m} />
       <Close t={t} m={m} />
-      <Team t={t} m={m} />
+      {SHOW_TEAM && <Team t={t} m={m} />}
       <FAQ t={t} m={m} />
       <SiteFooter />
     </React.Fragment>

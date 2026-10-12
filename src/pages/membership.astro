@@ -144,9 +144,9 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   .mem-link { color: var(--cream); font-weight: 600; text-decoration: underline; text-underline-offset: 5px; text-decoration-color: rgba(241,232,216,.35); }
   .mem-small { margin: 22px 0 0; font-size: 13.5px; letter-spacing: .03em; color: rgba(241,232,216,.55); }
 
-  .mcard-wrap { perspective: 1200px; display: flex; justify-content: center; }
-  .mcard { width: min(380px, 100%); aspect-ratio: 1.586; border-radius: 22px; padding: 24px 26px; background: linear-gradient(140deg, #F6EEDF 0%, #E9DCC3 100%); color: var(--ink); box-shadow: 0 40px 80px -30px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.5); transform: rotate(-4deg) rotateY(-8deg); display: flex; flex-direction: column; position: relative; overflow: hidden; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
-  .mcard:hover { transform: rotate(-1deg) rotateY(0); }
+  .mcard-wrap { perspective: 900px; display: flex; justify-content: center; padding: 40px 20px; margin: -40px -20px; }
+  .mcard { --gx: 30%; --gy: 20%; --glare: 0; width: min(380px, 100%); aspect-ratio: 1.586; border-radius: 22px; padding: 24px 26px; background: linear-gradient(140deg, #F6EEDF 0%, #E9DCC3 100%); color: var(--ink); box-shadow: 0 40px 80px -30px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.5); transform: rotate(-4deg) rotateY(-8deg); transform-style: preserve-3d; will-change: transform; display: flex; flex-direction: column; position: relative; overflow: hidden; touch-action: pan-y; cursor: default; }
+  .mcard::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: radial-gradient(circle at var(--gx) var(--gy), rgba(255,255,255,.55), rgba(255,255,255,0) 55%); opacity: var(--glare); mix-blend-mode: soft-light; transition: opacity .3s; }
   .mcard::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(43,39,35,.025) 22px 23px); }
   .mcard-top { display: flex; justify-content: space-between; align-items: center; position: relative; }
   .mcard-mark { width: 40px; height: 40px; }
@@ -275,6 +275,45 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     r.addEventListener('change', () => show(r.value)),
   );
   show((PLANS.find((p) => p.featured) ?? PLANS[0]).id);
+
+  // Membership card: the corner under the cursor is pressed into the page.
+  const card = document.querySelector<HTMLElement>('.mcard');
+  const zone = document.querySelector<HTMLElement>('.mcard-wrap');
+  if (card && zone && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const MAX = 16; // degrees of tilt at the very corner
+    const rest = { rz: -4, rx: 0, ry: -8, s: 1 };
+    const cur = { ...rest };
+    let target = { ...rest };
+    let raf = 0;
+    const apply = () => {
+      const k = 0.14; // easing – lower is softer
+      let moving = false;
+      for (const key of ['rz', 'rx', 'ry', 's'] as const) {
+        const d = target[key] - cur[key];
+        if (Math.abs(d) > 0.001) { cur[key] += d * k; moving = true; } else cur[key] = target[key];
+      }
+      card.style.transform = `rotate(${cur.rz}deg) rotateX(${cur.rx}deg) rotateY(${cur.ry}deg) scale(${cur.s})`;
+      raf = moving ? requestAnimationFrame(apply) : 0;
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(apply); };
+    zone.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch') return;
+      const r = card.getBoundingClientRect();
+      const x = Math.max(-0.5, Math.min(0.5, (e.clientX - r.left) / r.width - 0.5));
+      const y = Math.max(-0.5, Math.min(0.5, (e.clientY - r.top) / r.height - 0.5));
+      // Cursor right → right edge goes back (rotateY +). Cursor top → top edge goes back (rotateX +).
+      target = { rz: 0, rx: -y * 2 * MAX, ry: x * 2 * MAX, s: 1.03 };
+      card.style.setProperty('--gx', `${(x + 0.5) * 100}%`);
+      card.style.setProperty('--gy', `${(y + 0.5) * 100}%`);
+      card.style.setProperty('--glare', '1');
+      kick();
+    });
+    zone.addEventListener('pointerleave', () => {
+      target = { ...rest };
+      card.style.setProperty('--glare', '0');
+      kick();
+    });
+  }
 
   const supabase = createClient(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_ANON_KEY, {
     auth: { persistSession: false },

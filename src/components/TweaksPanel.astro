@@ -1,0 +1,178 @@
+---
+// Dev-only appearance tweaks. Rendered only when running `npm run dev` (never in the live build).
+---
+<div id="fx-tweaks" class="fx-closed">
+  <button type="button" class="fx-toggle" aria-expanded="false">✦ Tweaks</button>
+  <div class="fx-panel" role="dialog" aria-label="Appearance tweaks">
+    <div class="fx-head">
+      <strong>Tweaks</strong>
+      <span>localhost only · saved in this browser</span>
+    </div>
+    <div class="fx-body"></div>
+    <div class="fx-foot">
+      <button type="button" data-act="reset">Reset all</button>
+      <button type="button" data-act="copy">Copy settings</button>
+    </div>
+  </div>
+</div>
+
+<style is:inline>
+  #fx-tweaks { position: fixed; left: 18px; bottom: 18px; z-index: 2147483000; font: 13px/1.4 'Work Sans', system-ui, sans-serif; color: #2B2723; }
+  #fx-tweaks .fx-toggle { border: 0; cursor: pointer; padding: 11px 16px; border-radius: 999px; background: linear-gradient(135deg, #4A3027, #2E1F19); color: #F6E9D6; font: 600 12px 'Work Sans', sans-serif; letter-spacing: .12em; text-transform: uppercase; box-shadow: inset 0 0 0 1px rgba(233,165,142,.5), 0 10px 26px -10px rgba(0,0,0,.6); }
+  #fx-tweaks .fx-panel { position: absolute; left: 0; bottom: 52px; width: 320px; max-height: min(78vh, 760px); display: flex; flex-direction: column; background: #FBF7F0; border-radius: 18px; box-shadow: 0 30px 70px -20px rgba(0,0,0,.45), 0 0 0 1px rgba(43,39,35,.1); overflow: hidden; }
+  #fx-tweaks.fx-closed .fx-panel { display: none; }
+  #fx-tweaks .fx-head { padding: 14px 18px 10px; border-bottom: 1px solid rgba(43,39,35,.1); }
+  #fx-tweaks .fx-head strong { display: block; font: 800 18px 'Bricolage Grotesque', sans-serif; }
+  #fx-tweaks .fx-head span { color: rgba(43,39,35,.55); font-size: 11.5px; }
+  #fx-tweaks .fx-body { overflow-y: auto; padding: 4px 18px 12px; }
+  #fx-tweaks h4 { margin: 16px 0 6px; font: 600 10.5px 'Work Sans', sans-serif; letter-spacing: .18em; text-transform: uppercase; color: #B34426; }
+  #fx-tweaks .fx-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; padding: 7px 0; border-bottom: 1px dotted rgba(43,39,35,.12); }
+  #fx-tweaks .fx-row label { font-weight: 500; }
+  #fx-tweaks .fx-row output { font-variant-numeric: tabular-nums; color: rgba(43,39,35,.6); font-size: 12px; }
+  #fx-tweaks .fx-row input[type=range] { grid-column: 1 / 3; width: 100%; accent-color: #B34426; }
+  #fx-tweaks .fx-row select { font: inherit; padding: 4px 6px; border-radius: 8px; border: 1px solid rgba(43,39,35,.2); background: #fff; }
+  #fx-tweaks .fx-row input[type=color] { width: 40px; height: 26px; border: 0; padding: 0; background: none; cursor: pointer; }
+  #fx-tweaks .fx-row input[type=checkbox] { width: 18px; height: 18px; accent-color: #B34426; }
+  #fx-tweaks .fx-foot { display: flex; gap: 8px; padding: 12px 18px; border-top: 1px solid rgba(43,39,35,.1); }
+  #fx-tweaks .fx-foot button { flex: 1; cursor: pointer; padding: 9px 10px; border-radius: 10px; border: 1px solid rgba(43,39,35,.25); background: #fff; font: 600 12.5px 'Work Sans', sans-serif; }
+  #fx-tweaks .fx-foot button[data-act=copy] { background: #B34426; border-color: #B34426; color: #fff; }
+</style>
+
+<script>
+  type Ctl =
+    | { scope: 'home' | 'site'; key: string; label: string; type: 'range'; min: number; max: number; step?: number; def: number; unit?: string }
+    | { scope: 'home' | 'site'; key: string; label: string; type: 'select'; options: string[]; def: string }
+    | { scope: 'home' | 'site'; key: string; label: string; type: 'toggle'; def: boolean }
+    | { scope: 'home' | 'site'; key: string; label: string; type: 'color'; def: string };
+
+  const GROUPS: [string, Ctl[]][] = [
+    ['Colours (whole site)', [
+      { scope: 'site', key: 'brand', label: 'Brand colour (buttons, links)', type: 'color', def: '#B34426' },
+      { scope: 'site', key: 'cream', label: 'Page background', type: 'color', def: '#F1E8D8' },
+      { scope: 'site', key: 'ink', label: 'Text & dark sections', type: 'color', def: '#2B2723' },
+      { scope: 'site', key: 'sage', label: 'Accent green', type: 'color', def: '#6E8A6B' },
+    ]],
+    ['Type & shape (whole site)', [
+      { scope: 'site', key: 'font', label: 'Headline font', type: 'select', options: ['Bricolage Grotesque', 'Work Sans', 'Georgia (serif)', 'System'], def: 'Bricolage Grotesque' },
+      { scope: 'site', key: 'radius', label: 'Corner roundness', type: 'range', min: 0, max: 250, step: 5, def: 100, unit: '%' },
+    ]],
+    ['Homepage hero', [
+      { scope: 'home', key: 'heroPhoto', label: 'Hero photo', type: 'select', options: ['drawing room', 'kitchen & garden', 'dining skylight'], def: 'drawing room' },
+      { scope: 'home', key: 'heroScrim', label: 'Hero darkness', type: 'range', min: 0, max: 90, def: 52, unit: '%' },
+      { scope: 'home', key: 'heroEntrance', label: 'Hero animation', type: 'select', options: ['none', 'fade', 'kenburns'], def: 'none' },
+      { scope: 'home', key: 'wordmarkSize', label: 'FETTLE wordmark size', type: 'range', min: 8, max: 26, step: 0.5, def: 19 },
+      { scope: 'home', key: 'wordmarkWeight', label: 'Wordmark weight', type: 'range', min: 200, max: 800, step: 100, def: 800 },
+      { scope: 'home', key: 'wordmarkCase', label: 'Wordmark case', type: 'select', options: ['uppercase', 'none'], def: 'uppercase' },
+    ]],
+    ['Homepage photos', [
+      { scope: 'home', key: 'photoSaturation', label: 'Colour saturation', type: 'range', min: 0, max: 150, def: 82, unit: '%' },
+      { scope: 'home', key: 'photoBrightness', label: 'Brightness', type: 'range', min: 60, max: 130, def: 100, unit: '%' },
+      { scope: 'home', key: 'imageRadius', label: 'Photo corners', type: 'range', min: 0, max: 48, def: 16, unit: 'px' },
+    ]],
+    ['Homepage text & layout', [
+      { scope: 'home', key: 'headingScale', label: 'Heading size', type: 'range', min: 60, max: 130, def: 84, unit: '%' },
+      { scope: 'home', key: 'bodyScale', label: 'Body text size', type: 'range', min: 80, max: 125, def: 94, unit: '%' },
+      { scope: 'home', key: 'sectionSpacing', label: 'Space between sections', type: 'range', min: 40, max: 150, def: 78, unit: '%' },
+      { scope: 'home', key: 'contentWidth', label: 'Content width', type: 'range', min: 880, max: 1440, step: 20, def: 1120, unit: 'px' },
+      { scope: 'home', key: 'bgStyle', label: 'Background effect', type: 'select', options: ['flat', 'vignette', 'grain', 'drift'], def: 'flat' },
+    ]],
+    ['Homepage motion', [
+      { scope: 'home', key: 'scrollMotion', label: 'Scroll animations', type: 'toggle', def: true },
+      { scope: 'home', key: 'revealStyle', label: 'Reveal style', type: 'select', options: ['fade-up', 'fade', 'zoom', 'blur', 'clip'], def: 'fade-up' },
+      { scope: 'home', key: 'parallax', label: 'Photo parallax', type: 'toggle', def: true },
+    ]],
+  ];
+
+  const STORE = 'fettle-tweaks';
+  type State = { home: Record<string, unknown>; site: Record<string, unknown> };
+  const load = (): State => {
+    try { const s = JSON.parse(localStorage.getItem(STORE) || '{}'); return { home: s.home || {}, site: s.site || {} }; }
+    catch { return { home: {}, site: {} }; }
+  };
+  let state = load();
+  const save = () => {
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {}
+    window.dispatchEvent(new Event('fettle-tweaks'));
+  };
+  const get = (c: Ctl) => (state[c.scope][c.key] ?? c.def) as never;
+
+  const FONTS: Record<string, string> = {
+    'Bricolage Grotesque': "'Bricolage Grotesque', Georgia, serif",
+    'Work Sans': "'Work Sans', sans-serif",
+    'Georgia (serif)': "Georgia, 'Times New Roman', serif",
+    System: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  };
+  function applySite() {
+    const r = document.documentElement.style;
+    const s = state.site as Record<string, string | number>;
+    const set = (k: string, v: string | null) => (v == null ? r.removeProperty(k) : r.setProperty(k, v));
+    set('--rust', (s.brand as string) ?? null);
+    set('--brick', s.brand ? `color-mix(in srgb, ${s.brand} 80%, black)` : null);
+    set('--action', (s.brand as string) ?? null);
+    set('--cream', (s.cream as string) ?? null);
+    set('--ink', (s.ink as string) ?? null);
+    set('--sage', (s.sage as string) ?? null);
+    set('--font-display', s.font ? FONTS[s.font as string] : null);
+    if (s.radius != null) {
+      const k = Number(s.radius) / 100;
+      set('--radius-sm', `${6 * k}px`); set('--radius-md', `${10 * k}px`); set('--radius-lg', `${16 * k}px`); set('--radius-pill', `${20 * k}px`);
+    } else ['--radius-sm', '--radius-md', '--radius-lg', '--radius-pill'].forEach((v) => r.removeProperty(v));
+  }
+  applySite();
+
+  const root = document.getElementById('fx-tweaks')!;
+  const body = root.querySelector('.fx-body')!;
+  const toggle = root.querySelector<HTMLButtonElement>('.fx-toggle')!;
+  toggle.addEventListener('click', () => {
+    const open = root.classList.toggle('fx-closed') === false;
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  function render() {
+    body.replaceChildren();
+    for (const [title, ctls] of GROUPS) {
+      const h = document.createElement('h4'); h.textContent = title; body.append(h);
+      for (const c of ctls) {
+        const row = document.createElement('div'); row.className = 'fx-row';
+        const id = `fx-${c.scope}-${c.key}`;
+        const lab = document.createElement('label'); lab.htmlFor = id; lab.textContent = c.label; row.append(lab);
+        const commit = (v: unknown) => { state[c.scope][c.key] = v; save(); if (c.scope === 'site') applySite(); };
+        if (c.type === 'range') {
+          const out = document.createElement('output');
+          const inp = document.createElement('input'); inp.type = 'range'; inp.id = id;
+          inp.min = String(c.min); inp.max = String(c.max); inp.step = String(c.step ?? 1); inp.value = String(get(c));
+          const show = () => (out.textContent = `${inp.value}${c.unit ?? ''}`); show();
+          inp.addEventListener('input', () => { show(); commit(Number(inp.value)); });
+          row.append(out, inp);
+        } else if (c.type === 'select') {
+          const sel = document.createElement('select'); sel.id = id;
+          for (const o of c.options) { const op = document.createElement('option'); op.value = op.textContent = o; sel.append(op); }
+          sel.value = String(get(c));
+          sel.addEventListener('change', () => commit(sel.value));
+          row.append(sel);
+        } else if (c.type === 'toggle') {
+          const cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = id; cb.checked = Boolean(get(c));
+          cb.addEventListener('change', () => commit(cb.checked));
+          row.append(cb);
+        } else {
+          const col = document.createElement('input'); col.type = 'color'; col.id = id; col.value = String(get(c));
+          col.addEventListener('input', () => commit(col.value));
+          row.append(col);
+        }
+        body.append(row);
+      }
+    }
+  }
+  render();
+
+  root.querySelector('[data-act=reset]')!.addEventListener('click', () => {
+    state = { home: {}, site: {} }; save(); applySite(); render();
+  });
+  root.querySelector('[data-act=copy]')!.addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    const changed = JSON.stringify(state, null, 2);
+    try { await navigator.clipboard.writeText(changed); btn.textContent = 'Copied ✓'; }
+    catch { btn.textContent = 'Copy failed'; }
+    setTimeout(() => (btn.textContent = 'Copy settings'), 1600);
+  });
+</script>

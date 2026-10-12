@@ -10,6 +10,7 @@ const { title, description = 'A small London team, keeping a short list of homes
 // One canonical home: https://www.fettlelondon.com, no trailing slash (except the root).
 const path = Astro.url.pathname.replace(/\/index(\.html)?$/, '/').replace(/\.html$/, '').replace(/(.)\/+$/, '$1');
 import { BUSINESS_SCHEMA } from '../data/schema';
+import TweaksPanel from '../components/TweaksPanel.astro';
 import ChatWidget from '../components/ChatWidget.astro';
 const canonical = new URL(path, Astro.site ?? 'https://www.fettlelondon.com').href;
 ---
@@ -48,6 +49,7 @@ const canonical = new URL(path, Astro.site ?? 'https://www.fettlelondon.com').hr
     <slot />
 
     <ChatWidget />
+    {import.meta.env.DEV && <TweaksPanel />}
 
     <script is:inline>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };

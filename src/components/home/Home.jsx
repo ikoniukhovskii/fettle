@@ -1989,8 +1989,27 @@ function Carousel({ t, m }) {
 }
 
 /* ---------- App ---------- */
+// Dev-only tweaks: the floating Tweaks panel (localhost only) writes overrides to localStorage.
+const TWEAK_STORE = 'fettle-tweaks';
+function readTweaks() {
+  if (!import.meta.env.DEV || !isBrowser) return TWEAK_DEFAULTS;
+  try {
+    const saved = JSON.parse(localStorage.getItem(TWEAK_STORE) || '{}');
+    return { ...TWEAK_DEFAULTS, ...(saved.home || {}) };
+  } catch {
+    return TWEAK_DEFAULTS;
+  }
+}
+
 export default function Home() {
-  const t = TWEAK_DEFAULTS;
+  const [t, setT] = React.useState(TWEAK_DEFAULTS);
+  React.useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    setT(readTweaks());
+    const onChange = () => setT(readTweaks());
+    window.addEventListener('fettle-tweaks', onChange);
+    return () => window.removeEventListener('fettle-tweaks', onChange);
+  }, []);
 
 
   const m = {

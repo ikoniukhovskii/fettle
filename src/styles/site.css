@@ -272,6 +272,7 @@ textarea:focus-visible {
 .field.has-error input,
 .field.has-error textarea { border-color: var(--status-attention); background: var(--rust-tint); }
 .field-error { margin: 0; font-size: 14px; line-height: 1.45; color: var(--brick); }
+.field-note { margin: 2px 0 0; font-size: 14px; line-height: 1.5; color: var(--ink-60); }
 .form-err {
   display: none;
   align-items: flex-start;

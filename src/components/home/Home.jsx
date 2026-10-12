@@ -1,4 +1,5 @@
 import React from 'react';
+import { lookupCoords, milesFromBase, travelBand, travelNote } from '../../data/travel';
 import { createClient } from '@supabase/supabase-js';
 import heroDrawingRoomAsset from '../../assets/img/hero-drawing-room.webp';
 const heroDrawingRoom = heroDrawingRoomAsset.src;
@@ -438,11 +439,14 @@ function QuietPostcode({ id, t }) {
       return;
     }
     let previousCount = 0;
+    const coordsPromise = lookupCoords(parsed.postcode || area);
     try {
       previousCount = await bumpAreaCheckCount(area);
     } catch {
       previousCount = 0; // can't reach the shared count — still show a friendly result
     }
+    const coords = await coordsPromise;
+    const travel = coords ? travelNote(area, travelBand(milesFromBase(coords.lat, coords.lon))) : null;
     setChecking(false);
     const message =
       previousCount === 0
@@ -450,7 +454,7 @@ function QuietPostcode({ id, t }) {
         : previousCount < POPULAR_AREA_THRESHOLD
           ? repeatCheckMessage(area)
           : popularAreaMessage(area);
-    setResult({ area, postcode: parsed.postcode, covered: true, message });
+    setResult({ area, postcode: parsed.postcode, covered: true, message, travel });
   };
 
   return (
@@ -534,6 +538,11 @@ function QuietPostcode({ id, t }) {
           >
             {result.covered && <span style={{ color: 'var(--sage)', marginRight: 8 }}>✓</span>}
             {result.message}
+            {result.travel && (
+              <span style={{ display: 'block', marginTop: 10, color: 'var(--ink-60, rgba(43,39,35,.62))', fontSize: 15 * bs, lineHeight: 1.55 }}>
+                {result.travel}
+              </span>
+            )}
             <span style={{ display: 'block', marginTop: 16 }}>
               <a
                 href={`/contact?postcode=${encodeURIComponent(result.postcode || result.area)}`}
@@ -1379,6 +1388,10 @@ export const FAQS = [
   {
     q: 'How much does a visit cost?',
     a: 'A visit to see the job and give you a price is £30. Whenever you go ahead with the work, it comes straight off the cost, and if it turns out not to be a job for us, you don’t pay it. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or tree surgery, is quoted job by job once we have seen it.',
+  },
+  {
+    q: 'Do you charge for travel?',
+    a: 'Not if you are close by. We are based in Chelsea, and anywhere within about 4 miles has no travel charge. A little further out, up to 6 miles, we add £15 to the job. Beyond that, we book work as half-days or longer, with £25 up to 9 miles and £40 further afield. It covers time on the road and parking, it is never added to the £30 visit, and you will see it on your quote before anything starts. If a job is inside the Congestion Charge zone during charging hours, that is added at cost.',
   },
   {
     q: 'What sort of jobs do you take on?',

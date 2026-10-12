@@ -30,6 +30,7 @@ import Page from '../layouts/Page.astro';
                 <label for="cf-postcode">Postcode</label>
                 <input id="cf-postcode" name="postcode" type="text" autocomplete="postal-code" placeholder="e.g. N6 4AB" required />
                 <p class="field-error" id="cf-postcode-error" hidden></p>
+                <p class="field-note" id="cf-travel" aria-live="polite" hidden></p>
               </div>
               <div class="field">
                 <label for="cf-topic">Topic</label>
@@ -127,6 +128,7 @@ import Page from '../layouts/Page.astro';
 
 <script>
   import { createClient } from '@supabase/supabase-js';
+  import { lookupCoords, milesFromBase, travelBand, travelNote } from '../data/travel';
 
   const supabase = createClient(
     import.meta.env.PUBLIC_SUPABASE_URL,
@@ -202,10 +204,32 @@ import Page from '../layouts/Page.astro';
     if (!form.querySelector('[aria-invalid]')) err?.classList.remove('show');
   });
 
+  // Travel charge (Logistics Fee Concept): once a postcode is in, quietly say what, if anything,
+  // travel adds – so it's never a surprise on the quote.
+  const travelEl = document.getElementById('cf-travel');
+  let travelSummary = '';
+  async function updateTravel(raw: string) {
+    travelSummary = '';
+    if (!travelEl) return;
+    const pc = normalisePostcode(raw);
+    if (!pc || !isLondon(pc)) { travelEl.hidden = true; return; }
+    const coords = await lookupCoords(pc);
+    if (!coords) { travelEl.hidden = true; return; }
+    const miles = milesFromBase(coords.lat, coords.lon);
+    const band = travelBand(miles);
+    travelEl.textContent = travelNote(pc.split(' ')[0], band);
+    travelEl.hidden = false;
+    travelSummary = `Travel: ${band.fee ? '£' + band.fee : 'none'}${band.halfDayOnly ? ', half-day minimum' : ''} (~${miles.toFixed(1)} mi from SW10)`;
+  }
+  const postcodeInput = document.getElementById('cf-postcode') as HTMLInputElement | null;
+  postcodeInput?.addEventListener('blur', () => updateTravel(postcodeInput.value));
+  postcodeInput?.addEventListener('input', () => { if (travelEl) travelEl.hidden = true; });
+
   const prefillPostcode = new URLSearchParams(window.location.search).get('postcode');
   if (prefillPostcode) {
     const postcodeField = document.getElementById('cf-postcode') as HTMLInputElement | null;
     if (postcodeField) postcodeField.value = prefillPostcode;
+    updateTravel(prefillPostcode);
     const nameField = document.getElementById('cf-name') as HTMLInputElement | null;
     nameField?.focus();
   }
@@ -238,6 +262,7 @@ import Page from '../layouts/Page.astro';
     }
 
     if (problems.length) return showErrors(problems);
+    if (!travelSummary) await updateTravel(postcode.value);
 
     const submit = form.querySelector('button[type="submit"]') as HTMLButtonElement;
     submit.disabled = true;
@@ -247,7 +272,7 @@ import Page from '../layouts/Page.astro';
       email: email.value.trim(),
       postcode: postcode.value.trim(),
       topic: topic.value.trim(),
-      message: message.value.trim(),
+      message: [message.value.trim(), travelSummary && `[${travelSummary}]`].filter(Boolean).join('\n\n'),
     });
 
     if (error) {
@@ -259,6 +284,7 @@ import Page from '../layouts/Page.astro';
 
     ok?.classList.add('show');
     form.reset();
+    if (travelEl) travelEl.hidden = true;
   });
 </script>
 </Page>

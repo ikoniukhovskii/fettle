@@ -1,10 +1,29 @@
 ---
 import Page from '../layouts/Page.astro';
 import { PLANS, HOME_CHECK, MONTHS } from '../data/membership';
+const memSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'In Fine Fettle – home maintenance membership',
+  serviceType: 'Home maintenance plan',
+  description: 'Scheduled home maintenance in London from one small team: seasonal home checks, gutters, seals, damp and your list worked through.',
+  url: 'https://www.fettlelondon.com/membership',
+  provider: { '@type': 'HandymanService', name: 'Fettle London', url: 'https://www.fettlelondon.com' },
+  areaServed: { '@type': 'City', name: 'London' },
+  offers: PLANS.map((p) => ({
+    '@type': 'Offer',
+    name: p.name,
+    description: `${p.cadence}. ${p.blurb}`,
+    priceCurrency: 'GBP',
+    price: p.price,
+    priceSpecification: { '@type': 'UnitPriceSpecification', price: p.price, priceCurrency: 'GBP', unitText: 'MONTH', billingDuration: 'P1M' },
+  })),
+};
 const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
 ---
 
 <Page title="Home Maintenance Membership in London | Fettle" description="In Fine Fettle – a home maintenance plan from Fettle. The same small team on a schedule: seasonal home checks, gutters, seals and your list, from £29 a month.">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(memSchema)} />
   <section class="mem-hero">
     <div class="wrap mem-hero-grid">
       <div>

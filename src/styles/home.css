@@ -294,3 +294,8 @@ input:focus-visible {
   text-underline-offset: 4px;
 }
 @media (max-width: 560px) { .svc-card { padding: 18px 20px; gap: 6px; } .svc-title { font-size: 18px; } }
+
+@media (max-width: 760px) {
+  .mem-teaser { grid-template-columns: 1fr !important; }
+  .mem-teaser-months { grid-template-columns: repeat(6, 1fr) !important; }
+}

@@ -1299,6 +1299,62 @@ function Story({ t, m, pcfg }) {
   );
 }
 
+
+/* ---------- Membership teaser ---------- */
+function MembershipTeaser({ t, m }) {
+  const sf = t.sectionSpacing / 100;
+  return (
+    <section id="membership" data-screen-label="Membership" style={{ position: 'relative', zIndex: 1, padding: `calc(clamp(24px, 4vw, 48px) * ${sf}) 24px calc(clamp(40px, 6vw, 72px) * ${sf})` }}>
+      <Reveal m={m}>
+        <a
+          href="/membership"
+          className="mem-teaser"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)',
+            gap: 'clamp(24px, 4vw, 56px)',
+            alignItems: 'center',
+            maxWidth: 1040,
+            margin: '0 auto',
+            padding: 'clamp(36px, 5vw, 64px)',
+            borderRadius: 28,
+            background: 'var(--ink)',
+            color: 'var(--cream)',
+            textDecoration: 'none',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <div>
+            <p style={{ margin: '0 0 14px', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 12, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#E7DCC6', opacity: 0.8 }}>
+              New &middot; Membership
+            </p>
+            <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: `calc(clamp(30px, 4.2vw, 50px) * ${t.headingScale / 100})`, lineHeight: 1.05, letterSpacing: '-0.01em' }}>
+              Your home, kept{' '}
+              <span style={{ fontFamily: 'var(--font-script)', fontWeight: 400, color: '#E9A58E', fontSize: '1.15em', whiteSpace: 'nowrap' }}>in fine fettle</span>{' '}
+              all year.
+            </h2>
+            <p style={{ margin: '18px 0 0', maxWidth: 460, fontFamily: 'var(--font-body)', fontSize: 16.5 * (t.bodyScale / 100), lineHeight: 1.6, color: 'rgba(241,232,216,.72)' }}>
+              The same small team on a schedule – seasonal home checks, gutters, seals and your list worked through. From &pound;29 a month.
+            </p>
+            <span style={{ display: 'inline-block', marginTop: 26, padding: '13px 26px', borderRadius: 999, background: 'var(--rust)', color: 'var(--cream)', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 14.5 }}>
+              See the plans &rarr;
+            </span>
+          </div>
+          <div className="mem-teaser-months" aria-hidden="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+            {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((mo, i) => (
+              <div key={mo} style={{ background: 'rgba(241,232,216,.06)', border: '1px solid rgba(241,232,216,.1)', borderRadius: 12, padding: '12px 0 14px', textAlign: 'center' }}>
+                <span style={{ display: 'block', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: i % 3 === 0 ? 'var(--cream)' : 'rgba(241,232,216,.4)' }}>{mo}</span>
+                <span style={{ display: 'block', width: 11, height: 11, margin: '10px auto 0', borderRadius: '50%', background: i % 3 === 0 ? 'var(--rust)' : 'transparent', border: i % 3 === 0 ? 0 : '1.5px dashed rgba(241,232,216,.18)' }} />
+              </div>
+            ))}
+          </div>
+        </a>
+      </Reveal>
+    </section>
+  );
+}
+
 /* ---------- Close ---------- */
 function Close({ t, m }) {
   const cw = t.contentWidth;
@@ -1593,6 +1649,7 @@ const FOOT_COLS = [
     head: 'Company',
     links: [
       { label: 'About Fettle', href: '/about' },
+      { label: 'Membership', href: '/membership' },
       { label: 'Testimonials', href: '/testimonials' },
       { label: 'Contact', href: '/contact' },
     ],
@@ -1950,6 +2007,7 @@ export default function Home() {
       <Hero t={t} />
       <WhatWeDo t={t} m={m} />
       <Story t={t} m={m} pcfg={pcfg} />
+      <MembershipTeaser t={t} m={m} />
       <Close t={t} m={m} />
       <Team t={t} m={m} />
       <FAQ t={t} m={m} />

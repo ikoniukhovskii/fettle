@@ -13,6 +13,8 @@ import { BUSINESS_SCHEMA } from '../data/schema';
 import TweaksPanel from '../components/TweaksPanel.astro';
 import ChatWidget from '../components/ChatWidget.astro';
 const canonical = new URL(path, Astro.site ?? 'https://www.fettlelondon.com').href;
+// The Tweaks panel shows on localhost and on Vercel preview links – never on the live site.
+const showTweaks = import.meta.env.DEV || process.env.VERCEL_ENV === 'preview';
 ---
 
 <!doctype html>
@@ -49,7 +51,7 @@ const canonical = new URL(path, Astro.site ?? 'https://www.fettlelondon.com').hr
     <slot />
 
     <ChatWidget />
-    {import.meta.env.DEV && <TweaksPanel />}
+    {showTweaks && <TweaksPanel />}
 
     <script is:inline>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };

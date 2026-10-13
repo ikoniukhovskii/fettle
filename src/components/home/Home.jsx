@@ -1,6 +1,7 @@
 import React from 'react';
 import { lookupCoords, milesFromBase, travelBand, travelNote } from '../../data/travel';
 import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../data/supabase-config';
 import heroDrawingRoomAsset from '../../assets/img/hero-drawing-room.webp';
 const heroDrawingRoom = heroDrawingRoomAsset.src;
 import kitchenGardenAsset from '../../assets/img/kitchen-garden.webp';
@@ -329,8 +330,8 @@ const SERVICE_AREA_LETTERS = new Set(['N', 'NW', 'W', 'SW', 'SE', 'TW', 'EC', 'W
 const POPULAR_AREA_THRESHOLD = 5;
 
 const supabase = createClient(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
   { auth: { persistSession: false } }
 );
 
@@ -1992,7 +1993,7 @@ function Carousel({ t, m }) {
 // Dev-only tweaks: the floating Tweaks panel (localhost only) writes overrides to localStorage.
 const TWEAK_STORE = 'fettle-tweaks';
 function readTweaks() {
-  if (!import.meta.env.DEV || !isBrowser) return TWEAK_DEFAULTS;
+  if (!isBrowser || !(import.meta.env.DEV || window.__FETTLE_TWEAKS)) return TWEAK_DEFAULTS;
   try {
     const saved = JSON.parse(localStorage.getItem(TWEAK_STORE) || '{}');
     return { ...TWEAK_DEFAULTS, ...(saved.home || {}) };
@@ -2004,7 +2005,6 @@ function readTweaks() {
 export default function Home() {
   const [t, setT] = React.useState(TWEAK_DEFAULTS);
   React.useEffect(() => {
-    if (!import.meta.env.DEV) return;
     setT(readTweaks());
     const onChange = () => setT(readTweaks());
     window.addEventListener('fettle-tweaks', onChange);

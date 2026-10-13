@@ -1,8 +1,9 @@
 ---
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
 // Fettle website chat: AI answers, hand-off to the team via Telegram.
 // Talks only to the Supabase Edge Function "chat" (see supabase/functions/chat).
-const endpoint = `${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/chat`;
-const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+const endpoint = `${SUPABASE_URL}/functions/v1/chat`;
+const anonKey = SUPABASE_ANON_KEY;
 ---
 
 <div id="fchat" class="fchat" data-endpoint={endpoint} data-key={anonKey}>

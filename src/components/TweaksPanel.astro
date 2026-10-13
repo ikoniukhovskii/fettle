@@ -1,12 +1,12 @@
 ---
-// Dev-only appearance tweaks. Rendered only when running `npm run dev` (never in the live build).
+// Appearance tweaks. Rendered on localhost and Vercel preview links only (never on the live site).
 ---
 <div id="fx-tweaks" class="fx-closed">
   <button type="button" class="fx-toggle" aria-expanded="false">✦ Tweaks</button>
   <div class="fx-panel" role="dialog" aria-label="Appearance tweaks">
     <div class="fx-head">
       <strong>Tweaks</strong>
-      <span>localhost only · saved in this browser</span>
+      <span>preview only · saved in this browser</span>
     </div>
     <div class="fx-body"></div>
     <div class="fx-foot">
@@ -83,6 +83,7 @@
     ]],
   ];
 
+  (window as unknown as { __FETTLE_TWEAKS?: boolean }).__FETTLE_TWEAKS = true;
   const STORE = 'fettle-tweaks';
   type State = { home: Record<string, unknown>; site: Record<string, unknown> };
   const load = (): State => {
@@ -119,6 +120,7 @@
     } else ['--radius-sm', '--radius-md', '--radius-lg', '--radius-pill'].forEach((v) => r.removeProperty(v));
   }
   applySite();
+  window.dispatchEvent(new Event('fettle-tweaks'));
 
   const root = document.getElementById('fx-tweaks')!;
   const body = root.querySelector('.fx-body')!;

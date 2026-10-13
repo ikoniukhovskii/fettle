@@ -265,6 +265,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
 
 <script>
   import { createClient } from '@supabase/supabase-js';
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
   import { PLANS } from '../data/membership';
 
   const monthEls = Array.from(document.querySelectorAll<HTMLLIElement>('#months li'));
@@ -334,7 +335,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     });
   }
 
-  const supabase = createClient(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_ANON_KEY, {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false },
   });
   const form = document.getElementById('mem-form') as HTMLFormElement | null;

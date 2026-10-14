@@ -207,8 +207,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
 
   .aside { display: flex; align-items: flex-start; gap: 10px; margin: 14px 0 0; max-width: 34ch; color: #E9A58E; transform: rotate(-1.5deg); transform-origin: left; }
   .aside-arrow { flex: none; width: 46px; height: 32px; margin-top: 2px; opacity: .85; }
-  #aside-line { font-family: var(--font-script); font-size: clamp(25px, 2.5vw, 31px); line-height: 1.15; transition: opacity .6s ease; }
-  #aside-line.fade { opacity: 0; }
+  #aside-line { font-family: var(--font-script); font-size: clamp(25px, 2.5vw, 31px); line-height: 1.15; }
   .mem-lede { margin: 24px 0 0; max-width: 52ch; font-size: clamp(17px, 1.6vw, 19px); line-height: 1.6; color: rgba(241,232,216,.78); }
   .mem-cta { display: flex; align-items: center; gap: 24px; margin-top: 34px; flex-wrap: wrap; }
   .mem-btn { display: inline-block; padding: 15px 30px; border-radius: 999px; background: var(--rust); color: var(--cream); font-weight: 600; text-decoration: none; transition: background .15s; }
@@ -217,17 +216,17 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   .mem-small { margin: 22px 0 0; font-size: 13.5px; letter-spacing: .03em; color: rgba(241,232,216,.55); }
 
   .mcard-wrap { perspective: 900px; display: flex; justify-content: center; padding: 40px 20px; margin: -40px -20px; }
-  .mcard { --gx: 30%; --gy: 20%; --glare: 0; width: min(380px, 100%); aspect-ratio: 1.586; border-radius: 22px; padding: 24px 26px; background: linear-gradient(140deg, #F6EEDF 0%, #E9DCC3 100%); color: var(--ink); box-shadow: 0 40px 80px -30px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.5); transform: rotate(-4deg) rotateY(-8deg); transform-style: preserve-3d; will-change: transform; display: flex; flex-direction: column; position: relative; overflow: hidden; touch-action: pan-y; cursor: default; }
+  .mcard { --gx: 30%; --gy: 20%; --glare: 0; width: min(500px, 118%); flex: none; aspect-ratio: 1.586; border-radius: 28px; padding: 32px 34px; background: linear-gradient(140deg, #F6EEDF 0%, #E9DCC3 100%); color: var(--ink); box-shadow: 0 40px 80px -30px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.5); transform: rotate(-4deg) rotateY(-8deg); transform-style: preserve-3d; will-change: transform; display: flex; flex-direction: column; position: relative; overflow: hidden; touch-action: pan-y; cursor: default; }
   .mcard::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: radial-gradient(circle at var(--gx) var(--gy), rgba(255,255,255,.55), rgba(255,255,255,0) 55%); opacity: var(--glare); mix-blend-mode: soft-light; transition: opacity .3s; }
   .mcard::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(43,39,35,.025) 22px 23px); }
   .mcard-top { display: flex; justify-content: space-between; align-items: center; position: relative; }
-  .mcard-mark { width: 40px; height: 40px; }
-  .mcard-kind { font: 600 11px/1 var(--font-body); letter-spacing: .24em; text-transform: uppercase; color: var(--brick); }
-  .mcard-script { margin: auto 0 0; font-family: var(--font-script); font-size: 40px; line-height: 1; color: var(--rust); position: relative; }
-  .mcard-rows { display: flex; gap: 28px; margin-top: 12px; position: relative; }
-  .mcard-rows span { display: block; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-60); }
-  .mcard-rows strong { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
-  .mcard-foot { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--ink-12); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-60); position: relative; }
+  .mcard-mark { width: 52px; height: 52px; }
+  .mcard-kind { font: 600 13px/1 var(--font-body); letter-spacing: .24em; text-transform: uppercase; color: var(--brick); }
+  .mcard-script { margin: auto 0 0; font-family: var(--font-script); font-size: 54px; line-height: 1; color: var(--rust); position: relative; }
+  .mcard-rows { display: flex; gap: 36px; margin-top: 14px; position: relative; }
+  .mcard-rows span { display: block; font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-60); }
+  .mcard-rows strong { font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+  .mcard-foot { display: flex; justify-content: space-between; margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--ink-12); font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-60); position: relative; }
 
 
   .mem-familiar { padding: clamp(64px, 9vw, 112px) 0 0; }
@@ -329,6 +328,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   @media (max-width: 900px) {
     .mem-hero-grid, .mem-check-grid, .mem-join-grid { grid-template-columns: 1fr; }
     .mcard-wrap { margin-top: 12px; }
+    .mcard { width: min(500px, 100%); }
     .plans { grid-template-columns: 1fr; max-width: 460px; }
     .plan.is-featured { transform: none; margin-top: 12px; }
     .steps { grid-template-columns: 1fr 1fr; }
@@ -368,7 +368,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   }
 
 
-  // Playful one-liners under the hero – a random one on each visit, then a gentle rotation.
+  // Playful one-liners under the hero – a different one each time you come back to the page.
   const ASIDES = [
     'Like a streaming subscription – except each season’s new episode is your gutters, cleared.',
     'Auto-renewing peace of mind. No buffering.',
@@ -379,18 +379,19 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   ];
   const asideEl = document.getElementById('aside-line');
   if (asideEl) {
-    let ai = Math.floor(Math.random() * ASIDES.length);
-    asideEl.textContent = ASIDES[ai];
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setInterval(() => {
-        asideEl.classList.add('fade');
-        setTimeout(() => {
-          ai = (ai + 1) % ASIDES.length;
-          asideEl.textContent = ASIDES[ai];
-          asideEl.classList.remove('fade');
-        }, 600);
-      }, 7000);
-    }
+    const KEY = 'fettle-aside';
+    const pickNew = () => {
+      let last = -1;
+      try { last = Number(localStorage.getItem(KEY) ?? -1); } catch {}
+      let i = Math.floor(Math.random() * (ASIDES.length - 1));
+      if (i >= last && last >= 0) i += 1; // never the same line twice in a row
+      try { localStorage.setItem(KEY, String(i)); } catch {}
+      asideEl.textContent = ASIDES[i];
+    };
+    pickNew();
+    // Coming back to the tab, or returning with the back button, shows a fresh line.
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') pickNew(); });
+    window.addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) pickNew(); });
   }
 
   const monthEls = Array.from(document.querySelectorAll<HTMLLIElement>('#months li'));

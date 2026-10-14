@@ -1,5 +1,5 @@
 ---
-import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from '../data/membership';
+import { MTM_GROUPS, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from '../data/membership';
 ---
 <article class="mtm-card">
   <div class="mtm-card-text">
@@ -52,17 +52,15 @@ import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from 
           <fieldset class="mtm-group">
             <legend>{g.title}</legend>
             <div class="mtm-pills">
-              {g.services.map((s) => <label data-garden={s.needsGarden ? 'yes' : undefined}><input type="checkbox" name="services" value={s.id} /><span>{s.label}</span></label>)}
+              {g.services.map((s) => <label data-garden={s.needsGarden ? 'yes' : undefined}><input type="checkbox" name="services" value={s.id} /><span>{s.label}{s.oneOff && <small> · quoted</small>}</span></label>)}
             </div>
           </fieldset>
         ))}
+        <p class="mtm-hint mtm-key"><small>· quoted</small> one-off jobs – we’ll price them once we’ve seen them.</p>
         <fieldset class="mtm-group mtm-extra">
-          <legend>And more – priced on request</legend>
-          <p class="mtm-hint">Bigger or one-off jobs we’re happy to take on. We’ll talk them through and price them separately.</p>
-          <div class="mtm-pills">
-            {MTM_ON_REQUEST.map((x) => <label><input type="checkbox" name="extras" value={x} /><span>{x}</span></label>)}
-          </div>
-          <input type="text" name="extraText" class="mtm-text" placeholder="Anything else? e.g. re-hang the kitchen cabinets" maxlength="200" />
+          <legend>Something unusual? – priced on request</legend>
+          <p class="mtm-hint">The out-of-the-ordinary jobs. Tell us what you have in mind and we’ll talk it through.</p>
+          <input type="text" name="extraText" class="mtm-text" placeholder="e.g. move a young tree to the other side of the garden" maxlength="200" />
         </fieldset>
       </section>
 
@@ -155,7 +153,9 @@ import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from 
   .mtm-group legend { font: 600 11.5px var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-60); margin-bottom: 8px; }
   .mtm-extra { margin-top: 20px; padding: 18px; border-radius: 16px; border: 1.5px dashed rgba(179,68,38,.45); background: var(--rust-tint); }
   .mtm-extra legend { color: var(--brick); float: left; width: 100%; margin-bottom: 6px; }
-  .mtm-extra input:checked + span { background: var(--rust); border-color: var(--rust); }
+  .mtm-pills small { font-size: 12px; opacity: .6; }
+  .mtm-key { margin-top: 2px; font-size: 13px; }
+  .mtm-key small { color: var(--rust); font-weight: 600; }
   .mtm-text { width: 100%; margin-top: 10px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--ink-12); background: #fff; font: 15px var(--font-body); color: var(--ink); resize: vertical; box-sizing: border-box; }
   .mtm-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .mtm-fields label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
@@ -211,7 +211,7 @@ import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from 
   function state() {
     return {
       home: val('home'), bedrooms: Number(val('bedrooms') || 2), garden: val('garden'),
-      services: checked('services'), extras: checked('extras'), extraText: field('extraText'),
+      services: checked('services'), extraText: field('extraText'),
       frequency: val('frequency'), notes: field('notes'),
     };
   }
@@ -226,8 +226,9 @@ import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from 
     });
     const e = mtmEstimate(state());
     est.textContent = e.low === e.high ? `£${e.low}` : `£${e.low}–£${e.high}`;
-    const onReq = s.extras.length || s.extraText;
-    estNote.textContent = `a month${onReq ? ' + extras on request' : ''}${s.frequency === 'suggest' ? ' (based on every season)' : ''}`;
+    const oneOffs = s.services.some((id) => allServices.find((x) => x.id === id)?.oneOff);
+    const onReq = oneOffs || s.extraText;
+    estNote.textContent = `a month${onReq ? ' + one-off jobs quoted' : ''}${s.frequency === 'suggest' ? ' (based on every season)' : ''}`;
   }
 
   function show(i: number) {
@@ -246,12 +247,13 @@ import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from 
   function describe() {
     const s = state();
     const e = mtmEstimate(s);
-    const names = s.services.map((id) => allServices.find((x) => x.id === id)?.label).filter(Boolean) as string[];
+    const names = s.services.filter((id) => !allServices.find((x) => x.id === id)?.oneOff).map((id) => allServices.find((x) => x.id === id)?.label).filter(Boolean) as string[];
+    const oneOffNames = s.services.filter((id) => allServices.find((x) => x.id === id)?.oneOff).map((id) => allServices.find((x) => x.id === id)!.label);
     return {
       s, e, names,
       home: `${MTM_HOMES.find((h) => h.id === s.home)?.label}, ${s.bedrooms === 5 ? '5+' : s.bedrooms} bed, ${s.garden === 'yes' ? 'with garden' : 'no garden'}`,
       freq: MTM_FREQUENCIES.find((f) => f.id === s.frequency)?.label ?? '',
-      extras: [...s.extras, s.extraText].filter(Boolean),
+      extras: [...oneOffNames, s.extraText].filter(Boolean),
     };
   }
 
@@ -263,8 +265,8 @@ import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from 
       ['Looked after', d.names.length ? d.names.join(', ') : 'The home check only'],
       ['How often', d.freq],
     ];
-    if (d.extras.length) rows.push(['On request', d.extras.join(', ')]);
-    rows.push(['Estimate', `£${d.e.low}–£${d.e.high} a month – final price in your proposal`]);
+    if (d.extras.length) rows.push(['Quoted separately', d.extras.join(', ')]);
+    rows.push(['Estimate', `£${d.e.low}–£${d.e.high} a month – typical London prices; your final price comes in the proposal`]);
     for (const [k, v] of rows) {
       const p = document.createElement('div');
       const b = document.createElement('strong'); b.textContent = `${k}: `;
@@ -293,7 +295,7 @@ import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from 
         `Home: ${d.home}`,
         `Looked after: ${d.names.join(', ') || 'home check only'}`,
         `How often: ${d.freq}`,
-        d.extras.length ? `Priced on request: ${d.extras.join(', ')}` : '',
+        d.extras.length ? `Quoted separately: ${d.extras.join(', ')}` : '',
         d.s.notes ? `Notes: ${d.s.notes}` : '',
       ].filter(Boolean).join('\n'),
     });

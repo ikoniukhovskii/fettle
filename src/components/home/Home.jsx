@@ -708,7 +708,7 @@ function Hero({ t }) {
 
   return (
     <header
-      style={{ position: 'relative', height: `${t.heroHeight}svh`, minHeight: 520, overflow: 'hidden' }}
+      style={{ position: 'relative', height: `calc(${t.heroHeight}svh / var(--page-zoom, 1))`, minHeight: 520, overflow: 'hidden' }}
       data-screen-label="Hero"
     >
       <img
@@ -731,7 +731,7 @@ function Hero({ t }) {
         style={{
           position: 'absolute',
           left: '50%',
-          bottom: 'clamp(19vh, 24vh, 26vh)',
+          bottom: 'calc(24vh / var(--page-zoom, 1))',
           transform: 'translateX(-50%)',
           zIndex: 2,
           padding: '0 24px',
@@ -762,7 +762,7 @@ function Hero({ t }) {
           textAlign: 'center',
           fontFamily: 'var(--font-display)',
           fontWeight: t.wordmarkWeight,
-          fontSize: `clamp(88px, ${t.wordmarkSize}vw, 340px)`,
+          fontSize: `calc(clamp(88px, ${t.wordmarkSize}vw, 340px) / var(--page-zoom, 1))`,
           lineHeight: 0.82,
           letterSpacing: `${t.wordmarkTracking / 100}em`,
           textTransform: t.wordmarkCase,

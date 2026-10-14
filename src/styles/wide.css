@@ -1,0 +1,9 @@
+/* Big screens: scale the whole site up evenly so the layout fills wide monitors
+   instead of sitting in a narrow column with empty sides. Everything keeps its
+   proportions – it's the same design, just larger. */
+:root { --page-zoom: 1; }
+@media (min-width: 1600px) { :root { --page-zoom: 1.15; } }
+@media (min-width: 1900px) { :root { --page-zoom: 1.3; } }
+@media (min-width: 2300px) { :root { --page-zoom: 1.5; } }
+@media (min-width: 2800px) { :root { --page-zoom: 1.75; } }
+html { zoom: var(--page-zoom); }

@@ -53,6 +53,21 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     </div>
   </section>
 
+  <section class="mem-familiar" aria-labelledby="familiar-h">
+    <div class="wrap">
+      <p class="eyebrow">Sound familiar?</p>
+      <h2 class="mem-h2" id="familiar-h">The list that never gets shorter.</h2>
+      <ul class="fridge" id="fridge">
+        <li>The gutter you meant to clear last autumn</li>
+        <li>A drip you’ve stopped hearing</li>
+        <li>Sealant going black around the bath</li>
+        <li>The door that sticks every winter</li>
+        <li>That crack you’re keeping an eye on</li>
+      </ul>
+      <p class="fridge-after">Membership means someone else remembers – and crosses them off.</p>
+    </div>
+  </section>
+
   <section class="mem-year">
     <div class="wrap">
       <p class="eyebrow">A year with Fettle</p>
@@ -176,6 +191,19 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   .mcard-rows strong { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
   .mcard-foot { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--ink-12); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-60); position: relative; }
 
+
+  .mem-familiar { padding: clamp(64px, 9vw, 112px) 0 0; }
+  .fridge { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; max-width: 760px; }
+  .fridge li { position: relative; display: inline-block; justify-self: start; font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3vw, 34px); line-height: 1.35; color: var(--ink); transition: color .6s ease .2s; }
+  .fridge li::after { content: ''; position: absolute; left: -4px; right: -4px; top: 55%; height: 3px; border-radius: 3px; background: var(--rust); transform: scaleX(0); transform-origin: left; transition: transform .7s cubic-bezier(.6,.1,.2,1); }
+  .fridge.done li { color: var(--ink-40); }
+  .fridge.done li::after { transform: scaleX(1); }
+  .fridge.done li:nth-child(2)::after, .fridge.done li:nth-child(2) { transition-delay: .25s; }
+  .fridge.done li:nth-child(3)::after, .fridge.done li:nth-child(3) { transition-delay: .5s; }
+  .fridge.done li:nth-child(4)::after, .fridge.done li:nth-child(4) { transition-delay: .75s; }
+  .fridge.done li:nth-child(5)::after, .fridge.done li:nth-child(5) { transition-delay: 1s; }
+  .fridge-after { margin: 26px 0 0; font-size: 18px; color: var(--ink-60); max-width: 52ch; }
+  @media (prefers-reduced-motion: reduce) { .fridge li, .fridge li::after { transition: none; } }
   .mem-h2 { margin: 0 0 28px; font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 4.6vw, 54px); line-height: 1.06; letter-spacing: -.01em; max-width: 18ch; }
   .mem-body { font-size: 17px; line-height: 1.65; color: var(--ink-60); max-width: 48ch; }
   .mem-year, .mem-plans, .mem-check, .mem-how, .mem-join { padding: clamp(64px, 9vw, 112px) 0 0; }
@@ -267,6 +295,16 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   import { createClient } from '@supabase/supabase-js';
   import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
   import { PLANS } from '../data/membership';
+
+
+  // "Sound familiar?" – cross the list off once it scrolls into view.
+  const fridge = document.getElementById('fridge');
+  if (fridge) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { setTimeout(() => fridge.classList.add('done'), 500); io.disconnect(); }
+    }, { threshold: 0.6 });
+    io.observe(fridge);
+  }
 
   const monthEls = Array.from(document.querySelectorAll<HTMLLIElement>('#months li'));
   const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.seg button'));

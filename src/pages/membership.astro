@@ -2,6 +2,7 @@
 import Page from '../layouts/Page.astro';
 import { PLANS, HOME_CHECK, MONTHS } from '../data/membership';
 import MadeToMeasure from '../components/MadeToMeasure.astro';
+import { VIDEO_CALL_URL } from '../data/booking';
 const memSchema = {
   '@context': 'https://schema.org',
   '@type': 'Service',
@@ -171,6 +172,8 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
         <p class="eyebrow">Request a place</p>
         <h2 class="mem-h2">Let’s put your home on the list.</h2>
         <p class="mem-body">No payment today. We’ll call to talk it through, then book the first visit. If there isn’t room near you this season, we’ll say so plainly.</p>
+        <p class="mem-body">Rather talk first? Pick a time that suits you – it’s free, and you can show us the house on your phone.</p>
+        <p><a class="btn secondary video-call" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free 10-minute video call</a></p>
         <dl class="mem-faq">
           <dt>Can I pause or leave?</dt><dd>After the first twelve months, leave any time with a month’s notice. Moving house? Tell us and we’ll end the plan.</dd>
           <dt>What if something breaks in between?</dt><dd>Members go to the front of the queue, with the discount on your plan.</dd>

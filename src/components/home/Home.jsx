@@ -834,7 +834,7 @@ function WhatWeDo({ t, m }) {
               borderRadius: 'var(--radius-pill)',
             }}
           >
-            A visit and quote is £30 &ndash; counted toward the work if you go ahead
+            Free 10-minute video call &ndash; a £30 visit only if we need to see it
           </span>
         </p>
       </Reveal>
@@ -1569,7 +1569,7 @@ function Close({ t, m }) {
               color: 'var(--ink-40)',
             }}
           >
-            A visit and quote is £30, counted toward the work if you go ahead.
+            Start with a free 10-minute video call. If we need to see it in person, the £30 visit comes off the work.
           </p>
           <QuietPostcode id="postcode-close" t={t} />
           </div>
@@ -1583,8 +1583,8 @@ function Close({ t, m }) {
 /* ---------- FAQ ---------- */
 export const FAQS = [
   {
-    q: 'How much does a visit cost?',
-    a: 'A visit to see the job and give you a price is £30. Whenever you go ahead with the work, it comes straight off the cost, and if it turns out not to be a job for us, you don’t pay it. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or tree surgery, is quoted job by job once we have seen it.',
+    q: 'How much does a quote cost?',
+    a: 'Nothing to start. Most jobs begin with a free 10-minute video call: show us the job on your phone and we can usually price it there and then. If we need to see it in person, a visit is £30, it comes straight off the cost whenever you go ahead, and if it turns out not to be a job for us, you don’t pay it. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or tree surgery, is quoted job by job once we have seen it.',
   },
   {
     q: 'Do you charge for travel?',
@@ -1608,7 +1608,7 @@ export const FAQS = [
   },
   {
     q: 'What happens on the first visit?',
-    a: 'The visit itself is £30 – we come and take a proper look, note what needs doing, and get to know the house. Then you get a plain price, half-day or full-day, with no surprises, and the £30 counts toward it whenever you go ahead. Dust sheets down, shoes off, radio low, and everything left tidy.',
+    a: 'Usually it starts with a free 10-minute video call, so we can see the job and price it without a trip. If it needs a proper look in person, the visit is £30 – we come round, note what needs doing, and get to know the house. Then you get a plain price, half-day or full-day, with no surprises, and the £30 counts toward it whenever you go ahead. Dust sheets down, shoes off, radio low, and everything left tidy.',
   },
 ];
 

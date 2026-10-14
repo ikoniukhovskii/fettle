@@ -1,4 +1,5 @@
 ---
+import { VIDEO_CALL_URL } from '../data/booking';
 import { MTM_GROUPS, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from '../data/membership';
 ---
 <article class="mtm-card">
@@ -89,7 +90,7 @@ import { MTM_GROUPS, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from '../data/members
         <h4>Thank you – your plan is with us.</h4>
         <p>Ilia will send you a written proposal within 24 hours, with the final price.</p>
         <p class="mtm-hint">Prefer to talk it through? A short video call works well – we can look at the house together.</p>
-        <a class="mtm-video" id="mtm-video" href="https://wa.me/447361854124" target="_blank" rel="noopener">Arrange a video call</a>
+        <a class="mtm-video" id="mtm-video" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free 10-minute video call</a>
       </section>
     </div>
 
@@ -301,8 +302,6 @@ import { MTM_GROUPS, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from '../data/members
     });
     next.disabled = false;
     if (error) { err.textContent = 'Sorry, that didn’t send. Please try again, or call 07361 854124.'; err.hidden = false; next.textContent = 'Request my plan'; return; }
-    const v = document.getElementById('mtm-video') as HTMLAnchorElement;
-    v.href = `https://wa.me/447361854124?text=${encodeURIComponent(`Hi Fettle, I've just sent a Made to Measure plan request (${name}, ${postcode}). Could we arrange a short video call?`)}`;
     show(4);
     window.dispatchEvent(new CustomEvent('fettle:lead', { detail: { kind: 'made to measure' } }));
   }

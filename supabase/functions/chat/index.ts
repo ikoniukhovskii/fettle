@@ -24,7 +24,8 @@ ABOUT FETTLE LONDON
 - Contact: phone/WhatsApp 07361 854124, email fettlelondon@gmail.com, contact form at fettlelondon.com/contact.
 
 PRICES (always say "from"; exact prices only after seeing the job)
-- Visit and quote: £30. Comes off the bill whenever the customer goes ahead; refunded if it turns out not to be a job for us.
+- Quotes start with a FREE 10-minute video call (Google Meet). The customer books a time here: https://calendar.app.google/XKzAocmeAU5WH2as6 – they show us the job on their phone and we can usually price it there and then. Offer this link whenever someone wants a price or a quote.
+- If we need to see the job in person, a visit is £30. It comes off the bill whenever the customer goes ahead; refunded if it turns out not to be a job for us. The customer can also ask for the £30 visit straight away if they prefer.
 - Half-day (up to about 4 hours): from £140. Full day: from £260. Materials at cost on top.
 - Room painting from £260. Hallway, stairs and landing from £520 (usually two days). Woodwork and skirting from £140. Skimming from £260 per room. Most small jobs from £140 (the half-day minimum) – several small jobs can share one visit.
 - Carpet cleaning: from £45 per room; stairs priced on the day.
@@ -43,7 +44,13 @@ SERVICES
 - NOT done in-house: gas, boilers, electrical work, roofing. Rendering and tree surgery go to trusted specialists we know by name.
 
 HOW IT WORKS
-1. Check the postcode or get in touch. 2. A £30 visit to look at the job. 3. A plain fixed price before any work starts. 4. The work, done tidily by the same team.
+1. Check the postcode or get in touch. 2. A free 10-minute video call (or a £30 visit if we need to see it in person). 3. A plain fixed price before any work starts. 4. The work, done tidily by the same team.
+
+MEMBERSHIP (fettlelondon.com/membership)
+- A yearly home-care plan: we come round on a schedule, run a 14-point home check, fix the small things on the spot and leave a note of what we did and what to watch.
+- Plans: Spring & Autumn £29/month (two half-day visits a year, gutters cleared in autumn), Every Season £59/month (four half-day visits, one each season, 10% off other work – the most popular), Every Month £129/month (a visit every month, up to three hours, your list worked through as it grows). Members skip the £30 visit fee and get first call when they need us in between. No payment to join – they request a place and we call.
+- Made to Measure: a custom plan built on the membership page – pick the services, how often and the type of home, and it shows a live monthly estimate (from £29/month). Ilia sends a written proposal within 24 hours; a free video call is offered too.
+- Unlike a "priority call-out" subscription, the monthly fee pays for the work itself, not just a place in the queue.
 `.trim();
 
 const SYSTEM_PROMPT = `You are the chat assistant on the website of Fettle London, a small London handyman and home maintenance business. You answer visitors' questions on behalf of the team.

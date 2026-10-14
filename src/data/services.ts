@@ -30,7 +30,7 @@ export const SERVICES: Service[] = [
     homeLine: 'Shelves, TV mounting, flat-pack, doors and the odd jobs on your list.',
     name: 'Handyman & odd jobs',
     title: 'Handyman in London – Odd Jobs, Repairs & Fitting | Fettle',
-    description: 'A London handyman team for the jobs on the list: shelves, TV mounting, flat-pack, doors, locks, curtain poles and small repairs. Visit and quote £30.',
+    description: 'A London handyman team for the jobs on the list: shelves, TV mounting, flat-pack, doors, locks, curtain poles and small repairs. Free 10-minute video quote.',
     h1: 'Handyman services in London.',
     lede: 'The list on the fridge, finally done. One small, permanent team for the odd jobs and repairs that never quite get round to themselves.',
     jobs: [
@@ -48,7 +48,7 @@ export const SERVICES: Service[] = [
     homeLine: 'Walls, ceilings and woodwork, prepped properly and finished neatly.',
     name: 'Painting & decorating',
     title: 'Painter & Decorator in London – Interior Painting | Fettle',
-    description: 'Painting and decorating across London: walls, ceilings, woodwork and period rooms, done neatly with dust sheets down and a tidy finish. Visit and quote £30.',
+    description: 'Painting and decorating across London: walls, ceilings, woodwork and period rooms, done neatly with dust sheets down and a tidy finish. Free 10-minute video quote.',
     h1: 'Painting and decorating in London.',
     lede: 'Fresh coats, clean lines and careful prep. Rooms painted properly, from a single wall to the whole house.',
     jobs: [
@@ -66,7 +66,7 @@ export const SERVICES: Service[] = [
     homeLine: 'Cracks, holes and tired walls made smooth again, ready for paint.',
     name: 'Plastering',
     title: 'Plasterer in London – Plastering & Wall Repairs | Fettle',
-    description: 'Plastering and wall repairs across London: cracks, holes, patching, skimming and making good after other work. Visit and quote £30.',
+    description: 'Plastering and wall repairs across London: cracks, holes, patching, skimming and making good after other work. Free 10-minute video quote.',
     h1: 'Plastering in London.',
     lede: 'Cracks, holes and tired walls made smooth again, ready for paint.',
     jobs: [
@@ -84,7 +84,7 @@ export const SERVICES: Service[] = [
     homeLine: 'Taps, toilets, leaks, radiators and new fittings, by our own plumber.',
     name: 'Plumbing',
     title: 'Plumber in London – Taps, Leaks, Toilets & Radiators | Fettle',
-    description: 'Everyday plumbing across London by our own plumber: dripping taps, leaks, running toilets, radiators, blockages and new fittings. Visit and quote £30.',
+    description: 'Everyday plumbing across London by our own plumber: dripping taps, leaks, running toilets, radiators, blockages and new fittings. Free 10-minute video quote.',
     h1: 'Plumbing in London.',
     lede: 'The everyday plumbing jobs, done by Sergio, our own plumber. The same face every visit.',
     jobs: [
@@ -147,7 +147,7 @@ export const SERVICES: Service[] = [
     homeLine: 'Fence repairs, gates, decking, jet washing and garden tidy-ups.',
     name: 'Fences, gates & gardens',
     title: 'Fence Repair & Garden Maintenance in London | Fettle',
-    description: 'Fence repairs, gates, decking, jet washing and garden tidy-ups across London. The outside kept as tidy as the in. Visit and quote £30.',
+    description: 'Fence repairs, gates, decking, jet washing and garden tidy-ups across London. The outside kept as tidy as the in. Free 10-minute video quote.',
     h1: 'Fences, gates and gardens in London.',
     lede: 'A wonky fence set right, gates rehung and the outside kept as tidy as the in.',
     jobs: [
@@ -166,7 +166,7 @@ export const SERVICES: Service[] = [
     homeLine: 'Creaky boards, skirting, cracked tiles and fresh sealant.',
     name: 'Flooring & tiling',
     title: 'Flooring & Tiling Repairs in London | Fettle',
-    description: 'Floorboards, skirting, thresholds, tiling and resealing across London. Creaks fixed and period detail treated with care. Visit and quote £30.',
+    description: 'Floorboards, skirting, thresholds, tiling and resealing across London. Creaks fixed and period detail treated with care. Free 10-minute video quote.',
     h1: 'Flooring and tiling in London.',
     lede: 'Creaky boards quietened, worn thresholds replaced and tired tiling brought back.',
     jobs: [
@@ -184,7 +184,7 @@ export const SERVICES: Service[] = [
     homeLine: 'Gutters, damp checks and the once-a-season look-over.',
     name: 'Seasonal home maintenance',
     title: 'Home Maintenance Service in London – Seasonal Upkeep | Fettle',
-    description: 'Regular home maintenance across London: gutters, damp checks and a once-a-season look-over that stops small things becoming big ones. Visit and quote £30.',
+    description: 'Regular home maintenance across London: gutters, damp checks and a once-a-season look-over that stops small things becoming big ones. Free 10-minute video quote.',
     h1: 'Home maintenance in London.',
     lede: 'The once-a-season look-over that stops small things becoming big ones. Same team, same faces, a house that simply works.',
     jobs: [

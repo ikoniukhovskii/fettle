@@ -1,5 +1,6 @@
 ---
 import Page from '../layouts/Page.astro';
+import { VIDEO_CALL_URL } from '../data/booking';
 ---
 
 <Page title="Contact a London Handyman – Get a Quote | Fettle" description="If you’ve something that needs doing, drop us a line. We’ll answer plainly, and if there’s room on the list near you, we’ll say so.">
@@ -67,9 +68,10 @@ import Page from '../layouts/Page.astro';
                 <span class="ic" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L3 3v6.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l4.59-4.59a2 2 0 0 0 0-2.83Z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>
                 </span>
-                <h3>What a visit costs</h3>
+                <h3>What a quote costs</h3>
               </div>
-              <p>A visit to see the job and give you a price is &pound;30. Go ahead with the work, whenever you&rsquo;re ready, and it comes straight off the cost. If it&rsquo;s not a job for us, you don&rsquo;t pay.</p>
+              <p>Nothing to start. Book a free 10-minute video call, show us the job on your phone, and we can usually price it there and then. If we need to see it in person, a visit is &pound;30 &ndash; it comes straight off the cost when you go ahead, and if it&rsquo;s not a job for us, you don&rsquo;t pay.</p>
+              <p style="margin-top:14px"><a class="btn secondary video-call" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free 10-minute video call</a></p>
             </div>
 
             <div class="info-card">

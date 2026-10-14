@@ -1375,8 +1375,100 @@ const REVIEWS = [
 
 function KindWords({ t, m }) {
   const sf = t.sectionSpacing / 100;
-  // The list is shown twice in a row and slides by exactly one copy, so the loop never shows a seam.
+  // The list is shown twice in a row; we slide by exactly one copy, so the loop never shows a seam.
   const loop = [...REVIEWS, ...REVIEWS];
+  const viewRef = React.useRef(null);
+  const trackRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const view = viewRef.current;
+    const track = trackRef.current;
+    if (!view || !track) return;
+    const AUTO = reduceMotion ? 0 : 28; // px per second when left alone
+    let x = 0; // current offset (px, negative = moved left)
+    let half = 0; // width of one copy of the list
+    let vel = 0; // momentum after a fling (px/s)
+    let dragging = null; // { startX, startY, x0, lastX, lastT, horizontal }
+    let resumeAt = 0;
+    let last = performance.now();
+    let raf = 0;
+
+    const measure = () => { half = track.scrollWidth / 2 + 10; };
+    const wrap = () => { if (half > 0) { while (x <= -half) x += half; while (x > 0) x -= half; } };
+    const paint = () => { track.style.transform = `translate3d(${x}px,0,0)`; };
+
+    const tick = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (!dragging) {
+        if (Math.abs(vel) > 5) { x += vel * dt; vel *= Math.pow(0.04, dt); }
+        else if (now > resumeAt) { vel = 0; x -= AUTO * dt; }
+        wrap();
+        paint();
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    const down = (e) => {
+      dragging = { startX: e.clientX, startY: e.clientY, x0: x, lastX: e.clientX, lastT: performance.now(), horizontal: e.pointerType === 'mouse' };
+      vel = 0;
+      if (e.pointerType === 'mouse') { view.setPointerCapture(e.pointerId); view.classList.add('is-dragging'); }
+    };
+    const move = (e) => {
+      const d = dragging;
+      if (!d) return;
+      const dx = e.clientX - d.startX;
+      const dy = e.clientY - d.startY;
+      if (!d.horizontal) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dy) > Math.abs(dx)) { dragging = null; return; } // vertical swipe = page scroll
+        d.horizontal = true;
+        view.setPointerCapture(e.pointerId);
+      }
+      const now = performance.now();
+      const inst = ((e.clientX - d.lastX) / Math.max(1, now - d.lastT)) * 1000;
+      vel = vel * 0.6 + inst * 0.4;
+      d.lastX = e.clientX; d.lastT = now;
+      x = d.x0 + dx;
+      wrap(); paint();
+    };
+    const up = () => {
+      if (!dragging) return;
+      dragging = null;
+      view.classList.remove('is-dragging');
+      resumeAt = performance.now() + 2500;
+    };
+    // Trackpads and mouse wheels with sideways scroll spin it too.
+    const wheel = (e) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      x -= e.deltaX; vel = 0; resumeAt = performance.now() + 2500;
+      wrap(); paint();
+    };
+    // Stop the browser following links/images when a drag ends on a card.
+    const noDragGhost = (e) => e.preventDefault();
+
+    measure();
+    window.addEventListener('resize', measure);
+    view.addEventListener('pointerdown', down);
+    view.addEventListener('pointermove', move);
+    view.addEventListener('pointerup', up);
+    view.addEventListener('pointercancel', up);
+    view.addEventListener('wheel', wheel, { passive: false });
+    view.addEventListener('dragstart', noDragGhost);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', measure);
+      view.removeEventListener('pointerdown', down);
+      view.removeEventListener('pointermove', move);
+      view.removeEventListener('pointerup', up);
+      view.removeEventListener('pointercancel', up);
+      view.removeEventListener('wheel', wheel);
+      view.removeEventListener('dragstart', noDragGhost);
+    };
+  }, []);
+
   return (
     <section id="kind-words" data-screen-label="Kind words" className="kw" style={{ position: 'relative', zIndex: 1, padding: `calc(clamp(40px, 6vw, 88px) * ${sf}) 0 calc(clamp(56px, 7vw, 96px) * ${sf})` }}>
       <Reveal m={m}>
@@ -1385,8 +1477,8 @@ function KindWords({ t, m }) {
           <h2 className="kw-title" style={{ fontSize: `calc(clamp(32px, 4.4vw, 52px) * ${t.headingScale / 100})` }}>By recommendation, mostly.</h2>
         </div>
       </Reveal>
-      <div className="kw-viewport" aria-label="Reviews from Fettle clients">
-        <div className="kw-track">
+      <div className="kw-viewport" ref={viewRef} aria-label="Reviews from Fettle clients – drag or swipe to spin">
+        <div className="kw-track" ref={trackRef}>
           {loop.map((r, i) => (
             <figure className="kw-card" key={i} aria-hidden={i >= REVIEWS.length ? 'true' : undefined}>
               <span className="kw-mark" aria-hidden="true">“</span>

@@ -1,0 +1,320 @@
+---
+import { MTM_GROUPS, MTM_ON_REQUEST, MTM_FREQUENCIES, MTM_HOMES, MTM_MIN } from '../data/membership';
+---
+<article class="mtm-card">
+  <div class="mtm-card-text">
+    <span class="mtm-tag">Or build your own</span>
+    <h3>Made <span class="mtm-script">to measure</span></h3>
+    <p>Pick exactly what your home needs and how often. We’ll shape the plan around it – and you’ll see an estimate as you go.</p>
+    <div class="mtm-card-foot">
+      <button type="button" class="mtm-open">Build my plan <span aria-hidden="true">→</span></button>
+      <span class="mtm-from">From £{MTM_MIN}/month · priced to your home</span>
+    </div>
+  </div>
+  <ul class="mtm-chips" aria-hidden="true">
+    <li>Gutters</li><li class="on">Seals &amp; grout</li><li>Paint touch-ups</li><li class="on">Radiators</li>
+    <li>Deep clean</li><li class="on">Doors &amp; locks</li><li>Garden tidy</li><li>Carpet clean</li><li class="ask">+ anything else</li>
+  </ul>
+</article>
+
+<dialog class="mtm" id="mtm" aria-labelledby="mtm-title">
+  <form class="mtm-inner" id="mtm-form" novalidate method="dialog">
+    <header class="mtm-head">
+      <div>
+        <p class="mtm-kicker">Made to measure</p>
+        <h3 id="mtm-title">Build your plan</h3>
+      </div>
+      <button type="button" class="mtm-x" aria-label="Close">×</button>
+    </header>
+    <ol class="mtm-steps" aria-hidden="true"><li class="on">Your home</li><li>Looked after</li><li>How often</li><li>Your details</li></ol>
+
+    <div class="mtm-body">
+      <section class="mtm-step" data-step="0">
+        <p class="mtm-q">What kind of home is it?</p>
+        <div class="mtm-pills" data-name="home">
+          {MTM_HOMES.map((h, i) => <label><input type="radio" name="home" value={h.id} checked={i === 1} /><span>{h.label}</span></label>)}
+        </div>
+        <p class="mtm-q">Bedrooms</p>
+        <div class="mtm-pills">
+          {[1, 2, 3, 4, 5].map((n) => <label><input type="radio" name="bedrooms" value={n} checked={n === 2} /><span>{n === 5 ? '5+' : n}</span></label>)}
+        </div>
+        <p class="mtm-q">Is there a garden?</p>
+        <div class="mtm-pills">
+          <label><input type="radio" name="garden" value="yes" checked /><span>Yes</span></label>
+          <label><input type="radio" name="garden" value="no" /><span>No</span></label>
+        </div>
+      </section>
+
+      <section class="mtm-step" data-step="1" hidden>
+        <p class="mtm-q">What would you like us to look after?</p>
+        <p class="mtm-hint">Every visit includes our home check. Tick as many as you like.</p>
+        {MTM_GROUPS.map((g) => (
+          <fieldset class="mtm-group">
+            <legend>{g.title}</legend>
+            <div class="mtm-pills">
+              {g.services.map((s) => <label data-garden={s.needsGarden ? 'yes' : undefined}><input type="checkbox" name="services" value={s.id} /><span>{s.label}</span></label>)}
+            </div>
+          </fieldset>
+        ))}
+        <fieldset class="mtm-group mtm-extra">
+          <legend>And more – priced on request</legend>
+          <p class="mtm-hint">Bigger or one-off jobs we’re happy to take on. We’ll talk them through and price them separately.</p>
+          <div class="mtm-pills">
+            {MTM_ON_REQUEST.map((x) => <label><input type="checkbox" name="extras" value={x} /><span>{x}</span></label>)}
+          </div>
+          <input type="text" name="extraText" class="mtm-text" placeholder="Anything else? e.g. re-hang the kitchen cabinets" maxlength="200" />
+        </fieldset>
+      </section>
+
+      <section class="mtm-step" data-step="2" hidden>
+        <p class="mtm-q">How often should we come round?</p>
+        <div class="mtm-pills mtm-pills-col">
+          {MTM_FREQUENCIES.map((f, i) => <label><input type="radio" name="frequency" value={f.id} checked={i === 1} /><span>{f.label}</span></label>)}
+        </div>
+        <p class="mtm-q">Anything we should know?</p>
+        <textarea name="notes" class="mtm-text" rows="3" maxlength="800" placeholder="Timing, access, the thing that's been bothering you…"></textarea>
+      </section>
+
+      <section class="mtm-step" data-step="3" hidden>
+        <p class="mtm-q">Where should we send your plan?</p>
+        <div class="mtm-fields">
+          <label>Full name<input type="text" name="name" autocomplete="name" /></label>
+          <label>Email<input type="email" name="email" autocomplete="email" /></label>
+          <label>Phone<input type="tel" name="phone" autocomplete="tel" /></label>
+          <label>Postcode<input type="text" name="postcode" autocomplete="postal-code" placeholder="e.g. SW6 1AA" /></label>
+        </div>
+        <div class="mtm-summary" id="mtm-summary"></div>
+      </section>
+
+      <section class="mtm-step mtm-done" data-step="4" hidden>
+        <div class="mtm-tick" aria-hidden="true">✓</div>
+        <h4>Thank you – your plan is with us.</h4>
+        <p>Ilia will send you a written proposal within 24 hours, with the final price.</p>
+        <p class="mtm-hint">Prefer to talk it through? A short video call works well – we can look at the house together.</p>
+        <a class="mtm-video" id="mtm-video" href="https://wa.me/447361854124" target="_blank" rel="noopener">Arrange a video call</a>
+      </section>
+    </div>
+
+    <footer class="mtm-foot">
+      <div class="mtm-est" aria-live="polite">
+        <span>Estimate</span>
+        <strong id="mtm-est">£—</strong>
+        <em id="mtm-est-note">a month</em>
+      </div>
+      <p class="mtm-err" id="mtm-err" role="alert" hidden></p>
+      <div class="mtm-nav">
+        <button type="button" class="mtm-back">Back</button>
+        <button type="button" class="mtm-next">Next</button>
+      </div>
+    </footer>
+  </form>
+</dialog>
+
+<style>
+  .mtm-card { margin-top: 22px; display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(24px, 4vw, 56px); align-items: center; padding: clamp(30px, 4vw, 48px); border-radius: 26px; background: linear-gradient(135deg, #4A3027 0%, #2E1F19 70%); color: #F6E9D6; box-shadow: inset 0 0 0 1px rgba(233,165,142,.35), 0 30px 60px -30px rgba(46,31,25,.7); position: relative; overflow: hidden; }
+  .mtm-card::after { content: ''; position: absolute; right: -120px; top: -120px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(233,165,142,.18), transparent 65%); pointer-events: none; }
+  .mtm-tag { display: inline-block; font: 600 11px/1 var(--font-body); letter-spacing: .2em; text-transform: uppercase; color: #E9A58E; border: 1px solid rgba(233,165,142,.45); padding: 7px 11px; border-radius: 999px; }
+  .mtm-card h3 { margin: 16px 0 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(34px, 4vw, 48px); line-height: 1.05; }
+  .mtm-script { font-family: var(--font-script); font-weight: 400; color: #E9A58E; font-size: 1.15em; }
+  .mtm-card p { margin: 14px 0 0; max-width: 46ch; font-size: 16px; line-height: 1.6; color: rgba(246,233,214,.75); }
+  .mtm-card-foot { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 24px; }
+  .mtm-open { border: 0; cursor: pointer; padding: 14px 24px; border-radius: 999px; background: #F6E9D6; color: #2E1F19; font: 600 15px var(--font-body); transition: transform .15s, background .15s; }
+  .mtm-open:hover { transform: translateY(-1px); background: #fff; }
+  .mtm-from { font-size: 13.5px; color: rgba(246,233,214,.6); }
+  .mtm-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 9px; position: relative; z-index: 1; }
+  .mtm-chips li { padding: 9px 14px; border-radius: 999px; border: 1px solid rgba(246,233,214,.22); font-size: 14px; color: rgba(246,233,214,.8); }
+  .mtm-chips li.on { background: #E9A58E; border-color: #E9A58E; color: #2E1F19; font-weight: 600; }
+  .mtm-chips li.ask { border-style: dashed; color: #E9A58E; }
+
+  .mtm { padding: 0; border: 0; border-radius: 24px; width: min(640px, calc(100vw - 24px)); max-height: min(90vh, 820px); background: #FBF7F0; color: var(--ink); box-shadow: 0 40px 90px -20px rgba(0,0,0,.5); }
+  .mtm::backdrop { background: rgba(43,39,35,.55); backdrop-filter: blur(3px); }
+  .mtm[open] { animation: mtmIn .35s cubic-bezier(.2,.8,.2,1); }
+  @keyframes mtmIn { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+  .mtm-inner { display: flex; flex-direction: column; max-height: min(90vh, 820px); }
+  .mtm-head { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 28px 8px; }
+  .mtm-kicker { margin: 0; font: 600 11px var(--font-body); letter-spacing: .2em; text-transform: uppercase; color: var(--rust); }
+  .mtm-head h3 { margin: 6px 0 0; font-family: var(--font-display); font-weight: 800; font-size: 28px; }
+  .mtm-x { border: 0; background: none; font-size: 30px; line-height: 1; cursor: pointer; color: var(--ink-60); padding: 0 4px; }
+  .mtm-steps { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 28px 0; padding: 0; }
+  .mtm-steps li { font-size: 11.5px; letter-spacing: .04em; color: var(--ink-40); padding-top: 9px; border-top: 3px solid var(--ink-12); transition: color .2s, border-color .2s; }
+  .mtm-steps li.on { color: var(--ink); border-color: var(--rust); }
+  .mtm-body { overflow-y: auto; padding: 10px 28px 18px; }
+  .mtm-q { margin: 18px 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+  .mtm-hint { margin: -4px 0 10px; font-size: 14px; color: var(--ink-60); }
+  .mtm-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mtm-pills-col { flex-direction: column; align-items: stretch; }
+  .mtm-pills label { position: relative; cursor: pointer; }
+  .mtm-pills input { position: absolute; opacity: 0; pointer-events: none; }
+  .mtm-pills span { display: block; padding: 10px 16px; border-radius: 999px; border: 1.5px solid var(--ink-12); background: #fff; font-size: 14.5px; transition: background .15s, border-color .15s, color .15s; }
+  .mtm-pills-col span { border-radius: 14px; }
+  .mtm-pills label:hover span { border-color: var(--ink-40); }
+  .mtm-pills input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+  .mtm-pills input:focus-visible + span { outline: 2px solid var(--rust); outline-offset: 2px; }
+  .mtm-pills label.is-off { opacity: .35; pointer-events: none; }
+  .mtm-group { border: 0; margin: 0 0 14px; padding: 0; }
+  .mtm-group legend { font: 600 11.5px var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-60); margin-bottom: 8px; }
+  .mtm-extra { margin-top: 20px; padding: 18px; border-radius: 16px; border: 1.5px dashed rgba(179,68,38,.45); background: var(--rust-tint); }
+  .mtm-extra legend { color: var(--brick); float: left; width: 100%; margin-bottom: 6px; }
+  .mtm-extra input:checked + span { background: var(--rust); border-color: var(--rust); }
+  .mtm-text { width: 100%; margin-top: 10px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--ink-12); background: #fff; font: 15px var(--font-body); color: var(--ink); resize: vertical; box-sizing: border-box; }
+  .mtm-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mtm-fields label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+  .mtm-fields input { padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--ink-12); background: #fff; font: 15px var(--font-body); }
+  .mtm-fields input:focus, .mtm-text:focus { outline: none; border-color: var(--rust); }
+  .mtm-summary { margin-top: 18px; padding: 16px 18px; border-radius: 14px; background: var(--tan-pill); font-size: 14px; line-height: 1.6; }
+  .mtm-summary strong { font-family: var(--font-display); }
+  .mtm-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 16px 28px 22px; border-top: 1px solid var(--ink-12); background: #F6EFE3; border-radius: 0 0 24px 24px; }
+  .mtm-est span { display: block; font: 600 10.5px var(--font-body); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-60); }
+  .mtm-est strong { font-family: var(--font-display); font-weight: 800; font-size: 26px; }
+  .mtm-est em { font-style: normal; font-size: 13px; color: var(--ink-60); margin-left: 4px; }
+  .mtm-err { width: 100%; order: 3; margin: 0; color: var(--brick); font-size: 14px; }
+  .mtm-nav { display: flex; gap: 10px; }
+  .mtm-nav button { cursor: pointer; padding: 12px 22px; border-radius: 999px; font: 600 15px var(--font-body); border: 1.5px solid var(--ink); background: transparent; color: var(--ink); }
+  .mtm-nav .mtm-next { background: var(--rust); border-color: var(--rust); color: #fff; }
+  .mtm-nav .mtm-next:hover { background: var(--brick); border-color: var(--brick); }
+  .mtm-nav button[hidden], .mtm-foot[hidden] { display: none; }
+  .mtm-done { text-align: center; padding: 20px 0 6px; }
+  .mtm-tick { width: 56px; height: 56px; margin: 0 auto; border-radius: 50%; background: var(--sage); color: #fff; font-size: 26px; display: grid; place-items: center; }
+  .mtm-done h4 { margin: 16px 0 6px; font-family: var(--font-display); font-weight: 800; font-size: 24px; }
+  .mtm-done p { margin: 0 0 10px; }
+  .mtm-video { display: inline-block; margin-top: 8px; padding: 13px 22px; border-radius: 999px; background: var(--ink); color: var(--cream); font-weight: 600; text-decoration: none; }
+  @media (max-width: 760px) {
+    .mtm-card { grid-template-columns: 1fr; }
+    .mtm-fields { grid-template-columns: 1fr; }
+    .mtm-head, .mtm-body, .mtm-foot { padding-left: 20px; padding-right: 20px; }
+    .mtm-steps { margin: 10px 20px 0; }
+  }
+</style>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
+  import { MTM_GROUPS, MTM_FREQUENCIES, MTM_HOMES, mtmEstimate } from '../data/membership';
+
+  const dlg = document.getElementById('mtm') as HTMLDialogElement;
+  const form = document.getElementById('mtm-form') as HTMLFormElement;
+  const steps = Array.from(form.querySelectorAll<HTMLElement>('.mtm-step'));
+  const dots = Array.from(form.querySelectorAll<HTMLLIElement>('.mtm-steps li'));
+  const back = form.querySelector<HTMLButtonElement>('.mtm-back')!;
+  const next = form.querySelector<HTMLButtonElement>('.mtm-next')!;
+  const est = document.getElementById('mtm-est')!;
+  const estNote = document.getElementById('mtm-est-note')!;
+  const err = document.getElementById('mtm-err')!;
+  const summary = document.getElementById('mtm-summary')!;
+  let step = 0;
+
+  const val = (n: string) => (form.querySelector<HTMLInputElement>(`[name="${n}"]:checked`)?.value ?? '');
+  const field = (n: string) => (form.elements.namedItem(n) as HTMLInputElement).value.trim();
+  const checked = (n: string) => Array.from(form.querySelectorAll<HTMLInputElement>(`[name="${n}"]:checked`)).map((i) => i.value);
+  const allServices = MTM_GROUPS.flatMap((g) => g.services);
+
+  function state() {
+    return {
+      home: val('home'), bedrooms: Number(val('bedrooms') || 2), garden: val('garden'),
+      services: checked('services'), extras: checked('extras'), extraText: field('extraText'),
+      frequency: val('frequency'), notes: field('notes'),
+    };
+  }
+
+  function refresh() {
+    const s = state();
+    // Garden-only services switch off when there's no garden.
+    form.querySelectorAll<HTMLLabelElement>('label[data-garden]').forEach((l) => {
+      const off = s.garden === 'no';
+      l.classList.toggle('is-off', off);
+      if (off) (l.querySelector('input') as HTMLInputElement).checked = false;
+    });
+    const e = mtmEstimate(state());
+    est.textContent = e.low === e.high ? `£${e.low}` : `£${e.low}–£${e.high}`;
+    const onReq = s.extras.length || s.extraText;
+    estNote.textContent = `a month${onReq ? ' + extras on request' : ''}${s.frequency === 'suggest' ? ' (based on every season)' : ''}`;
+  }
+
+  function show(i: number) {
+    step = i;
+    steps.forEach((el, k) => (el.hidden = k !== i));
+    dots.forEach((d, k) => d.classList.toggle('on', k <= Math.min(i, 3)));
+    back.hidden = i === 0 || i === 4;
+    next.hidden = i === 4;
+    next.textContent = i === 3 ? 'Request my plan' : 'Next';
+    err.hidden = true;
+    form.querySelector('.mtm-body')!.scrollTop = 0;
+    if (i === 3) renderSummary();
+    form.querySelector<HTMLElement>('.mtm-foot')!.hidden = i === 4;
+  }
+
+  function describe() {
+    const s = state();
+    const e = mtmEstimate(s);
+    const names = s.services.map((id) => allServices.find((x) => x.id === id)?.label).filter(Boolean) as string[];
+    return {
+      s, e, names,
+      home: `${MTM_HOMES.find((h) => h.id === s.home)?.label}, ${s.bedrooms === 5 ? '5+' : s.bedrooms} bed, ${s.garden === 'yes' ? 'with garden' : 'no garden'}`,
+      freq: MTM_FREQUENCIES.find((f) => f.id === s.frequency)?.label ?? '',
+      extras: [...s.extras, s.extraText].filter(Boolean),
+    };
+  }
+
+  function renderSummary() {
+    const d = describe();
+    summary.replaceChildren();
+    const rows: [string, string][] = [
+      ['Home', d.home],
+      ['Looked after', d.names.length ? d.names.join(', ') : 'The home check only'],
+      ['How often', d.freq],
+    ];
+    if (d.extras.length) rows.push(['On request', d.extras.join(', ')]);
+    rows.push(['Estimate', `£${d.e.low}–£${d.e.high} a month – final price in your proposal`]);
+    for (const [k, v] of rows) {
+      const p = document.createElement('div');
+      const b = document.createElement('strong'); b.textContent = `${k}: `;
+      p.append(b, v);
+      summary.append(p);
+    }
+  }
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+
+  async function submit() {
+    const name = field('name'), email = field('email'), phone = field('phone'), postcode = field('postcode').toUpperCase();
+    const missing: string[] = [];
+    if (!name) missing.push('your name');
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) missing.push('a valid email');
+    if (!/^[+0-9 ()-]{7,}$/.test(phone)) missing.push('a phone number');
+    if (!/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/.test(postcode)) missing.push('your full postcode');
+    if (missing.length) { err.textContent = `Nearly there – we just need ${missing.join(', ')}.`; err.hidden = false; return; }
+    const d = describe();
+    next.disabled = true; next.textContent = 'Sending…';
+    const { error } = await supabase.from('contact_submissions').insert({
+      full_name: name, email, postcode,
+      topic: `Made to Measure request – est. £${d.e.low}–£${d.e.high}/month`,
+      message: [
+        `Phone: ${phone}`,
+        `Home: ${d.home}`,
+        `Looked after: ${d.names.join(', ') || 'home check only'}`,
+        `How often: ${d.freq}`,
+        d.extras.length ? `Priced on request: ${d.extras.join(', ')}` : '',
+        d.s.notes ? `Notes: ${d.s.notes}` : '',
+      ].filter(Boolean).join('\n'),
+    });
+    next.disabled = false;
+    if (error) { err.textContent = 'Sorry, that didn’t send. Please try again, or call 07361 854124.'; err.hidden = false; next.textContent = 'Request my plan'; return; }
+    const v = document.getElementById('mtm-video') as HTMLAnchorElement;
+    v.href = `https://wa.me/447361854124?text=${encodeURIComponent(`Hi Fettle, I've just sent a Made to Measure plan request (${name}, ${postcode}). Could we arrange a short video call?`)}`;
+    show(4);
+  }
+
+  next.addEventListener('click', () => (step === 3 ? submit() : show(step + 1)));
+  back.addEventListener('click', () => show(Math.max(0, step - 1)));
+  form.addEventListener('change', refresh);
+  form.addEventListener('input', refresh);
+  form.querySelector('.mtm-x')!.addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', () => {
+    if (step === 4) { form.reset(); show(0); refresh(); }
+  });
+  document.querySelectorAll('.mtm-open, [data-mtm-open]').forEach((b) =>
+    b.addEventListener('click', () => { dlg.showModal(); refresh(); }),
+  );
+  refresh();
+</script>

@@ -1,6 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
 import { PLANS, HOME_CHECK, MONTHS } from '../data/membership';
+import MadeToMeasure from '../components/MadeToMeasure.astro';
 const memSchema = {
   '@context': 'https://schema.org',
   '@type': 'Service',
@@ -103,6 +104,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
           </article>
         ))}
       </div>
+      <MadeToMeasure />
       <p class="mem-note">Plans run for twelve months, paid monthly. Materials at cost. No travel charge on plan visits. We don’t do gas, boiler or electrical work.</p>
     </div>
   </section>

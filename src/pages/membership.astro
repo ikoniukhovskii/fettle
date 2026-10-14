@@ -58,11 +58,11 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
       <p class="eyebrow">Sound familiar?</p>
       <h2 class="mem-h2" id="familiar-h">The list that never gets shorter.</h2>
       <ul class="fridge" id="fridge">
-        <li>The gutter you meant to clear last autumn</li>
-        <li>A drip you’ve stopped hearing</li>
-        <li>Sealant going black around the bath</li>
-        <li>The door that sticks every winter</li>
-        <li>That crack you’re keeping an eye on</li>
+        <li><span>The gutter you meant to clear last autumn</span></li>
+        <li><span>A drip you’ve stopped hearing</span></li>
+        <li><span>Sealant going black around the bath</span></li>
+        <li><span>The door that sticks every winter</span></li>
+        <li><span>That crack you’re keeping an eye on</span></li>
       </ul>
       <p class="fridge-after">Membership means someone else remembers – and crosses them off.</p>
     </div>
@@ -194,16 +194,15 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
 
   .mem-familiar { padding: clamp(64px, 9vw, 112px) 0 0; }
   .fridge { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; max-width: 760px; }
-  .fridge li { position: relative; display: inline-block; justify-self: start; font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3vw, 34px); line-height: 1.35; color: var(--ink); transition: color .6s ease .2s; }
-  .fridge li::after { content: ''; position: absolute; left: -4px; right: -4px; top: 55%; height: 3px; border-radius: 3px; background: var(--rust); transform: scaleX(0); transform-origin: left; transition: transform .7s cubic-bezier(.6,.1,.2,1); }
-  .fridge.done li { color: var(--ink-40); }
-  .fridge.done li::after { transform: scaleX(1); }
-  .fridge.done li:nth-child(2)::after, .fridge.done li:nth-child(2) { transition-delay: .25s; }
-  .fridge.done li:nth-child(3)::after, .fridge.done li:nth-child(3) { transition-delay: .5s; }
-  .fridge.done li:nth-child(4)::after, .fridge.done li:nth-child(4) { transition-delay: .75s; }
-  .fridge.done li:nth-child(5)::after, .fridge.done li:nth-child(5) { transition-delay: 1s; }
+  .fridge li { position: relative; padding-left: 34px; font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3vw, 34px); line-height: 1.35; color: var(--ink); transition: color .5s ease; }
+  .fridge li::before { content: ''; position: absolute; left: 4px; top: .58em; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--rust); background: transparent; transition: background .4s ease; }
+  .fridge li span { position: relative; }
+  .fridge li span::after { content: ''; position: absolute; left: -4px; right: -4px; top: 55%; height: 3px; border-radius: 3px; background: var(--rust); transform: scaleX(0); transform-origin: left; transition: transform .6s cubic-bezier(.6,.1,.2,1); }
+  .fridge li.done { color: var(--ink-40); }
+  .fridge li.done::before { background: var(--rust); }
+  .fridge li.done span::after { transform: scaleX(1); }
   .fridge-after { margin: 26px 0 0; font-size: 18px; color: var(--ink-60); max-width: 52ch; }
-  @media (prefers-reduced-motion: reduce) { .fridge li, .fridge li::after { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .fridge li, .fridge li::before, .fridge li span::after { transition: none; } }
   .mem-h2 { margin: 0 0 28px; font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 4.6vw, 54px); line-height: 1.06; letter-spacing: -.01em; max-width: 18ch; }
   .mem-body { font-size: 17px; line-height: 1.65; color: var(--ink-60); max-width: 48ch; }
   .mem-year, .mem-plans, .mem-check, .mem-how, .mem-join { padding: clamp(64px, 9vw, 112px) 0 0; }
@@ -297,13 +296,23 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   import { PLANS } from '../data/membership';
 
 
-  // "Sound familiar?" – cross the list off once it scrolls into view.
-  const fridge = document.getElementById('fridge');
-  if (fridge) {
-    const io = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) { setTimeout(() => fridge.classList.add('done'), 500); io.disconnect(); }
-    }, { threshold: 0.6 });
-    io.observe(fridge);
+  // "Sound familiar?" – each line is crossed off as it scrolls up past the middle of the screen,
+  // and un-crossed again when you scroll back up.
+  const fridgeItems = Array.from(document.querySelectorAll<HTMLLIElement>('#fridge li'));
+  if (fridgeItems.length) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const line = window.innerHeight * 0.55;
+      for (const li of fridgeItems) {
+        const r = li.getBoundingClientRect();
+        li.classList.toggle('done', r.top + r.height / 2 < line);
+      }
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
   }
 
   const monthEls = Array.from(document.querySelectorAll<HTMLLIElement>('#months li'));

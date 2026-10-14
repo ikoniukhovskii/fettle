@@ -4,12 +4,15 @@ const names = [TRACKERS.ga4 && 'Google Analytics', TRACKERS.metaPixel && 'Meta',
 const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0];
 ---
 {TRACKING_ENABLED && (
-  <div class="consent" id="consent" role="dialog" aria-label="Cookie choices" hidden>
-    <p class="consent-title">Mind if we count your visit?</p>
-    <p class="consent-text">With your OK we use {list} to see how people find Fettle and which pages help. Nothing is sold. <a href="/cookies">More about cookies</a></p>
-    <div class="consent-btns">
-      <button type="button" data-consent="no">No thanks</button>
-      <button type="button" data-consent="yes" class="yes">That’s fine</button>
+  <div class="consent-overlay" id="consent" hidden>
+    <div class="consent" role="dialog" aria-modal="true" aria-labelledby="consent-title" aria-describedby="consent-text">
+      <svg class="consent-mark" viewBox="12 12 104 104" aria-hidden="true"><rect x="12" y="12" width="104" height="104" rx="24" fill="#B34426"/><rect x="46" y="34" width="14" height="60" fill="#F1E8D8"/><rect x="46" y="34" width="34" height="14" fill="#F1E8D8"/><rect x="46" y="60" width="28" height="14" fill="#F1E8D8"/></svg>
+      <p class="consent-title" id="consent-title">Mind if we count your visit?</p>
+      <p class="consent-text" id="consent-text">With your OK we use {list} to see how people find Fettle and which pages help. Nothing is sold, and you can change your mind any time. <a href="/cookies">More about cookies</a></p>
+      <div class="consent-btns">
+        <button type="button" data-consent="no">No thanks</button>
+        <button type="button" data-consent="yes" class="yes">That’s fine</button>
+      </div>
     </div>
   </div>
   <script is:inline define:vars={{ T: TRACKERS }}>
@@ -44,27 +47,46 @@ const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[na
         if (window.gtag) gtag('event', 'generate_lead', { lead_type: kind });
         if (window.fbq) fbq('track', 'Lead', { content_name: kind });
       });
-      window.fettleConsent = { open: function () { box.hidden = false; } };
+      function show() { box.hidden = false; document.documentElement.style.overflow = 'hidden'; var y = box.querySelector('.yes'); if (y) setTimeout(function () { y.focus(); }, 50); }
+      function hide() { box.hidden = true; document.documentElement.style.overflow = ''; }
+      window.fettleConsent = { open: show };
+      // Keep keyboard focus inside the banner while it's open.
+      box.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var f = box.querySelectorAll('a, button'); var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+      // The cookies page stays readable, so people can check the details before choosing.
+      var onCookiesPage = /^\/cookies\/?$/.test(location.pathname);
       var c = get();
       if (c && c.analytics) load();
-      else if (!c) box.hidden = false;
+      else if (!c && !onCookiesPage) show();
       box.addEventListener('click', function (e) {
         var b = e.target.closest('[data-consent]'); if (!b) return;
         var yes = b.getAttribute('data-consent') === 'yes';
-        set(yes); box.hidden = true;
+        set(yes); hide();
         if (yes) load();
       });
     })();
   </script>
   <style>
-    .consent { position: fixed; left: 18px; bottom: 18px; z-index: 2147482000; width: min(380px, calc(100vw - 36px)); padding: 20px 20px 16px; border-radius: 18px; background: #2B2723; color: #F1E8D8; box-shadow: 0 24px 60px -20px rgba(0,0,0,.55), inset 0 0 0 1px rgba(233,165,142,.25); font-family: var(--font-body, 'Work Sans', sans-serif); }
-    .consent[hidden] { display: none; }
-    .consent-title { margin: 0; font-family: var(--font-display, sans-serif); font-weight: 700; font-size: 18px; }
-    .consent-text { margin: 8px 0 14px; font-size: 14px; line-height: 1.55; color: rgba(241,232,216,.75); }
+    .consent-overlay { position: fixed; inset: 0; z-index: 2147483600; display: grid; place-items: center; padding: 20px; background: rgba(28, 24, 21, .55); backdrop-filter: blur(4px) saturate(.7); -webkit-backdrop-filter: blur(4px) saturate(.7); animation: cIn .35s ease both; }
+    .consent-overlay[hidden] { display: none; }
+    @keyframes cIn { from { opacity: 0; } to { opacity: 1; } }
+    .consent { width: min(480px, 100%); padding: 34px 34px 28px; border-radius: 26px; background: #2B2723; color: #F1E8D8; text-align: center; box-shadow: 0 40px 90px -20px rgba(0,0,0,.6), inset 0 0 0 1px rgba(233,165,142,.3); font-family: var(--font-body, 'Work Sans', sans-serif); animation: cUp .45s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes cUp { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: none; } }
+    .consent-mark { width: 52px; height: 52px; }
+    .consent-title { margin: 16px 0 0; font-family: var(--font-display, sans-serif); font-weight: 800; font-size: clamp(24px, 3vw, 30px); line-height: 1.15; }
+    .consent-text { margin: 12px auto 24px; max-width: 38ch; font-size: 15.5px; line-height: 1.6; color: rgba(241,232,216,.75); }
     .consent-text a { color: #E9A58E; }
-    .consent-btns { display: flex; gap: 8px; justify-content: flex-end; }
-    .consent-btns button { cursor: pointer; padding: 10px 16px; border-radius: 999px; font: 600 14px var(--font-body, sans-serif); border: 1px solid rgba(241,232,216,.3); background: transparent; color: #F1E8D8; }
+    .consent-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .consent-btns button { cursor: pointer; padding: 15px 18px; border-radius: 999px; font: 600 16px var(--font-body, sans-serif); border: 1.5px solid rgba(241,232,216,.45); background: transparent; color: #F1E8D8; transition: background .15s, border-color .15s; }
+    .consent-btns button:hover { border-color: #F1E8D8; }
     .consent-btns .yes { background: #B34426; border-color: #B34426; }
-    @media (max-width: 560px) { .consent { bottom: 86px; } }
+    .consent-btns .yes:hover { background: #97381E; border-color: #97381E; }
+    .consent-btns button:focus-visible { outline: 2px solid #E9A58E; outline-offset: 3px; }
+    @media (max-width: 420px) { .consent { padding: 28px 22px 22px; } .consent-btns { grid-template-columns: 1fr; } .consent-btns .yes { order: -1; } }
+    @media (prefers-reduced-motion: reduce) { .consent-overlay, .consent { animation: none; } }
   </style>
 )}

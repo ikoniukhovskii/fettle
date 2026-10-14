@@ -1362,6 +1362,100 @@ function MembershipTeaser({ t, m }) {
   );
 }
 
+
+/* ---------- Kind words (testimonials strip) ---------- */
+const REVIEWS = [
+  { q: 'They knew where our stopcock was before we did. Three winters in and it is the same two faces every time, which is rather the whole point.', who: 'Sarah M.', where: 'Plimsoll Road · N5', since: '2023' },
+  { q: 'A wonky gate, a dripping tap, and a wall that needed making good. One visit, one team, all of it done by lunch and swept up after.', who: 'James & Priya K.', where: 'Bishopswood Road · N6', since: '2023' },
+  { q: 'We have a period house that does not forgive shortcuts. Fettle treat it the way you would hope, quietly and properly, and the price was the price we were told.', who: 'Eleanor W.', where: 'Wadham Gardens · NW3', since: '2023' },
+  { q: 'What sold me was the once a season look over. They spotted the gutters going before it became a proper job, which is exactly the sort of thing I never get round to.', who: 'Tom H.', where: 'Highbury New Park · N5', since: '2024' },
+  { q: 'Dust sheets down, shoes off, radio low. You would hardly know they had been in, apart from the fact everything simply works again.', who: 'Priyanka D.', where: 'Church Crescent · N10', since: '2023' },
+  { q: 'We came to them the way most people seem to, a neighbour would not stop going on about them. Now we are the ones going on about them.', who: 'Michael R.', where: 'Fitzjohn’s Avenue · NW3', since: '2024' },
+];
+
+function KindWords({ t, m }) {
+  const sf = t.sectionSpacing / 100;
+  const track = React.useRef(null);
+  const drag = React.useRef(null);
+  const [edge, setEdge] = React.useState({ start: true, end: false });
+
+  const update = React.useCallback(() => {
+    const el = track.current;
+    if (!el) return;
+    setEdge({ start: el.scrollLeft < 8, end: el.scrollLeft + el.clientWidth > el.scrollWidth - 8 });
+  }, []);
+  React.useEffect(() => { update(); }, [update]);
+
+  const step = (dir) => {
+    const el = track.current;
+    if (!el) return;
+    const card = el.querySelector('.kw-card');
+    const w = card ? card.getBoundingClientRect().width + 20 : 360;
+    el.scrollBy({ left: dir * w, behavior: 'smooth' });
+  };
+  // Click-and-drag on desktop; touch devices swipe natively.
+  const onDown = (e) => {
+    if (e.pointerType !== 'mouse') return;
+    drag.current = { x: e.clientX, left: track.current.scrollLeft, moved: false };
+    track.current.classList.add('is-dragging');
+  };
+  const onMove = (e) => {
+    const d = drag.current;
+    if (!d) return;
+    const dx = e.clientX - d.x;
+    if (Math.abs(dx) > 3) d.moved = true;
+    track.current.scrollLeft = d.left - dx;
+  };
+  const onUp = () => {
+    if (!drag.current) return;
+    drag.current = null;
+    track.current.classList.remove('is-dragging');
+  };
+
+  return (
+    <section id="kind-words" data-screen-label="Kind words" className="kw" style={{ position: 'relative', zIndex: 1, padding: `calc(clamp(40px, 6vw, 88px) * ${sf}) 0 calc(clamp(64px, 8vw, 110px) * ${sf})` }}>
+      <Reveal m={m}>
+        <div className="kw-head">
+          <div>
+            <p className="kw-eyebrow">Kind words</p>
+            <h2 className="kw-title" style={{ fontSize: `calc(clamp(32px, 4.4vw, 52px) * ${t.headingScale / 100})` }}>By recommendation, mostly.</h2>
+          </div>
+          <div className="kw-nav">
+            <button type="button" aria-label="Previous reviews" onClick={() => step(-1)} disabled={edge.start}>←</button>
+            <button type="button" aria-label="More reviews" onClick={() => step(1)} disabled={edge.end}>→</button>
+          </div>
+        </div>
+      </Reveal>
+      <div
+        className="kw-track"
+        ref={track}
+        onScroll={update}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerLeave={onUp}
+        tabIndex={0}
+        aria-label="Reviews from Fettle clients"
+      >
+        {REVIEWS.map((r) => (
+          <figure className="kw-card" key={r.who}>
+            <span className="kw-mark" aria-hidden="true">“</span>
+            <blockquote>{r.q}</blockquote>
+            <figcaption>
+              <span className="kw-who">{r.who}</span>
+              <span className="kw-where">{r.where} · Client since {r.since}</span>
+            </figcaption>
+          </figure>
+        ))}
+        <a className="kw-card kw-more" href="/testimonials">
+          <span>Read all reviews</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- Close ---------- */
 function Close({ t, m }) {
   const cw = t.contentWidth;
@@ -1379,23 +1473,6 @@ function Close({ t, m }) {
               padding: 'clamp(40px, 6vw, 72px) clamp(24px, 5vw, 56px)',
             }}
           >
-          <p
-            style={{
-              margin: '0 auto 40px',
-              maxWidth: 480,
-              textAlign: 'center',
-              fontFamily: 'var(--font-body)',
-              fontStyle: 'italic',
-              fontSize: 16.5 * (t.bodyScale / 100),
-              lineHeight: 1.6,
-              color: 'var(--ink-60)',
-            }}
-          >
-            &ldquo;They knew where our stopcock was before we did. Three winters in and it is the same two faces every time, which is rather the whole point.&rdquo;
-            <span style={{ display: 'block', marginTop: 8, fontStyle: 'normal', fontSize: 13, letterSpacing: '0.04em', color: 'var(--ink-40)' }}>
-              Sarah M. &middot; Plimsoll Road, Highbury &middot; Client since 2023
-            </span>
-          </p>
           <h2
             style={{
               margin: '0 auto 16px',
@@ -2036,6 +2113,7 @@ export default function Home() {
       <Close t={t} m={m} />
       {SHOW_TEAM && <Team t={t} m={m} />}
       <FAQ t={t} m={m} />
+      <KindWords t={t} m={m} />
       <SiteFooter />
     </React.Fragment>
   );

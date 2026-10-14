@@ -325,3 +325,27 @@ input:focus-visible {
   .hlink-mem, .hlink-cta { padding: 10px 12px; font-size: 11.5px; letter-spacing: .1em; }
   .hlink-mem .mem-spark { display: none; }
 }
+
+/* ---------- Kind words strip ---------- */
+.kw-head { width: min(1120px, calc(100% - 48px)); margin: 0 auto 28px; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+.kw-eyebrow { margin: 0 0 12px; font: 600 12px var(--font-body); letter-spacing: .2em; text-transform: uppercase; color: var(--rust); }
+.kw-title { margin: 0; font-family: var(--font-display); font-weight: 800; line-height: 1.06; letter-spacing: -.01em; color: var(--ink); }
+.kw-nav { display: flex; gap: 10px; flex: none; }
+.kw-nav button { width: 50px; height: 50px; border-radius: 50%; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); font-size: 18px; cursor: pointer; transition: background .15s, color .15s, opacity .2s; }
+.kw-nav button:hover:not(:disabled) { background: var(--ink); color: var(--cream); }
+.kw-nav button:disabled { opacity: .25; cursor: default; }
+.kw-track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; cursor: grab; user-select: none;
+  padding: 6px max(24px, calc((100% - 1120px) / 2)) 24px; scroll-padding-left: max(24px, calc((100% - 1120px) / 2)); }
+.kw-track::-webkit-scrollbar { display: none; }
+.kw-track.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.kw-track:focus-visible { outline: 2px solid var(--rust); outline-offset: 4px; }
+.kw-card { flex: 0 0 clamp(280px, 30vw, 380px); scroll-snap-align: start; margin: 0; padding: 30px 30px 26px; border-radius: 22px; background: var(--white); border: 1px solid var(--ink-08); display: flex; flex-direction: column; box-shadow: 0 18px 40px -30px rgba(43,39,35,.35); }
+.kw-card:nth-child(3n+2) { background: var(--tan-pill); border-color: transparent; }
+.kw-mark { font-family: var(--font-display); font-weight: 800; font-size: 64px; line-height: .6; color: var(--rust); height: 30px; }
+.kw-card blockquote { margin: 14px 0 22px; font-size: 16.5px; line-height: 1.6; color: var(--ink); flex: 1; }
+.kw-card figcaption { border-top: 1px solid var(--ink-12); padding-top: 14px; }
+.kw-who { display: block; font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+.kw-where { display: block; margin-top: 3px; font-size: 13px; color: var(--ink-60); letter-spacing: .02em; }
+.kw-more { flex-basis: clamp(200px, 18vw, 240px); background: var(--ink) !important; color: var(--cream); text-decoration: none; justify-content: space-between; font-family: var(--font-display); font-weight: 700; font-size: 22px; }
+.kw-more span:last-child { font-size: 30px; color: #E9A58E; align-self: flex-end; }
+@media (max-width: 640px) { .kw-nav { display: none; } .kw-card { flex-basis: 82vw; } }

@@ -284,6 +284,7 @@ import Page from '../layouts/Page.astro';
     }
 
     ok?.classList.add('show');
+    window.dispatchEvent(new CustomEvent('fettle:lead', { detail: { kind: 'contact form' } }));
     form.reset();
     if (travelEl) travelEl.hidden = true;
   });

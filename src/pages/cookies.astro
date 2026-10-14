@@ -1,4 +1,5 @@
 ---
+import { TRACKERS, TRACKING_ENABLED } from '../data/trackers';
 import Page from '../layouts/Page.astro';
 ---
 
@@ -19,9 +20,22 @@ import Page from '../layouts/Page.astro';
           <h2>What we use</h2>
           <p>Fettle&rsquo;s site uses a small number of essential cookies and local storage &ndash; the sort that remember your place on the page and keep the site running. Nothing more is needed to browse or to check availability.</p>
 
+          {TRACKING_ENABLED && (
+            <Fragment>
+              <h2>Optional cookies – only if you say yes</h2>
+              <p>When you first visit, we ask whether we may use these. If you say no, none of them load.</p>
+              <ul>
+                {TRACKERS.ga4 && <li><strong>Google Analytics</strong> &ndash; counts visits and shows which pages help.</li>}
+                {TRACKERS.metaPixel && <li><strong>Meta Pixel</strong> &ndash; tells us when a visit came from one of our Facebook or Instagram adverts.</li>}
+                {TRACKERS.clarity && <li><strong>Microsoft Clarity</strong> &ndash; anonymous heatmaps and replays of how pages are used, with typing hidden.</li>}
+              </ul>
+              <p><button type="button" class="btn secondary" onclick="window.fettleConsent && window.fettleConsent.open()">Change cookie settings</button></p>
+            </Fragment>
+          )}
+
           <h2>What we don&rsquo;t use</h2>
           <ul>
-            <li>No advertising or third-party tracking cookies.</li>
+            {!TRACKING_ENABLED && <li>No advertising or third-party tracking cookies.</li>}
             <li>No selling of browsing data to anyone.</li>
             <li>No profiles built to follow you across other sites.</li>
           </ul>

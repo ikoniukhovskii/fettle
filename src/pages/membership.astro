@@ -502,5 +502,6 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     form.reset();
     show(plan!.id);
     if (ok) ok.hidden = false;
+    window.dispatchEvent(new CustomEvent('fettle:lead', { detail: { kind: `membership – ${plan?.name}` } }));
   });
 </script>

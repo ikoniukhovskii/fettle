@@ -1,0 +1,70 @@
+---
+import { TRACKERS, TRACKING_ENABLED } from '../data/trackers';
+const names = [TRACKERS.ga4 && 'Google Analytics', TRACKERS.metaPixel && 'Meta', TRACKERS.clarity && 'Microsoft Clarity'].filter(Boolean) as string[];
+const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0];
+---
+{TRACKING_ENABLED && (
+  <div class="consent" id="consent" role="dialog" aria-label="Cookie choices" hidden>
+    <p class="consent-title">Mind if we count your visit?</p>
+    <p class="consent-text">With your OK we use {list} to see how people find Fettle and which pages help. Nothing is sold. <a href="/cookies">More about cookies</a></p>
+    <div class="consent-btns">
+      <button type="button" data-consent="no">No thanks</button>
+      <button type="button" data-consent="yes" class="yes">That’s fine</button>
+    </div>
+  </div>
+  <script is:inline define:vars={{ T: TRACKERS }}>
+    (function () {
+      var KEY = 'fettle-consent';
+      var box = document.getElementById('consent');
+      var loaded = false;
+      function get() { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } }
+      function set(v) { try { localStorage.setItem(KEY, JSON.stringify({ analytics: v, at: Date.now() })); } catch (e) {} }
+      function add(src, attrs) { var s = document.createElement('script'); s.async = true; s.src = src; for (var k in attrs || {}) s.setAttribute(k, attrs[k]); document.head.appendChild(s); }
+      function load() {
+        if (loaded) return; loaded = true;
+        if (T.ga4) {
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { dataLayer.push(arguments); };
+          gtag('js', new Date());
+          gtag('config', T.ga4);
+          add('https://www.googletagmanager.com/gtag/js?id=' + T.ga4);
+        }
+        if (T.metaPixel) {
+          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', T.metaPixel);
+          fbq('track', 'PageView');
+        }
+        if (T.clarity) {
+          (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,'clarity','script',T.clarity);
+        }
+      }
+      // Enquiries count as "leads" in Google and Meta, so you can see which visits turn into work.
+      window.addEventListener('fettle:lead', function (e) {
+        var kind = (e.detail && e.detail.kind) || 'enquiry';
+        if (window.gtag) gtag('event', 'generate_lead', { lead_type: kind });
+        if (window.fbq) fbq('track', 'Lead', { content_name: kind });
+      });
+      window.fettleConsent = { open: function () { box.hidden = false; } };
+      var c = get();
+      if (c && c.analytics) load();
+      else if (!c) box.hidden = false;
+      box.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-consent]'); if (!b) return;
+        var yes = b.getAttribute('data-consent') === 'yes';
+        set(yes); box.hidden = true;
+        if (yes) load();
+      });
+    })();
+  </script>
+  <style>
+    .consent { position: fixed; left: 18px; bottom: 18px; z-index: 2147482000; width: min(380px, calc(100vw - 36px)); padding: 20px 20px 16px; border-radius: 18px; background: #2B2723; color: #F1E8D8; box-shadow: 0 24px 60px -20px rgba(0,0,0,.55), inset 0 0 0 1px rgba(233,165,142,.25); font-family: var(--font-body, 'Work Sans', sans-serif); }
+    .consent[hidden] { display: none; }
+    .consent-title { margin: 0; font-family: var(--font-display, sans-serif); font-weight: 700; font-size: 18px; }
+    .consent-text { margin: 8px 0 14px; font-size: 14px; line-height: 1.55; color: rgba(241,232,216,.75); }
+    .consent-text a { color: #E9A58E; }
+    .consent-btns { display: flex; gap: 8px; justify-content: flex-end; }
+    .consent-btns button { cursor: pointer; padding: 10px 16px; border-radius: 999px; font: 600 14px var(--font-body, sans-serif); border: 1px solid rgba(241,232,216,.3); background: transparent; color: #F1E8D8; }
+    .consent-btns .yes { background: #B34426; border-color: #B34426; }
+    @media (max-width: 560px) { .consent { bottom: 86px; } }
+  </style>
+)}

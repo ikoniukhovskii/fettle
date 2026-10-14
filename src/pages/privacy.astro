@@ -1,4 +1,5 @@
 ---
+import { TRACKERS, TRACKING_ENABLED } from '../data/trackers';
 import Page from '../layouts/Page.astro';
 ---
 
@@ -26,6 +27,7 @@ import Page from '../layouts/Page.astro';
             <li><strong>When you check a postcode:</strong> the area part of your postcode (for example &ldquo;SW10&rdquo;), so we can tell you whether we cover it.</li>
             <li><strong>When we visit:</strong> notes on what needs doing at your home, so we can price and plan the work.</li>
             <li><strong>When you browse:</strong> anonymous visit counts (which pages are viewed, roughly where from). No cookies, and nothing that identifies you.</li>
+            {TRACKING_ENABLED && <li><strong>Only if you agree to analytics cookies:</strong> how you use the site (pages, clicks, device, approximate location) through the services listed below, so we can improve it and measure our adverts.</li>}
           </ul>
 
           <h2>Why we hold it, and our legal basis</h2>
@@ -34,6 +36,7 @@ import Page from '../layouts/Page.astro';
             <li>To carry out the work and keep a record of jobs at your home &ndash; performing our contract with you.</li>
             <li>To keep invoices and records for tax and insurance &ndash; a legal obligation.</li>
             <li>To understand which pages of the site help people &ndash; our legitimate interest, using anonymous figures only.</li>
+            {TRACKING_ENABLED && <li>Analytics and advertising cookies &ndash; only with your consent, which you can withdraw at any time on our <a href="/cookies">cookies page</a>.</li>}
           </ul>
 
           <h2>Who helps us run things</h2>
@@ -43,6 +46,9 @@ import Page from '../layouts/Page.astro';
             <li><strong>Supabase</strong> &ndash; stores enquiries sent through the contact form and website chats (servers in Ireland, EU).</li>
             <li><strong>Telegram</strong> &ndash; delivers a notification of each new enquiry, and chats you ask to pass to a person, to our phone so we can reply quickly.</li>
             <li><strong>Anthropic</strong> &ndash; provides the AI that answers questions in the website chat. Your chat messages are sent to it to generate a reply; they are not used to train its models.</li>
+            {TRACKERS.ga4 && <li><strong>Google Analytics</strong> &ndash; visitor statistics, only if you accept analytics cookies.</li>}
+            {TRACKERS.metaPixel && <li><strong>Meta (Facebook &amp; Instagram)</strong> &ndash; measures visits from our adverts, only if you accept analytics cookies.</li>}
+            {TRACKERS.clarity && <li><strong>Microsoft Clarity</strong> &ndash; anonymous heatmaps and session replays that show how pages are used, only if you accept analytics cookies.</li>}
             <li><strong>Postcodes.io</strong> &ndash; checks that a postcode you enter is real. Only the postcode is sent.</li>
             <li><strong>Google (Gmail) and WhatsApp</strong> &ndash; if you email or message us, those conversations are held by those services.</li>
           </ul>

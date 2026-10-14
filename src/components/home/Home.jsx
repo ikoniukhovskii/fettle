@@ -1375,8 +1375,10 @@ const REVIEWS = [
 
 function KindWords({ t, m }) {
   const sf = t.sectionSpacing / 100;
-  // The list is shown twice in a row; we slide by exactly one copy, so the loop never shows a seam.
-  const loop = [...REVIEWS, ...REVIEWS];
+  // The list is repeated enough times to cover any screen width, and we slide by exactly one
+  // copy, so the loop never shows a seam or an empty gap – however wide the screen or far you drag.
+  const [copies, setCopies] = React.useState(3);
+  const loop = Array.from({ length: copies }, () => REVIEWS).flat();
   const viewRef = React.useRef(null);
   const trackRef = React.useRef(null);
 
@@ -1393,7 +1395,17 @@ function KindWords({ t, m }) {
     let last = performance.now();
     let raf = 0;
 
-    const measure = () => { half = track.scrollWidth / 2 + 10; };
+    const GAP = 20;
+    const measure = () => {
+      const cards = track.children;
+      if (cards.length < REVIEWS.length + 1) return;
+      // One copy = distance from the first card to the first card of the next copy.
+      half = cards[REVIEWS.length].offsetLeft - cards[0].offsetLeft;
+      if (!half) half = track.scrollWidth / copies + GAP / copies;
+      const need = Math.ceil(view.clientWidth / half) + 2;
+      if (need !== copies) setCopies(need);
+      wrap(); paint();
+    };
     const wrap = () => { if (half > 0) { while (x <= -half) x += half; while (x > 0) x -= half; } };
     const paint = () => { track.style.transform = `translate3d(${x}px,0,0)`; };
 
@@ -1450,6 +1462,9 @@ function KindWords({ t, m }) {
 
     measure();
     window.addEventListener('resize', measure);
+    window.addEventListener('load', measure);
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    if (ro) { ro.observe(track); ro.observe(view); }
     view.addEventListener('pointerdown', down);
     view.addEventListener('pointermove', move);
     view.addEventListener('pointerup', up);
@@ -1460,6 +1475,8 @@ function KindWords({ t, m }) {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', measure);
+      window.removeEventListener('load', measure);
+      if (ro) ro.disconnect();
       view.removeEventListener('pointerdown', down);
       view.removeEventListener('pointermove', move);
       view.removeEventListener('pointerup', up);
@@ -1467,7 +1484,7 @@ function KindWords({ t, m }) {
       view.removeEventListener('wheel', wheel);
       view.removeEventListener('dragstart', noDragGhost);
     };
-  }, []);
+  }, [copies]);
 
   return (
     <section id="kind-words" data-screen-label="Kind words" className="kw" style={{ position: 'relative', zIndex: 1, padding: `calc(clamp(40px, 6vw, 88px) * ${sf}) 0 calc(clamp(56px, 7vw, 96px) * ${sf})` }}>

@@ -109,6 +109,33 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     </div>
   </section>
 
+  <section class="mem-diff" aria-labelledby="diff-h">
+    <div class="wrap">
+      <p class="eyebrow">What you’re paying for</p>
+      <h2 class="mem-h2" id="diff-h">Not a place in the queue. The work itself.</h2>
+      <div class="diff-grid">
+        <div class="diff-col diff-them">
+          <p class="diff-label">Most home memberships</p>
+          <ul>
+            <li>A small monthly fee buys priority and no call-out charge</li>
+            <li>The work is billed on top, usually by the hour</li>
+            <li>A different tradesperson each time</li>
+            <li>Nothing happens unless something breaks</li>
+          </ul>
+        </div>
+        <div class="diff-col diff-us">
+          <p class="diff-label">A Fettle membership</p>
+          <ul>
+            <li>Your monthly price pays for the visits themselves</li>
+            <li>The home check and your list, done on each visit</li>
+            <li>The same small team, who know the house</li>
+            <li>We come round on schedule – before things break</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="mem-check">
     <div class="wrap mem-check-grid">
       <div>
@@ -205,6 +232,20 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   .fridge li.done span::after { transform: scaleX(1); }
   .fridge-after { margin: 26px 0 0; font-size: 18px; color: var(--ink-60); max-width: 52ch; }
   @media (prefers-reduced-motion: reduce) { .fridge li, .fridge li::before, .fridge li span::after { transition: none; } }
+
+  .mem-diff { padding: clamp(64px, 9vw, 112px) 0 0; }
+  .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .diff-col { border-radius: 22px; padding: 30px 30px 26px; }
+  .diff-them { background: transparent; border: 1.5px dashed var(--ink-12); }
+  .diff-us { background: var(--ink); color: var(--cream); box-shadow: 0 30px 60px -30px rgba(43,39,35,.55); }
+  .diff-label { margin: 0 0 16px; font: 600 12px var(--font-body); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-40); }
+  .diff-us .diff-label { color: #E9A58E; }
+  .diff-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .diff-col li { position: relative; padding-left: 28px; font-size: 16px; line-height: 1.5; }
+  .diff-them li { color: var(--ink-60); }
+  .diff-them li::before { content: ''; position: absolute; left: 2px; top: .7em; width: 12px; height: 2px; background: var(--ink-40); }
+  .diff-us li::before { content: ''; position: absolute; left: 0; top: .32em; width: 14px; height: 8px; border-left: 2px solid #E9A58E; border-bottom: 2px solid #E9A58E; transform: rotate(-45deg); }
+  @media (max-width: 760px) { .diff-grid { grid-template-columns: 1fr; } }
   .mem-h2 { margin: 0 0 28px; font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 4.6vw, 54px); line-height: 1.06; letter-spacing: -.01em; max-width: 18ch; }
   .mem-body { font-size: 17px; line-height: 1.65; color: var(--ink-60); max-width: 48ch; }
   .mem-year, .mem-plans, .mem-check, .mem-how, .mem-join { padding: clamp(64px, 9vw, 112px) 0 0; }

@@ -1375,83 +1375,31 @@ const REVIEWS = [
 
 function KindWords({ t, m }) {
   const sf = t.sectionSpacing / 100;
-  const track = React.useRef(null);
-  const drag = React.useRef(null);
-  const [edge, setEdge] = React.useState({ start: true, end: false });
-
-  const update = React.useCallback(() => {
-    const el = track.current;
-    if (!el) return;
-    setEdge({ start: el.scrollLeft < 8, end: el.scrollLeft + el.clientWidth > el.scrollWidth - 8 });
-  }, []);
-  React.useEffect(() => { update(); }, [update]);
-
-  const step = (dir) => {
-    const el = track.current;
-    if (!el) return;
-    const card = el.querySelector('.kw-card');
-    const w = card ? card.getBoundingClientRect().width + 20 : 360;
-    el.scrollBy({ left: dir * w, behavior: 'smooth' });
-  };
-  // Click-and-drag on desktop; touch devices swipe natively.
-  const onDown = (e) => {
-    if (e.pointerType !== 'mouse') return;
-    drag.current = { x: e.clientX, left: track.current.scrollLeft, moved: false };
-    track.current.classList.add('is-dragging');
-  };
-  const onMove = (e) => {
-    const d = drag.current;
-    if (!d) return;
-    const dx = e.clientX - d.x;
-    if (Math.abs(dx) > 3) d.moved = true;
-    track.current.scrollLeft = d.left - dx;
-  };
-  const onUp = () => {
-    if (!drag.current) return;
-    drag.current = null;
-    track.current.classList.remove('is-dragging');
-  };
-
+  // The list is shown twice in a row and slides by exactly one copy, so the loop never shows a seam.
+  const loop = [...REVIEWS, ...REVIEWS];
   return (
-    <section id="kind-words" data-screen-label="Kind words" className="kw" style={{ position: 'relative', zIndex: 1, padding: `calc(clamp(40px, 6vw, 88px) * ${sf}) 0 calc(clamp(64px, 8vw, 110px) * ${sf})` }}>
+    <section id="kind-words" data-screen-label="Kind words" className="kw" style={{ position: 'relative', zIndex: 1, padding: `calc(clamp(40px, 6vw, 88px) * ${sf}) 0 calc(clamp(56px, 7vw, 96px) * ${sf})` }}>
       <Reveal m={m}>
         <div className="kw-head">
-          <div>
-            <p className="kw-eyebrow">Kind words</p>
-            <h2 className="kw-title" style={{ fontSize: `calc(clamp(32px, 4.4vw, 52px) * ${t.headingScale / 100})` }}>By recommendation, mostly.</h2>
-          </div>
-          <div className="kw-nav">
-            <button type="button" aria-label="Previous reviews" onClick={() => step(-1)} disabled={edge.start}>←</button>
-            <button type="button" aria-label="More reviews" onClick={() => step(1)} disabled={edge.end}>→</button>
-          </div>
+          <p className="kw-eyebrow">Kind words</p>
+          <h2 className="kw-title" style={{ fontSize: `calc(clamp(32px, 4.4vw, 52px) * ${t.headingScale / 100})` }}>By recommendation, mostly.</h2>
         </div>
       </Reveal>
-      <div
-        className="kw-track"
-        ref={track}
-        onScroll={update}
-        onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerLeave={onUp}
-        tabIndex={0}
-        aria-label="Reviews from Fettle clients"
-      >
-        {REVIEWS.map((r) => (
-          <figure className="kw-card" key={r.who}>
-            <span className="kw-mark" aria-hidden="true">“</span>
-            <blockquote>{r.q}</blockquote>
-            <figcaption>
-              <span className="kw-who">{r.who}</span>
-              <span className="kw-where">{r.where} · Client since {r.since}</span>
-            </figcaption>
-          </figure>
-        ))}
-        <a className="kw-card kw-more" href="/testimonials">
-          <span>Read all reviews</span>
-          <span aria-hidden="true">→</span>
-        </a>
+      <div className="kw-viewport" aria-label="Reviews from Fettle clients">
+        <div className="kw-track">
+          {loop.map((r, i) => (
+            <figure className="kw-card" key={i} aria-hidden={i >= REVIEWS.length ? 'true' : undefined}>
+              <span className="kw-mark" aria-hidden="true">“</span>
+              <blockquote>{r.q}</blockquote>
+              <figcaption>
+                <span className="kw-who">{r.who}</span>
+                <span className="kw-where">{r.where} · Client since {r.since}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
       </div>
+      <p className="kw-all"><a href="/testimonials">Read all reviews →</a></p>
     </section>
   );
 }

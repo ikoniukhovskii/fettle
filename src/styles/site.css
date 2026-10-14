@@ -356,8 +356,10 @@ textarea:focus-visible {
 
 /* Testimonials */
 .quote-grid {
-  columns: 3 280px;
-  column-gap: 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+  align-items: start;
   margin-top: 8px;
 }
 .quote {
@@ -366,7 +368,7 @@ textarea:focus-visible {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   padding: 30px 30px 26px;
-  margin-bottom: 22px;
+  margin: 0;
 }
 .quote .mark {
   font-family: var(--font-display);

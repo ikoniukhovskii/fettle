@@ -10,6 +10,7 @@ export const BUSINESS_SCHEMA = {
   '@type': 'HandymanService',
   '@id': `${SITE}/#business`,
   name: 'Fettle London',
+  alternateName: ['Fettle', 'Fettle London handyman', 'Fettle Home Maintenance'],
   description:
     'A small, permanent London team for handyman services and home maintenance: painting and decorating, plastering, plumbing, carpet cleaning, end of tenancy cleaning, flooring, fences and odd jobs.',
   url: SITE,
@@ -20,7 +21,8 @@ export const BUSINESS_SCHEMA = {
   email: 'hello@fettlelondon.com',
   priceRange: '£30–£520',
   currenciesAccepted: 'GBP',
-  address: { '@type': 'PostalAddress', addressLocality: 'London', addressCountry: 'GB' },
+  address: { '@type': 'PostalAddress', streetAddress: '356A Fulham Road', addressLocality: 'London', postalCode: 'SW10 9UH', addressCountry: 'GB' },
+  geo: { '@type': 'GeoCoordinates', latitude: 51.4835, longitude: -0.183 },
   areaServed: AREAS.flatMap((a) => [a.region, ...a.places.split(', ')]).map((name) => ({ '@type': 'Place', name })),
   sameAs: [FACEBOOK_URL],
   openingHoursSpecification: {
@@ -37,6 +39,17 @@ export const BUSINESS_SCHEMA = {
       itemOffered: { '@type': 'Service', name: s.name, url: `${SITE}/services/${s.slug}` },
     })),
   },
+};
+
+// Tells Google the site's name is "Fettle London", so results show that name (not just "fettlelondon.com").
+export const WEBSITE_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${SITE}/#website`,
+  name: 'Fettle London',
+  alternateName: ['Fettle', 'fettlelondon.com'],
+  url: `${SITE}/`,
+  publisher: { '@id': `${SITE}/#business` },
 };
 
 export function serviceSchema(s: { name: string; slug: string; description: string }) {

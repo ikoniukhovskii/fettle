@@ -11,7 +11,7 @@ const { noindex = false } = Astro.props;
 const { title, description = 'A small London team, keeping a short list of homes in good working order. By recommendation, mostly.' } = Astro.props;
 // One canonical home: https://www.fettlelondon.com, no trailing slash (except the root).
 const path = Astro.url.pathname.replace(/\/index(\.html)?$/, '/').replace(/\.html$/, '').replace(/(.)\/+$/, '$1');
-import { BUSINESS_SCHEMA } from '../data/schema';
+import { BUSINESS_SCHEMA, WEBSITE_SCHEMA } from '../data/schema';
 import TweaksPanel from '../components/TweaksPanel.astro';
 import ChatWidget from '../components/ChatWidget.astro';
 import Consent from '../components/Consent.astro';
@@ -48,6 +48,7 @@ const showTweaks = import.meta.env.DEV || process.env.VERCEL_ENV === 'preview';
     <link rel="preload" href="/fonts/work-sans-400.woff2" as="font" type="font/woff2" crossorigin />
 
     <script type="application/ld+json" set:html={JSON.stringify(BUSINESS_SCHEMA)} />
+    <script type="application/ld+json" set:html={JSON.stringify(WEBSITE_SCHEMA)} />
 
     <slot name="head" />
   </head>

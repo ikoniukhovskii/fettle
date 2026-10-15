@@ -7,6 +7,12 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 // Prices live here, on the server, so nobody can change them in their browser.
+const EXTRAS: Record<string, string> = {
+  jetwash: 'A spring jet wash',
+  carpets: 'Carpets cleaned (up to three rooms)',
+  'extra-hour': 'An extra hour on every visit',
+};
+
 const PLANS: Record<string, { name: string; pence: number; cadence: string }> = {
   'spring-autumn': { name: 'Spring & Autumn', pence: 2900, cadence: 'Two visits a year' },
   'every-season': { name: 'Every Season', pence: 5900, cadence: 'Four visits a year' },
@@ -74,6 +80,7 @@ Deno.serve(async (req) => {
   const yearly = body.billing === 'year';
   const pence = yearly ? plan?.pence * 10 : plan?.pence; // yearly: twelve months for the price of ten
   const per = yearly ? 'year' : 'month';
+  const extra = body.plan === 'every-season' ? (EXTRAS[body.extra] ?? EXTRAS.jetwash) : '';
   const name = (body.name || '').trim().slice(0, 120);
   const email = (body.email || '').trim().slice(0, 200);
   const phone = (body.phone || '').trim().slice(0, 40);
@@ -113,9 +120,10 @@ Deno.serve(async (req) => {
           recurring: { interval: per },
           product_data: {
             name: `Fettle Membership – ${plan.name}`,
-            description: yearly
+            description: (extra ? `Your extra: ${extra}. ` : '') + (yearly
               ? `${plan.cadence}. Paid once for the year – twelve months for the price of ten.`
-              : `${plan.cadence}. Twelve-month plan, paid monthly.`,
+              : `${plan.cadence}. Twelve-month plan, paid monthly.`),
+
           },
         },
       },
@@ -127,10 +135,10 @@ Deno.serve(async (req) => {
           : 'Your plan runs for twelve months, paid monthly – after that, leave any time with a month’s notice. If we find there isn’t room near you, we refund you in full.',
       },
     },
-    metadata: { plan: body.plan, billing: per, name, phone, postcode, notes },
+    metadata: { plan: body.plan, billing: per, extra, name, phone, postcode, notes },
     subscription_data: {
       description: `Fettle Membership – ${plan.name} (${yearly ? 'yearly' : 'monthly'}) – ${postcode}`,
-      metadata: { plan: body.plan, billing: per, name, phone, postcode, minimum_term_months: '12' },
+      metadata: { plan: body.plan, billing: per, extra, name, phone, postcode, minimum_term_months: '12' },
     },
     success_url: `${back}/membership/welcome?plan=${encodeURIComponent(body.plan)}`,
     cancel_url: `${back}/membership?checkout=cancelled#join`,
@@ -154,7 +162,7 @@ Deno.serve(async (req) => {
       full_name: name,
       email,
       postcode,
-      topic: `Membership checkout opened – ${plan.name} (£${pence / 100}/${per}) – not paid yet`,
+      topic: `Membership checkout opened – ${plan.name} (£${pence / 100}/${per}) – not paid yet${extra ? ` – extra: ${extra}` : ''}`,
       message: [`Phone: ${phone}`, notes].filter(Boolean).join('\n\n'),
     });
   } catch (e) {

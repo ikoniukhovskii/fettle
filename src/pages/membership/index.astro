@@ -1,6 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
-import { PLANS, HOME_CHECK, MONTHS, yearlyPrice, fmt } from '../../data/membership';
+import { PLANS, HOME_CHECK, MONTHS, EXTRAS, yearlyPrice, fmt } from '../../data/membership';
 import MadeToMeasure from '../../components/MadeToMeasure.astro';
 import { VIDEO_CALL_URL } from '../../data/booking';
 import { PAYMENTS_ENABLED } from '../../data/payments';
@@ -113,6 +113,12 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
             <p class="plan-worth">Worth {fmt(p.worth)}+ a year at our usual prices</p>
             <p class="plan-blurb">{p.blurb}</p>
             <ul>{p.perks.map((x) => <li>{x}</li>)}</ul>
+            {p.choosesExtra && (
+              <div class="plan-extra">
+                <p class="plan-extra-h">Your extra – you choose</p>
+                <p class="plan-extra-list">Spring jet wash · Carpets cleaned · An extra hour every visit</p>
+              </div>
+            )}
             <a class={`plan-btn${p.featured ? ' solid' : ''}`} href={`#join`} data-choose={p.id}>Choose {p.name}</a>
           </article>
         ))}
@@ -193,6 +199,12 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
           <legend>Plan</legend>
           {PLANS.map((p) => (
             <label><input type="radio" name="plan" value={p.id} checked={p.featured} /><span><strong>{p.name}</strong><em data-month={`£${p.price}/month`} data-year={`${fmt(yearlyPrice(p))}/year`}>£{p.price}/month</em></span></label>
+          ))}
+        </fieldset>
+        <fieldset class="extra-pick" id="extra-pick">
+          <legend>Your extra, on us <span class="opt">– Every Season</span></legend>
+          {EXTRAS.map((e, i) => (
+            <label><input type="radio" name="extra" value={e.id} checked={i === 0} /><span><strong>{e.label}</strong><em>{e.note}</em></span></label>
           ))}
         </fieldset>
         <fieldset class="bill-pick">
@@ -346,6 +358,19 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   .is-featured .plan-save s { color: rgba(241,232,216,.5); }
   .plan-worth { margin: 10px 0 0; font-size: 13.5px; color: var(--ink-60); font-style: italic; }
   .is-featured .plan-worth { color: rgba(241,232,216,.65); }
+  .plan-extra { margin: 18px 0 20px; padding: 14px 16px; border-radius: 14px; border: 1px dashed rgba(233,165,142,.55); }
+  .plan-extra-h { margin: 0; font-family: var(--font-script); font-size: 24px; line-height: 1.1; color: #E9A58E; }
+  .plan-extra-list { margin: 6px 0 0; font-size: 14px; color: rgba(241,232,216,.8); }
+  .extra-pick { border: 0; margin: 0 0 22px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .extra-pick[hidden] { display: none; }
+  .extra-pick legend { font-weight: 600; font-size: 14px; margin-bottom: 10px; }
+  .extra-pick .opt { font-weight: 400; color: var(--ink-60); }
+  .extra-pick label { display: grid; gap: 8px; align-content: start; padding: 14px; border: 1.5px solid var(--ink-12); border-radius: 14px; cursor: pointer; transition: border-color .15s, background .15s; }
+  .extra-pick label:has(input:checked) { border-color: var(--rust); background: var(--rust-tint); }
+  .extra-pick input { accent-color: var(--rust); margin: 0; }
+  .extra-pick span { display: grid; gap: 2px; font-size: 14px; line-height: 1.3; }
+  .extra-pick em { font-style: normal; color: var(--ink-60); font-size: 12.5px; }
+  @media (max-width: 520px) { .extra-pick { grid-template-columns: 1fr; } .extra-pick label { grid-template-columns: auto 1fr; align-items: center; } }
   .bill-pick { border: 0; margin: 0 0 22px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .bill-pick legend { font-weight: 600; font-size: 14px; margin-bottom: 10px; }
   .bill-pick label { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1.5px solid var(--ink-12); border-radius: 14px; cursor: pointer; transition: border-color .15s, background .15s; }
@@ -390,7 +415,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
 <script>
   import { createClient } from '@supabase/supabase-js';
   import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../data/supabase-config';
-  import { PLANS } from '../../data/membership';
+  import { PLANS, EXTRAS } from '../../data/membership';
   import { ONLINE_JOIN_MAX_MILES } from '../../data/payments';
   import { lookupCoords, milesFromBase } from '../../data/travel';
 
@@ -459,6 +484,8 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     if (cardVisits) cardVisits.textContent = plan.cadence;
     const radio = document.querySelector<HTMLInputElement>(`input[name="plan"][value="${id}"]`);
     if (radio) radio.checked = true;
+    const extraPick = document.getElementById('extra-pick');
+    if (extraPick) extraPick.hidden = !plan.choosesExtra;
   }
   tabs.forEach((t) => t.addEventListener('click', () => show(t.dataset.plan!)));
   document.querySelectorAll<HTMLAnchorElement>('[data-choose]').forEach((a) =>
@@ -570,6 +597,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     const planId = (form.querySelector('input[name="plan"]:checked') as HTMLInputElement | null)?.value;
     const plan = PLANS.find((p) => p.id === planId);
     const billing = (form.querySelector('input[name="billing"]:checked') as HTMLInputElement | null)?.value === 'year' ? 'year' : 'month';
+    const extra = plan?.choosesExtra ? EXTRAS.find((x) => x.id === (form.querySelector('input[name="extra"]:checked') as HTMLInputElement | null)?.value) : undefined;
     const priceLabel = billing === 'year' ? `£${(plan!.price * 10).toLocaleString('en-GB')}/year` : `£${plan?.price}/month`;
     const problems: string[] = [];
     if (!name) problems.push('your name');
@@ -588,7 +616,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
         const res = await fetch(`${SUPABASE_URL}/functions/v1/membership-checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-          body: JSON.stringify({ plan: plan?.id, billing, name, email, phone, postcode, notes }),
+          body: JSON.stringify({ plan: plan?.id, billing, extra: extra?.id, name, email, phone, postcode, notes }),
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.url) {
@@ -611,7 +639,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
       full_name: name,
       email,
       postcode,
-      topic: `Membership request – ${plan?.name} (${priceLabel})`,
+      topic: `Membership request – ${plan?.name} (${priceLabel})${extra ? ` – extra: ${extra.label}` : ''}`,
       message: [`Phone: ${phone}`, notes].filter(Boolean).join('\n\n'),
     });
     btn.disabled = false;

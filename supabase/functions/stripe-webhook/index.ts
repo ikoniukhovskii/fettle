@@ -52,8 +52,9 @@ Deno.serve(async (req) => {
         topic: `NEW MEMBER${test} – ${plan} (${money(o.amount_total)}/${m.billing || 'month'}) – ${how}`,
         message: [
           `Phone: ${m.phone || o.customer_details?.phone || ''}`,
+          m.extra ? `Their extra: ${m.extra}` : '',
           m.notes,
-          'Next: call to welcome them and book the first visit. If there isn’t room, refund in Stripe.',
+          'Next: call to welcome them and book the first visit (straight away or next season – their choice). If there isn’t room, refund in Stripe.',
           `Stripe customer: ${o.customer}`,
         ].filter(Boolean).join('\n\n'),
       };

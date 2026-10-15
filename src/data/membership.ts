@@ -10,7 +10,15 @@ export type Plan = {
   perks: string[];
   visits: { month: number; kind: 'check' | 'list' }[];
   featured?: boolean;
+  choosesExtra?: boolean; // member picks one extra from EXTRAS
 };
+
+// Every Season members pick one extra, on us, each year.
+export const EXTRAS = [
+  { id: 'jetwash', label: 'A spring jet wash', note: 'Patio, path or front steps' },
+  { id: 'carpets', label: 'Carpets cleaned', note: 'Up to three rooms, once a year' },
+  { id: 'extra-hour', label: 'An extra hour', note: 'On every visit, for your list' },
+];
 
 export const PLANS: Plan[] = [
   {
@@ -37,12 +45,13 @@ export const PLANS: Plan[] = [
     name: 'Every Season',
     cadence: 'Four visits a year',
     price: 59,
-    worth: 750,
+    worth: 850,
     blurb: 'A visit each season, so small things never become big ones.',
     perks: [
       'Four half-day visits, one each season',
       'The full home check on every visit',
       'Gutters cleared in autumn, outside checked in spring',
+      'One extra of your choice, on us',
       '10% off any other work',
       'Booked in within the week when you need us',
     ],
@@ -53,6 +62,7 @@ export const PLANS: Plan[] = [
       { month: 9, kind: 'check' },
     ],
     featured: true,
+    choosesExtra: true,
   },
   {
     id: 'every-month',

@@ -10,7 +10,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const FROM = 'Fettle London <hello@fettlelondon.com>';
-const REPLY_TO = 'fettlelondon@gmail.com';
+const REPLY_TO = 'hello@fettlelondon.com';
 const VIDEO_CALL_URL = 'https://calendar.app.google/XKzAocmeAU5WH2as6';
 const SITE = 'https://www.fettlelondon.com';
 

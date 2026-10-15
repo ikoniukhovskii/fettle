@@ -5,6 +5,7 @@ export type Plan = {
   name: string;
   cadence: string;
   price: number;
+  worth: number; // what the year's visits would cost at our usual prices (half-day + visit fee + extras)
   blurb: string;
   perks: string[];
   visits: { month: number; kind: 'check' | 'list' }[];
@@ -17,6 +18,7 @@ export const PLANS: Plan[] = [
     name: 'Spring & Autumn',
     cadence: 'Two visits a year',
     price: 29,
+    worth: 400,
     blurb: 'The house looked over before winter and after it.',
     perks: [
       'Two half-day visits, in spring and autumn',
@@ -35,6 +37,7 @@ export const PLANS: Plan[] = [
     name: 'Every Season',
     cadence: 'Four visits a year',
     price: 59,
+    worth: 750,
     blurb: 'A visit each season, so small things never become big ones.',
     perks: [
       'Four half-day visits, one each season',
@@ -56,6 +59,7 @@ export const PLANS: Plan[] = [
     name: 'Every Month',
     cadence: 'Twelve visits a year',
     price: 129,
+    worth: 2000,
     blurb: 'Someone who knows the house, round every month.',
     perks: [
       'A visit every month, up to three hours',
@@ -67,6 +71,11 @@ export const PLANS: Plan[] = [
     visits: Array.from({ length: 12 }, (_, m) => ({ month: m, kind: (m % 3 === 0 ? 'check' : 'list') as 'check' | 'list' })),
   },
 ];
+
+// Pay yearly: twelve months for the price of ten.
+export const YEARLY_MONTHS = 10;
+export const yearlyPrice = (p: Plan) => p.price * YEARLY_MONTHS;
+export const fmt = (n: number) => `£${n.toLocaleString('en-GB')}`;
 
 export const HOME_CHECK = [
   'Gutters and downpipes',

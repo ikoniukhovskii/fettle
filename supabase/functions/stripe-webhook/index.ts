@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
         full_name: m.name || o.customer_details?.name || '',
         email: o.customer_details?.email || o.customer_email || '',
         postcode: m.postcode || o.customer_details?.address?.postal_code || '',
-        topic: `NEW MEMBER${test} – ${plan} (${money(o.amount_total)}/month) – ${how}`,
+        topic: `NEW MEMBER${test} – ${plan} (${money(o.amount_total)}/${m.billing || 'month'}) – ${how}`,
         message: [
           `Phone: ${m.phone || o.customer_details?.phone || ''}`,
           m.notes,

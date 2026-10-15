@@ -71,6 +71,9 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { return new Response(JSON.stringify({ error: 'Bad request' }), { status: 400, headers }); }
 
   const plan = PLANS[body.plan];
+  const yearly = body.billing === 'year';
+  const pence = yearly ? plan?.pence * 10 : plan?.pence; // yearly: twelve months for the price of ten
+  const per = yearly ? 'year' : 'month';
   const name = (body.name || '').trim().slice(0, 120);
   const email = (body.email || '').trim().slice(0, 200);
   const phone = (body.phone || '').trim().slice(0, 40);
@@ -106,24 +109,28 @@ Deno.serve(async (req) => {
         quantity: 1,
         price_data: {
           currency: 'gbp',
-          unit_amount: plan.pence,
-          recurring: { interval: 'month' },
+          unit_amount: pence,
+          recurring: { interval: per },
           product_data: {
             name: `Fettle Membership – ${plan.name}`,
-            description: `${plan.cadence}. Twelve-month plan, paid monthly.`,
+            description: yearly
+              ? `${plan.cadence}. Paid once for the year – twelve months for the price of ten.`
+              : `${plan.cadence}. Twelve-month plan, paid monthly.`,
           },
         },
       },
     },
     custom_text: {
       submit: {
-        message: 'Your plan runs for twelve months, paid monthly – after that, leave any time with a month’s notice. If we find there isn’t room near you, we refund you in full.',
+        message: yearly
+          ? 'Paid once for the year, renewing yearly – tell us any time before it renews if you’d like to stop. If we find there isn’t room near you, we refund you in full.'
+          : 'Your plan runs for twelve months, paid monthly – after that, leave any time with a month’s notice. If we find there isn’t room near you, we refund you in full.',
       },
     },
-    metadata: { plan: body.plan, name, phone, postcode, notes },
+    metadata: { plan: body.plan, billing: per, name, phone, postcode, notes },
     subscription_data: {
-      description: `Fettle Membership – ${plan.name} – ${postcode}`,
-      metadata: { plan: body.plan, name, phone, postcode, minimum_term_months: '12' },
+      description: `Fettle Membership – ${plan.name} (${yearly ? 'yearly' : 'monthly'}) – ${postcode}`,
+      metadata: { plan: body.plan, billing: per, name, phone, postcode, minimum_term_months: '12' },
     },
     success_url: `${back}/membership/welcome?plan=${encodeURIComponent(body.plan)}`,
     cancel_url: `${back}/membership?checkout=cancelled#join`,
@@ -147,7 +154,7 @@ Deno.serve(async (req) => {
       full_name: name,
       email,
       postcode,
-      topic: `Membership checkout opened – ${plan.name} (£${plan.pence / 100}/month) – not paid yet`,
+      topic: `Membership checkout opened – ${plan.name} (£${pence / 100}/${per}) – not paid yet`,
       message: [`Phone: ${phone}`, notes].filter(Boolean).join('\n\n'),
     });
   } catch (e) {

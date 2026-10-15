@@ -1,6 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
-import { PLANS, HOME_CHECK, MONTHS } from '../../data/membership';
+import { PLANS, HOME_CHECK, MONTHS, yearlyPrice, fmt } from '../../data/membership';
 import MadeToMeasure from '../../components/MadeToMeasure.astro';
 import { VIDEO_CALL_URL } from '../../data/booking';
 import { PAYMENTS_ENABLED } from '../../data/payments';
@@ -97,13 +97,20 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     <div class="wrap">
       <p class="eyebrow">The plans</p>
       <h2 class="mem-h2">Three ways to keep the house in order.</h2>
-      <div class="plans">
+      <div class="billing" role="radiogroup" aria-label="How you’d like to pay">
+        <button type="button" role="radio" aria-checked="true" data-billing="month">Pay monthly</button>
+        <button type="button" role="radio" aria-checked="false" data-billing="year">Pay yearly <span class="billing-gift">two months on us</span></button>
+      </div>
+      <div class="plans" data-billing-view="month">
         {PLANS.map((p) => (
           <article class={`plan${p.featured ? ' is-featured' : ''}`}>
             {p.featured && <span class="plan-tag">Our suggestion</span>}
             <h3>{p.name}</h3>
             <p class="plan-cad">{p.cadence}</p>
-            <p class="plan-price"><span class="cur">£</span>{p.price}<span class="per">/month</span></p>
+            <p class="plan-price only-month"><span class="cur">£</span>{p.price}<span class="per">/month</span></p>
+            <p class="plan-price only-year"><span class="cur">£</span>{yearlyPrice(p).toLocaleString('en-GB')}<span class="per">/year</span></p>
+            <p class="plan-save only-year"><s>{fmt(p.price * 12)}</s> twelve months for the price of ten</p>
+            <p class="plan-worth">Worth {fmt(p.worth)}+ a year at our usual prices</p>
             <p class="plan-blurb">{p.blurb}</p>
             <ul>{p.perks.map((x) => <li>{x}</li>)}</ul>
             <a class={`plan-btn${p.featured ? ' solid' : ''}`} href={`#join`} data-choose={p.id}>Choose {p.name}</a>
@@ -111,7 +118,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
         ))}
       </div>
       <MadeToMeasure />
-      <p class="mem-note">Plans run for twelve months, paid monthly. Materials at cost. No travel charge on plan visits. We don’t do gas, boiler or electrical work.</p>
+      <p class="mem-note">Plans run for twelve months, paid monthly or once for the year. Materials at cost. No travel charge on plan visits. We don’t do gas, boiler or electrical work.</p>
     </div>
   </section>
 
@@ -176,7 +183,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
         <p class="mem-body">Rather talk first? Pick a time that suits you – it’s free, and you can show us the house on your phone.</p>
         <p><a class="btn secondary video-call" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free 10-minute video call</a></p>
         <dl class="mem-faq">
-          <dt>Can I pause or leave?</dt><dd>After the first twelve months, leave any time with a month’s notice. Moving house? Tell us and we’ll end the plan.</dd>
+          <dt>Can I pause or leave?</dt><dd>After the first twelve months, leave any time with a month’s notice. Leaving sooner? You pay the normal price of the visits you’ve had, less what you’ve paid – and if you’ve paid more, we refund the difference. Moving house? Tell us and we’ll end the plan.</dd>
           <dt>What if something breaks in between?</dt><dd>Members go to the front of the queue, with the discount on your plan.</dd>
           <dt>What’s not included?</dt><dd>Bigger jobs, materials and specialist work are quoted separately, as always – you’ll know the price first.</dd>
         </dl>
@@ -185,8 +192,13 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
         <fieldset class="plan-pick">
           <legend>Plan</legend>
           {PLANS.map((p) => (
-            <label><input type="radio" name="plan" value={p.id} checked={p.featured} /><span><strong>{p.name}</strong><em>£{p.price}/month</em></span></label>
+            <label><input type="radio" name="plan" value={p.id} checked={p.featured} /><span><strong>{p.name}</strong><em data-month={`£${p.price}/month`} data-year={`${fmt(yearlyPrice(p))}/year`}>£{p.price}/month</em></span></label>
           ))}
+        </fieldset>
+        <fieldset class="bill-pick">
+          <legend>How you’d like to pay</legend>
+          <label><input type="radio" name="billing" value="month" checked /><span><strong>Monthly</strong><em>Spread across the year</em></span></label>
+          <label><input type="radio" name="billing" value="year" /><span><strong>Yearly</strong><em>Two months on us</em></span></label>
         </fieldset>
         <div class="field"><label for="mf-name">Full name</label><input id="mf-name" type="text" autocomplete="name" required /></div>
         <div class="field"><label for="mf-email">Email</label><input id="mf-email" type="email" autocomplete="email" required /></div>
@@ -198,7 +210,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
           {PAYMENTS_ENABLED && <button class="btn primary" type="submit" name="action" value="pay" id="mf-pay">Join now – pay securely</button>}
           <button class={`btn ${PAYMENTS_ENABLED ? 'secondary' : 'primary'}`} type="submit" name="action" value="request" id="mf-request">{PAYMENTS_ENABLED ? 'Request a call first' : 'Request a place'}</button>
         </div>
-        {PAYMENTS_ENABLED && <p class="mem-paynote" id="mf-paynote">Card, Apple Pay, Google Pay or Direct Debit, secured by Stripe. Twelve-month plan, paid monthly – and if there isn’t room near you, a full refund.</p>}
+        {PAYMENTS_ENABLED && <p class="mem-paynote" id="mf-paynote">Card, Apple Pay, Google Pay or Direct Debit, secured by Stripe. A twelve-month plan – and if there isn’t room near you, a full refund.</p>}
         <p class="mem-ok" id="mf-ok" role="status" hidden>Thank you – you’re on our list. A person, not a bot, will call you shortly.</p>
       </form>
     </div>
@@ -322,6 +334,25 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   .mem-faq { margin: 32px 0 0; }
   .mem-faq dt { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin-top: 22px; }
   .mem-faq dd { margin: 6px 0 0; font-size: 15.5px; line-height: 1.6; color: var(--ink-60); }
+  .billing { display: inline-flex; gap: 4px; margin: 28px 0 36px; padding: 5px; border-radius: 999px; background: var(--white); border: 1px solid var(--ink-08); }
+  .billing button { border: 0; background: transparent; padding: 11px 20px; border-radius: 999px; font: 600 15px/1 var(--font-body); color: var(--ink-60); cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: background .2s, color .2s; }
+  .billing button[aria-checked="true"] { background: var(--ink); color: var(--cream); }
+  .billing-gift { font-family: var(--font-script); font-weight: 400; font-size: 21px; line-height: .8; color: var(--rust); }
+  .billing button[aria-checked="true"] .billing-gift { color: #E9A58E; }
+  .plans[data-billing-view="month"] .only-year, .plans[data-billing-view="year"] .only-month { display: none; }
+  .plan-save { margin: 8px 0 0; font-size: 13.5px; color: var(--rust); }
+  .plan-save s { color: var(--ink-40); margin-right: 2px; }
+  .is-featured .plan-save { color: #E9A58E; }
+  .is-featured .plan-save s { color: rgba(241,232,216,.5); }
+  .plan-worth { margin: 10px 0 0; font-size: 13.5px; color: var(--ink-60); font-style: italic; }
+  .is-featured .plan-worth { color: rgba(241,232,216,.65); }
+  .bill-pick { border: 0; margin: 0 0 22px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bill-pick legend { font-weight: 600; font-size: 14px; margin-bottom: 10px; }
+  .bill-pick label { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1.5px solid var(--ink-12); border-radius: 14px; cursor: pointer; transition: border-color .15s, background .15s; }
+  .bill-pick label:has(input:checked) { border-color: var(--rust); background: var(--rust-tint); }
+  .bill-pick input { accent-color: var(--rust); }
+  .bill-pick span { display: grid; gap: 2px; }
+  .bill-pick em { font-style: normal; color: var(--ink-60); font-size: 13px; }
   .plan-pick { border: 0; margin: 0 0 22px; padding: 0; display: grid; gap: 10px; }
   .plan-pick legend { font-weight: 600; font-size: 14px; margin-bottom: 10px; }
   .plan-pick label { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1.5px solid var(--ink-12); border-radius: 14px; cursor: pointer; transition: border-color .15s, background .15s; }
@@ -438,6 +469,21 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   );
   show((PLANS.find((p) => p.featured) ?? PLANS[0]).id);
 
+  // Monthly or yearly – the switch above the plans and the choice in the form stay in step.
+  const plansEl = document.querySelector<HTMLElement>('.plans[data-billing-view]');
+  const billBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-billing]'));
+  function setBilling(b: 'month' | 'year') {
+    plansEl?.setAttribute('data-billing-view', b);
+    billBtns.forEach((x) => x.setAttribute('aria-checked', String(x.dataset.billing === b)));
+    const r = document.querySelector<HTMLInputElement>(`input[name="billing"][value="${b}"]`);
+    if (r) r.checked = true;
+    document.querySelectorAll<HTMLElement>('.plan-pick em[data-month]').forEach((em) => { em.textContent = em.dataset[b] ?? ''; });
+  }
+  billBtns.forEach((x) => x.addEventListener('click', () => setBilling(x.dataset.billing as 'month' | 'year')));
+  document.querySelectorAll<HTMLInputElement>('input[name="billing"]').forEach((r) =>
+    r.addEventListener('change', () => setBilling(r.value as 'month' | 'year')),
+  );
+
   // Membership card: the corner under the cursor is pressed into the page.
   const card = document.querySelector<HTMLElement>('.mcard');
   const zone = document.querySelector<HTMLElement>('.mcard-wrap');
@@ -523,6 +569,8 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     const notes = (document.getElementById('mf-notes') as HTMLTextAreaElement).value.trim();
     const planId = (form.querySelector('input[name="plan"]:checked') as HTMLInputElement | null)?.value;
     const plan = PLANS.find((p) => p.id === planId);
+    const billing = (form.querySelector('input[name="billing"]:checked') as HTMLInputElement | null)?.value === 'year' ? 'year' : 'month';
+    const priceLabel = billing === 'year' ? `£${(plan!.price * 10).toLocaleString('en-GB')}/year` : `£${plan?.price}/month`;
     const problems: string[] = [];
     if (!name) problems.push('your name');
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) problems.push('a valid email');
@@ -540,7 +588,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
         const res = await fetch(`${SUPABASE_URL}/functions/v1/membership-checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-          body: JSON.stringify({ plan: plan?.id, name, email, phone, postcode, notes }),
+          body: JSON.stringify({ plan: plan?.id, billing, name, email, phone, postcode, notes }),
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.url) {
@@ -563,7 +611,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
       full_name: name,
       email,
       postcode,
-      topic: `Membership request – ${plan?.name} (£${plan?.price}/month)`,
+      topic: `Membership request – ${plan?.name} (${priceLabel})`,
       message: [`Phone: ${phone}`, notes].filter(Boolean).join('\n\n'),
     });
     btn.disabled = false;
@@ -573,6 +621,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     }
     form.reset();
     show(plan!.id);
+    setBilling(billing);
     if (ok) ok.hidden = false;
     window.dispatchEvent(new CustomEvent('fettle:lead', { detail: { kind: `membership – ${plan?.name}` } }));
   });

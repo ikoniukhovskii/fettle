@@ -1,8 +1,9 @@
 ---
-import Page from '../layouts/Page.astro';
-import { PLANS, HOME_CHECK, MONTHS } from '../data/membership';
-import MadeToMeasure from '../components/MadeToMeasure.astro';
-import { VIDEO_CALL_URL } from '../data/booking';
+import Page from '../../layouts/Page.astro';
+import { PLANS, HOME_CHECK, MONTHS } from '../../data/membership';
+import MadeToMeasure from '../../components/MadeToMeasure.astro';
+import { VIDEO_CALL_URL } from '../../data/booking';
+import { PAYMENTS_ENABLED } from '../../data/payments';
 const memSchema = {
   '@context': 'https://schema.org',
   '@type': 'Service',
@@ -171,7 +172,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
       <div>
         <p class="eyebrow">Request a place</p>
         <h2 class="mem-h2">Let’s put your home on the list.</h2>
-        <p class="mem-body">No payment today. We’ll call to talk it through, then book the first visit. If there isn’t room near you this season, we’ll say so plainly.</p>
+        <p class="mem-body">Join online in a couple of minutes, or ask us to call you first – whichever you prefer. Either way, Ilia calls to say hello and book your first visit. If there isn’t room near you this season, we’ll say so plainly, and refund you in full if you’ve paid.</p>
         <p class="mem-body">Rather talk first? Pick a time that suits you – it’s free, and you can show us the house on your phone.</p>
         <p><a class="btn secondary video-call" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free 10-minute video call</a></p>
         <dl class="mem-faq">
@@ -193,7 +194,11 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
         <div class="field"><label for="mf-postcode">Postcode</label><input id="mf-postcode" type="text" autocomplete="postal-code" placeholder="e.g. SW6 1AA" required /></div>
         <div class="field"><label for="mf-notes">About the house <span class="opt">(optional)</span></label><textarea id="mf-notes" placeholder="Flat or house, how many rooms, anything that's bothering you…"></textarea></div>
         <p class="mem-err" id="mf-err" role="alert" hidden></p>
-        <button class="btn primary" type="submit">Request a place</button>
+        <div class="mem-actions">
+          {PAYMENTS_ENABLED && <button class="btn primary" type="submit" name="action" value="pay" id="mf-pay">Join now – pay securely</button>}
+          <button class={`btn ${PAYMENTS_ENABLED ? 'secondary' : 'primary'}`} type="submit" name="action" value="request" id="mf-request">{PAYMENTS_ENABLED ? 'Request a call first' : 'Request a place'}</button>
+        </div>
+        {PAYMENTS_ENABLED && <p class="mem-paynote" id="mf-paynote">Card, Apple Pay, Google Pay or Direct Debit, secured by Stripe. Twelve-month plan, paid monthly – and if there isn’t room near you, a full refund.</p>}
         <p class="mem-ok" id="mf-ok" role="status" hidden>Thank you – you’re on our list. A person, not a bot, will call you shortly.</p>
       </form>
     </div>
@@ -325,6 +330,12 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   .plan-pick span { display: flex; justify-content: space-between; flex: 1; gap: 12px; }
   .plan-pick em { font-style: normal; color: var(--ink-60); font-size: 14px; }
   .opt { font-weight: 400; color: var(--ink-40); }
+  .mem-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .mem-actions .btn { flex: 1 1 auto; justify-content: center; }
+  .mem-actions .btn[hidden] { display: none; }
+  .mem-actions .btn[disabled] { opacity: .6; cursor: progress; }
+  .mem-paynote { margin: 14px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-60); }
+  .mem-paynote.is-far { color: var(--ink); background: var(--sand, #EFE5D3); padding: 12px 14px; border-radius: 12px; }
   .mem-err { margin: 0 0 14px; color: var(--brick); font-size: 14.5px; }
   .mem-ok { margin: 16px 0 0; padding: 14px 16px; border-radius: 12px; background: var(--sage-tint); font-size: 15px; }
 
@@ -347,8 +358,10 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
 
 <script>
   import { createClient } from '@supabase/supabase-js';
-  import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
-  import { PLANS } from '../data/membership';
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../data/supabase-config';
+  import { PLANS } from '../../data/membership';
+  import { ONLINE_JOIN_MAX_MILES } from '../../data/payments';
+  import { lookupCoords, milesFromBase } from '../../data/travel';
 
 
   // "Sound familiar?" – each line is crossed off as it scrolls up past the middle of the screen,
@@ -472,9 +485,40 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   const ok = document.getElementById('mf-ok');
   const val = (id: string) => (document.getElementById(id) as HTMLInputElement).value.trim();
 
+  // "Join now" is offered close to Chelsea; further out we'd rather talk first.
+  const payBtn = document.getElementById('mf-pay') as HTMLButtonElement | null;
+  const reqBtn = document.getElementById('mf-request') as HTMLButtonElement | null;
+  const payNote = document.getElementById('mf-paynote');
+  const payNoteDefault = payNote?.textContent ?? '';
+  const setFar = (far: boolean, area = '') => {
+    if (!payBtn || !reqBtn || !payNote) return;
+    payBtn.hidden = far;
+    reqBtn.className = `btn ${far ? 'primary' : 'secondary'}`;
+    reqBtn.textContent = far ? 'Request a place' : 'Request a call first';
+    payNote.classList.toggle('is-far', far);
+    payNote.textContent = far
+      ? `${area || 'Your area'} is a little further from us, so we’d like to talk first. Request a place and Ilia will call you – usually the same day.`
+      : payNoteDefault;
+  };
+  let pcTimer = 0;
+  const pcInput = document.getElementById('mf-postcode') as HTMLInputElement | null;
+  const checkPostcode = async () => {
+    const pc = pcInput?.value.trim().toUpperCase() ?? '';
+    if (!/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/.test(pc)) return setFar(false);
+    const c = await lookupCoords(pc);
+    if (c) setFar(milesFromBase(c.lat, c.lon) > ONLINE_JOIN_MAX_MILES, pc.replace(/\s*\d[A-Z]{2}$/, ''));
+  };
+  pcInput?.addEventListener('input', () => { clearTimeout(pcTimer); pcTimer = window.setTimeout(checkPostcode, 450); });
+
+  if (new URLSearchParams(location.search).get('checkout') === 'cancelled' && err) {
+    err.textContent = 'No payment was taken. Change anything you like and try again – or ask us to call you first.';
+    err.hidden = false;
+  }
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (err) err.hidden = true;
+    const action = ((e as SubmitEvent).submitter as HTMLButtonElement | null)?.value ?? 'request';
     const name = val('mf-name'), email = val('mf-email'), phone = val('mf-phone'), postcode = val('mf-postcode').toUpperCase();
     const notes = (document.getElementById('mf-notes') as HTMLTextAreaElement).value.trim();
     const planId = (form.querySelector('input[name="plan"]:checked') as HTMLInputElement | null)?.value;
@@ -488,7 +532,32 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
       if (err) { err.textContent = `Nearly there – we just need ${problems.join(', ')}.`; err.hidden = false; }
       return;
     }
-    const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    if (action === 'pay' && payBtn && !payBtn.hidden) {
+      payBtn.disabled = true;
+      const label = payBtn.textContent;
+      payBtn.textContent = 'Opening secure payment…';
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/membership-checkout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+          body: JSON.stringify({ plan: plan?.id, name, email, phone, postcode, notes }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.url) {
+          window.dispatchEvent(new CustomEvent('fettle:lead', { detail: { kind: `membership checkout – ${plan?.name}` } }));
+          location.href = data.url;
+          return;
+        }
+        if (data.error === 'far') setFar(true, postcode.replace(/\s*\d[A-Z]{2}$/, ''));
+        else if (err) { err.textContent = data.error || 'The payment page didn’t open. Please try again, or ask us to call you first.'; err.hidden = false; }
+      } catch {
+        if (err) { err.textContent = 'The payment page didn’t open. Please try again, or ask us to call you first.'; err.hidden = false; }
+      }
+      payBtn.disabled = false;
+      payBtn.textContent = label;
+      return;
+    }
+    const btn = reqBtn ?? (form.querySelector('button[type="submit"]') as HTMLButtonElement);
     btn.disabled = true;
     const { error } = await supabase.from('contact_submissions').insert({
       full_name: name,

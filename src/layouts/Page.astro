@@ -9,8 +9,9 @@ import '../styles/site.css';
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, noindex } = Astro.props;
 const path = Astro.url.pathname;
 
 const nav = [
@@ -54,7 +55,7 @@ const footerCols = [
 ];
 ---
 
-<Base title={title} description={description}>
+<Base title={title} description={description} noindex={noindex}>
   <slot name="head" slot="head" />
   <header class="site-header">
     <div class="wrap">

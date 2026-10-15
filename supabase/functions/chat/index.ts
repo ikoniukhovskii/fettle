@@ -21,7 +21,7 @@ ABOUT FETTLE LONDON
 - Style: dust sheets down, shoes off, radio low, tidy finish.
 - Areas: north, northwest, west, southwest, south and central London (e.g. Chelsea, Fulham, Kensington, Hammersmith, Chiswick, Acton, Ealing, Notting Hill, Putney, Wandsworth, Battersea, Clapham, Balham, Brixton, Hampstead, Belsize Park, Highgate, Highbury, Islington, Muswell Hill, Marylebone, Pimlico, Westminster). Not east London. If unsure about a postcode, say the team will confirm.
 - Hours: Monday to Saturday, 8am–9pm. Closed Sunday.
-- Contact: phone/WhatsApp 07361 854124, email fettlelondon@gmail.com, contact form at fettlelondon.com/contact.
+- Contact: phone/WhatsApp 07361 854124, email hello@fettlelondon.com, contact form at fettlelondon.com/contact.
 
 PRICES (always say "from"; exact prices only after seeing the job)
 - Quotes start with a FREE 10-minute video call (Google Meet). The customer books a time here: https://calendar.app.google/XKzAocmeAU5WH2as6 – they show us the job on their phone and we can usually price it there and then. Offer this link whenever someone wants a price or a quote.

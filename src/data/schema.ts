@@ -17,7 +17,7 @@ export const BUSINESS_SCHEMA = {
   image: `${SITE}/og-image.jpg`,
   foundingDate: '2023',
   telephone: '+447361854124',
-  email: 'fettlelondon@gmail.com',
+  email: 'hello@fettlelondon.com',
   priceRange: '£30–£520',
   currenciesAccepted: 'GBP',
   address: { '@type': 'PostalAddress', addressLocality: 'London', addressCountry: 'GB' },

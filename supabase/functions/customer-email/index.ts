@@ -14,9 +14,16 @@ const REPLY_TO = 'fettlelondon@gmail.com';
 const VIDEO_CALL_URL = 'https://calendar.app.google/XKzAocmeAU5WH2as6';
 const SITE = 'https://www.fettlelondon.com';
 
-const C = { cream: '#F1E8D8', ink: '#2B2723', rust: '#B34426', tan: '#E7DCC6', muted: '#6B645C', line: '#DDD2BE' };
-const SERIF = "Georgia, 'Times New Roman', serif";
-const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+// Exactly the website's tokens (src/styles/tokens/colors.css). Muted and hairline are the site's
+// ink-60 / ink-12 alphas, pre-mixed onto white because email apps don't all handle rgba.
+const C = { cream: '#F1E8D8', ink: '#2B2723', rust: '#B34426', brick: '#97381E', tan: '#E7DCC6', white: '#FFFFFF', muted: '#7C7977', faint: '#A9A7A4', line: '#E6E5E4' };
+// The website's fonts. Apple Mail and iPhone load them; Gmail and Outlook fall back to the next font.
+const DISPLAY = "'Bricolage Grotesque', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+const SANS = "'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+const FONTS = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Work+Sans:wght@400;500;600;700&display=swap';
+// Header and signature are images, so the logo and the handwritten "Ilia" look right everywhere, Gmail included.
+const HEADER_IMG = `${SITE}/email/header.png`;
+const SIGNATURE_IMG = `${SITE}/email/signature.png`;
 
 // ---------- helpers ----------
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
@@ -27,43 +34,39 @@ const firstName = (full: string) => {
   return f ? f.charAt(0).toUpperCase() + f.slice(1) : '';
 };
 
-type Mail = { subject: string; preheader: string; heading: string; paras: string[]; steps?: string[]; button?: { label: string; href: string }; after?: string };
+type Mail = { eyebrow: string; subject: string; preheader: string; heading: string; paras: string[]; steps?: string[]; button?: { label: string; href: string }; after?: string };
 
 function html(m: Mail, hi: string) {
-  const p = (t: string) => `<p style="margin:0 0 16px;font:16px/1.6 ${SANS};color:${C.ink}">${t}</p>`;
+  const p = (t: string) => `<p style="margin:0 0 16px;font-family:${SANS};font-size:16px;line-height:1.65;color:${C.ink}">${t}</p>`;
   const steps = m.steps?.length
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 22px;border-top:1px solid ${C.line}">${m.steps
-        .map((s, i) => `<tr><td valign="top" style="padding:12px 14px 12px 0;border-bottom:1px solid ${C.line};font:bold 15px ${SERIF};color:${C.rust};width:28px">${String(i + 1).padStart(2, '0')}</td><td style="padding:12px 0;border-bottom:1px solid ${C.line};font:15px/1.55 ${SANS};color:${C.ink}">${s}</td></tr>`)
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 24px;border-top:1px solid ${C.line}">${m.steps
+        .map((s, i) => `<tr><td valign="top" style="padding:14px 14px 14px 0;border-bottom:1px solid ${C.line};font-family:${DISPLAY};font-weight:800;font-size:15px;color:${C.rust};width:30px">${String(i + 1).padStart(2, '0')}</td><td style="padding:14px 0;border-bottom:1px solid ${C.line};font-family:${SANS};font-size:15px;line-height:1.6;color:${C.ink}">${s}</td></tr>`)
         .join('')}</table>`
     : '';
   const button = m.button
-    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 24px"><tr><td style="background:${C.rust};border-radius:999px"><a href="${m.button.href}" style="display:inline-block;padding:14px 28px;font:bold 15px ${SANS};color:#ffffff;text-decoration:none">${m.button.label}</a></td></tr></table>`
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 26px"><tr><td style="background:${C.rust};border-radius:999px"><a href="${m.button.href}" style="display:inline-block;padding:15px 30px;font-family:${SANS};font-weight:600;font-size:15px;color:${C.white};text-decoration:none;border-radius:999px">${m.button.label}</a></td></tr></table>`
     : '';
-  return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(m.subject)}</title></head>
+  return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light">
+<title>${esc(m.subject)}</title><link href="${FONTS}" rel="stylesheet"><style>@import url('${FONTS}'); a { color:${C.rust}; }</style></head>
 <body style="margin:0;padding:0;background:${C.cream}">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(m.preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.cream}"><tr><td align="center" style="padding:28px 14px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.cream}"><tr><td align="center" style="padding:32px 14px">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px">
-    <tr><td style="background:${C.ink};border-radius:18px 18px 0 0;padding:26px 32px">
-      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-        <td style="background:${C.rust};border-radius:10px;width:40px;height:40px;text-align:center;font:bold 24px/40px ${SERIF};color:${C.cream}">F</td>
-        <td style="padding-left:14px"><div style="font:bold 24px/1 ${SERIF};letter-spacing:2px;color:${C.cream}">FETTLE</div>
-        <div style="font:10px/1 ${SANS};letter-spacing:3px;color:${C.tan};padding-top:6px">HANDYMAN &amp; HOME MAINTENANCE · LONDON</div></td>
-      </tr></table>
-    </td></tr>
-    <tr><td style="background:#ffffff;padding:34px 32px 18px;border-radius:0 0 18px 18px">
-      <h1 style="margin:0 0 18px;font:bold 26px/1.25 ${SERIF};color:${C.ink}">${m.heading}</h1>
+    <tr><td style="background:${C.ink};border-radius:20px 20px 0 0;line-height:0"><img src="${HEADER_IMG}" width="580" alt="Fettle – Handyman &amp; home maintenance, London" style="display:block;width:100%;max-width:580px;height:auto;border:0;border-radius:20px 20px 0 0;color:${C.cream};font-family:${DISPLAY};font-size:24px;line-height:1.2"></td></tr>
+    <tr><td style="background:${C.white};padding:36px 32px 22px;border-radius:0 0 20px 20px">
+      <p style="margin:0 0 14px;font-family:${SANS};font-weight:700;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:${C.rust}">${m.eyebrow}</p>
+      <h1 style="margin:0 0 22px;font-family:${DISPLAY};font-weight:800;font-size:30px;line-height:1.1;letter-spacing:-0.02em;color:${C.ink}">${m.heading}</h1>
       ${p(hi ? `Hello ${esc(hi)},` : 'Hello,')}
       ${m.paras.map(p).join('')}
       ${steps}${button}
       ${m.after ? p(m.after) : ''}
-      <p style="margin:6px 0 2px;font:italic 26px/1 ${SERIF};color:${C.rust}">Ilia</p>
-      <p style="margin:0 0 22px;font:14px/1.5 ${SANS};color:${C.muted}">Founder, Fettle London</p>
+      <img src="${SIGNATURE_IMG}" width="82" alt="Ilia" style="display:block;width:82px;height:auto;border:0;margin:4px 0 2px;font-family:${SANS};font-size:22px;color:${C.rust}">
+      <p style="margin:0 0 20px;font-family:${SANS};font-size:14px;line-height:1.5;color:${C.muted}">Founder, Fettle London</p>
     </td></tr>
-    <tr><td style="padding:22px 8px 6px;text-align:center;font:13px/1.7 ${SANS};color:${C.muted}">
-      <strong style="color:${C.ink}">07361 854124</strong> · <a href="${SITE}" style="color:${C.rust};text-decoration:none">fettlelondon.com</a><br>
-      Monday to Saturday, 8am–9pm · Just reply to this email to reach us<br>
-      Fettle London · 356A Fulham Road, London SW10 9UH
+    <tr><td style="padding:24px 8px 6px;text-align:center;font-family:${SANS};font-size:13px;line-height:1.75;color:${C.muted}">
+      <strong style="color:${C.ink};font-weight:600">07361 854124</strong> &middot; <a href="${SITE}" style="color:${C.rust};text-decoration:none">fettlelondon.com</a><br>
+      Monday to Saturday, 8am&ndash;9pm &middot; Just reply to this email to reach us<br>
+      <span style="color:${C.faint}">Fettle London &middot; 356A Fulham Road, London SW10 9UH</span>
     </td></tr>
   </table>
 </td></tr></table></body></html>`;
@@ -92,6 +95,7 @@ function choose(topic: string, message = ''): Mail | null {
     const extraName = message.match(/Their extra:\s*([^\n]+)/)?.[1]?.trim();
     const extra = extraName ? `. Your extra this year: <strong>${esc(extraName)}</strong> – we’ll plan it in on the welcome call` : '';
     return {
+      eyebrow: 'Membership',
       subject: 'Welcome to Fettle Membership',
       preheader: `You’re on the list – ${plan}. Here’s what happens next.`,
       heading: 'Welcome to the list.',
@@ -110,6 +114,7 @@ function choose(topic: string, message = ''): Mail | null {
 
   if (/^Membership payment FAILED/i.test(topic)) {
     return {
+      eyebrow: 'Your membership',
       subject: 'A quick note about your Fettle payment',
       preheader: 'Your latest membership payment didn’t go through – nothing to worry about.',
       heading: 'A quick note about your payment.',
@@ -124,6 +129,7 @@ function choose(topic: string, message = ''): Mail | null {
   if (/^Membership request/i.test(topic)) {
     const plan = topic.match(/^Membership request\s*–\s*([^(]+?)\s*\(/)?.[1] ?? 'membership';
     return {
+      eyebrow: 'Membership request',
       subject: 'Your place on the list – Fettle',
       preheader: 'Thanks for asking about Fettle Membership – I’ll call you shortly.',
       heading: 'Thank you – you’re on our list.',
@@ -139,6 +145,7 @@ function choose(topic: string, message = ''): Mail | null {
   if (/^Made to Measure request/i.test(topic)) {
     const est = topic.match(/est\.\s*(£[\d,]+–£[\d,]+\/month)/)?.[1];
     return {
+      eyebrow: 'Made to Measure',
       subject: 'Your Made to Measure plan – Fettle',
       preheader: 'Your written proposal is on its way within 24 hours.',
       heading: 'Your plan is being put together.',
@@ -152,7 +159,8 @@ function choose(topic: string, message = ''): Mail | null {
 
   // Anything else: the contact form.
   return {
-    subject: 'Thanks for getting in touch – Fettle',
+    eyebrow: 'Message received',
+      subject: 'Thanks for getting in touch – Fettle',
     preheader: 'We’ve got your message and will reply within a working day.',
     heading: 'Thanks – we’ve got your message.',
     paras: [

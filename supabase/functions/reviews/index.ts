@@ -120,7 +120,7 @@ function emailHtml(o: { subject: string; preheader: string; eyebrow: string; hea
     <tr><td style="padding:24px 8px 6px;text-align:center;font-family:${SANS};font-size:13px;line-height:1.75;color:${C.muted}">
       <strong style="color:${C.ink};font-weight:600">07361 854124</strong> &middot; <a href="${SITE}" style="color:${C.rust};text-decoration:none">fettlelondon.com</a><br>
       ${o.foot}<br>
-      <span style="color:${C.faint}">Fettle London &middot; 356A Fulham Road, London SW10 9UH</span>
+      <span style="color:${C.faint}">Fettle London &middot; London SW10 9UH</span>
     </td></tr>
   </table>
 </td></tr></table></body></html>`;

@@ -52,7 +52,12 @@ Deno.serve(async (req) => {
       job = rest.slice((own.index ?? 0) + own[0].length).replace(/^[\s–—:-]+/, '').trim();
     } else {
       email = quoted.match(EMAIL)?.[0] ?? '';
-      name = quoted.match(/(?:^|\n)\s*(?:👤\s*)?(?:name|from)\s*[:\-–]\s*([^\n]+)/i)?.[1]?.trim() ?? '';
+      name = quoted.match(/(?:^|\n)\s*(?:👤\s*)?(?:name|from)\s*[:\-–]\s*([^\n]+)/i)?.[1]?.trim()
+        ?? quoted.match(/Already asked (.+?) \(/)?.[1]?.trim() ?? '';
+    }
+    if (!email && force) {
+      await send('To send it again, hold my “Already asked…” message, tap Reply, and write "done again" there – that’s how I know which customer you mean.', msg.message_id);
+      return new Response('ok');
     }
     if (!email) {
       await send('I couldn’t find an email address for that. Either swipe-reply "done" to the customer’s enquiry alert, or send:\n\n/done Jane Smith jane@email.com fixed the bathroom tap', msg.message_id);
@@ -69,7 +74,7 @@ Deno.serve(async (req) => {
       const when = at.getTime() <= Date.now() + 60_000 ? 'now' : at.toLocaleString('en-GB', { weekday: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
       await send(`⭐ Review request for ${name || email}${job ? ` (${job})` : ''} – email goes out ${when === 'now' ? 'now' : `at ${when}`}. One reminder in 3 days if they don't answer.`, msg.message_id);
     } else if (j.duplicate) {
-      await send(`${j.error}\n\nReply "done again" to send it anyway.`, msg.message_id);
+      await send(`${j.error}\n\nTo send it anyway, swipe-reply "done again" to this message.`, msg.message_id);
     } else {
       await send(`Couldn’t set up the review request: ${j.error ?? 'the reviews function didn’t answer'}.`, msg.message_id);
     }

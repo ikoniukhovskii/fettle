@@ -19,7 +19,7 @@ import Page from '../layouts/Page.astro';
           <span class="pill"><span class="dot"></span>Tidy finish</span>
         </div>
 
-        <div class="quote-grid">
+        <div class="quote-grid" id="quote-grid">
           <figure class="quote">
             <span class="mark" aria-hidden="true">&ldquo;</span>
             <p>They knew where our stopcock was before we did. Three winters in and it is the same two faces every time, which is rather the whole point.</p>
@@ -82,3 +82,19 @@ import Page from '../layouts/Page.astro';
       </div>
     </section>
 </Page>
+
+<script>
+  // Reviews you've published from /send-review appear first, newest on top.
+  import { fetchPublishedReviews } from '../data/published-reviews';
+  const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  fetchPublishedReviews().then((list) => {
+    const grid = document.getElementById('quote-grid');
+    if (!grid || !list.length) return;
+    grid.insertAdjacentHTML('afterbegin', list.map((r) => `
+      <figure class="quote">
+        <span class="mark" aria-hidden="true">&ldquo;</span>
+        <p>${esc(r.q)}</p>
+        <figcaption class="who"><span class="name">${esc(r.who)}</span>${r.meta ? `<span class="meta">${esc(r.meta)}</span>` : ''}</figcaption>
+      </figure>`).join(''));
+  });
+</script>

@@ -24,6 +24,7 @@ import Page from '../layouts/Page.astro';
         <form class="sr-card" id="sr-form">
           <label>Customer’s name<input id="sr-name" type="text" maxlength="80" autocomplete="off" placeholder="Jane Smith" required /></label>
           <label>Their email<input id="sr-email" type="email" maxlength="160" autocomplete="off" placeholder="jane@email.com" required /></label>
+          <label>Their area <em>(optional – postcode start, e.g. SW10; shown if you publish their review)</em><input id="sr-area" type="text" maxlength="8" autocomplete="off" placeholder="SW10" /></label>
           <label>What did we do? <em>(optional – shows in the email)</em><input id="sr-job" type="text" maxlength="160" autocomplete="off" placeholder="fixed the bathroom tap and hung two mirrors" /></label>
           <fieldset class="sr-when">
             <legend>Send it</legend>
@@ -77,6 +78,9 @@ import Page from '../layouts/Page.astro';
   .sr-t .tag.bad { background: var(--rust-tint); color: var(--brick); }
   .sr-link { border: 0; background: none; color: var(--ink-60); text-decoration: underline; cursor: pointer; font: inherit; font-size: 14px; }
   .sr-empty { color: var(--ink-60); font-size: 14px; }
+  .sr-pub { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+  .sr-area { width: 70px; padding: 6px 8px; border-radius: 8px; border: 1.5px solid var(--ink-12); background: var(--cream); font: inherit; font-size: 13px; text-transform: uppercase; }
+  .sr-pubbtn { padding: 7px 14px !important; font-size: 13px !important; min-height: 0 !important; }
 </style>
 
 <script>
@@ -108,6 +112,15 @@ import Page from '../layouts/Page.astro';
     return `<span class="tag ${r.status === 'failed' ? 'bad' : ''}">${esc(map[r.status] || r.status)}</span>`;
   }
 
+  function publishCell(r: any) {
+    if (!r.feedback) return '';
+    if (!r.can_publish) return '<br><span class="tag">Private</span>';
+    if (r.published) return `<div class="sr-pub"><span class="tag good">✓ Live on the website</span> <button type="button" class="sr-link" data-unpublish="${r.id}">Unpublish</button></div>`;
+    return `<div class="sr-pub"><span class="tag good">OK for website</span>
+      <input class="sr-area" data-area-for="${r.id}" value="${esc(r.area || '')}" placeholder="Area" maxlength="8" aria-label="Area shown with the review" />
+      <button type="button" class="btn primary sr-pubbtn" data-publish="${r.id}">Publish</button></div>`;
+  }
+
   async function list() {
     const { requests } = await call({ action: 'list' });
     $('sr-login').hidden = true; $('sr-body').hidden = false;
@@ -118,15 +131,21 @@ import Page from '../layouts/Page.astro';
         <td><b>${esc(r.name || '–')}</b><br><span class="fb">${esc(r.email || '')}${r.job ? `<br>${esc(r.job)}` : ''}</span></td>
         <td>${statusTag(r)}${r.google_clicked_at ? '<br><span class="tag good">Went to Google</span>' : ''}</td>
         <td class="stars">${r.rating ? '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating) : ''}</td>
-        <td class="fb">${esc(r.feedback || '')}${r.feedback && r.can_publish ? '<br><span class="tag good">OK for website</span>' : ''}</td>
+        <td class="fb">${esc(r.feedback || '')}${publishCell(r)}</td>
         <td>${r.status === 'scheduled' || (r.status === 'sent' && !r.rating) ? `<button type="button" class="sr-link" data-cancel="${r.id}">Cancel</button>` : ''}</td>
       </tr>`).join('');
   }
 
   $('sr-list').addEventListener('click', async (e: Event) => {
-    const id = (e.target as HTMLElement).dataset?.cancel;
-    if (!id) return;
-    await call({ action: 'cancel', id: Number(id) }).catch(() => {});
+    const d = (e.target as HTMLElement).dataset || {};
+    try {
+      if (d.cancel) await call({ action: 'cancel', id: Number(d.cancel) });
+      else if (d.unpublish) await call({ action: 'unpublish', id: Number(d.unpublish) });
+      else if (d.publish) {
+        const area = (document.querySelector(`[data-area-for="${d.publish}"]`) as HTMLInputElement)?.value || '';
+        await call({ action: 'publish', id: Number(d.publish), area });
+      } else return;
+    } catch (err: any) { alert(err.message); }
     list();
   });
 
@@ -143,7 +162,7 @@ import Page from '../layouts/Page.astro';
     const when = (document.querySelector('input[name=when]:checked') as HTMLInputElement).value;
     $('sr-go').disabled = true;
     try {
-      const j = await call({ action: 'create', name: $('sr-name').value, email: $('sr-email').value, job: $('sr-job').value, when, force });
+      const j = await call({ action: 'create', name: $('sr-name').value, email: $('sr-email').value, job: $('sr-job').value, area: $('sr-area').value, when, force });
       const at = new Date(j.send_at);
       msg.textContent = `✓ Done – ${at.getTime() <= Date.now() + 60000 ? 'the email is on its way now' : `it goes out ${fmt(j.send_at)}`}.`;
       msg.classList.add('ok'); msg.hidden = false;

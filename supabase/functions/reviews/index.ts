@@ -4,7 +4,8 @@
 // if they haven't answered. Every rating and comment pings Ilia on Telegram.
 //
 // Who calls it:
-//   /send-review page (password)          → create, list, cancel
+//   /send-review page (password)          → create, list, cancel, publish, unpublish
+//   /testimonials + homepage (public)      → published (only reviews you've tapped Publish on)
 //   telegram-webhook ("done" reply)        → create (with the same password, read from secrets)
 //   /review page (customer, email link)    → view, rate, feedback, google
 //   /review page (QR card, no email link)  → start
@@ -180,6 +181,7 @@ async function admin(b: Body) {
 
 async function create(b: Body) {
   const name = clean(b.name, 80), email = String(b.email ?? '').trim().toLowerCase().slice(0, 160), job = clean(b.job, 160);
+  const area = clean(b.area, 12).toUpperCase();
   if (!isEmail(email)) return { status: 400, body: { error: 'That email address doesn’t look right.' } };
   const source = b.source === 'telegram' ? 'telegram' : 'form';
   // Don't ask the same person twice within 30 days (unless forced).
@@ -192,7 +194,7 @@ async function create(b: Body) {
     }
   }
   const send_at = b.when === 'now' ? new Date() : sameEvening();
-  const { data, error } = await sb.from('review_requests').insert({ source, name: name || null, email, job: job || null, send_at: send_at.toISOString() }).select('id,send_at').single();
+  const { data, error } = await sb.from('review_requests').insert({ source, name: name || null, email, job: job || null, area: area || null, send_at: send_at.toISOString() }).select('id,send_at').single();
   if (error) return { status: 500, body: { error: error.message } };
   // If it's due right away, send it now rather than waiting for the 10-minute run.
   if (send_at.getTime() <= Date.now() + 60_000) await runDue();
@@ -240,7 +242,7 @@ async function handle(b: Body) {
 
     case 'list': {
       if (!(await admin(b))) return { status: 401, body: { error: 'Wrong password.' } };
-      const { data, error } = await sb.from('review_requests').select('id,created_at,source,name,email,job,status,send_at,sent_at,reminded_at,opened_at,rating,feedback,can_publish,google_clicked_at').order('created_at', { ascending: false }).limit(60);
+      const { data, error } = await sb.from('review_requests').select('id,created_at,source,name,email,job,area,status,send_at,sent_at,reminded_at,opened_at,rating,feedback,can_publish,google_clicked_at,published,published_at').order('created_at', { ascending: false }).limit(60);
       if (error) return { status: 500, body: { error: error.message } };
       return { status: 200, body: { requests: data } };
     }
@@ -249,6 +251,34 @@ async function handle(b: Body) {
       if (!(await admin(b))) return { status: 401, body: { error: 'Wrong password.' } };
       await sb.from('review_requests').update({ status: 'cancelled' }).eq('id', Number(b.id)).in('status', ['scheduled', 'sent']);
       return { status: 200, body: { ok: true } };
+    }
+
+    case 'publish': {
+      if (!(await admin(b))) return { status: 401, body: { error: 'Wrong password.' } };
+      const area = clean(b.area, 12).toUpperCase();
+      const { data, error } = await sb.from('review_requests')
+        .update({ published: true, published_at: new Date().toISOString(), ...(area ? { area } : {}) })
+        .eq('id', Number(b.id)).eq('can_publish', true).not('feedback', 'is', null).select('id');
+      if (error) return { status: 500, body: { error: error.message } };
+      if (!data?.length) return { status: 400, body: { error: 'Only reviews the customer said are OK for the website can be published.' } };
+      return { status: 200, body: { ok: true } };
+    }
+
+    case 'unpublish': {
+      if (!(await admin(b))) return { status: 401, body: { error: 'Wrong password.' } };
+      await sb.from('review_requests').update({ published: false }).eq('id', Number(b.id));
+      return { status: 200, body: { ok: true } };
+    }
+
+    case 'published': {
+      // Public: only reviews you've tapped Publish on. First name, area and month only.
+      const { data } = await sb.from('review_requests').select('name,area,feedback,published_at').eq('published', true).eq('can_publish', true).order('published_at', { ascending: false }).limit(30);
+      const reviews = (data ?? []).filter((r) => r.feedback).map((r) => ({
+        q: String(r.feedback).trim(),
+        who: firstName(r.name) || 'A Fettle customer',
+        meta: [r.area, new Date(r.published_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'Europe/London' })].filter(Boolean).join(' · '),
+      }));
+      return { status: 200, body: { reviews } };
     }
 
     case 'view': {

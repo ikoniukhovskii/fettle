@@ -3,6 +3,7 @@ import { lookupCoords, milesFromBase, travelBand, travelNote } from '../../data/
 import { createClient } from '@supabase/supabase-js';
 import { logEvent, isOwner } from '../../data/track';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../data/supabase-config';
+import { fetchPublishedReviews } from '../../data/published-reviews';
 import heroDrawingRoomAsset from '../../assets/img/hero-drawing-room.webp';
 const heroDrawingRoom = heroDrawingRoomAsset.src;
 import kitchenGardenAsset from '../../assets/img/kitchen-garden.webp';
@@ -1382,7 +1383,14 @@ function KindWords({ t, m }) {
   // The list is repeated enough times to cover any screen width, and we slide by exactly one
   // copy, so the loop never shows a seam or an empty gap – however wide the screen or far you drag.
   const [copies, setCopies] = React.useState(3);
-  const loop = Array.from({ length: copies }, () => REVIEWS).flat();
+  // Newest published customer reviews go first, then the original six.
+  const [list, setList] = React.useState(REVIEWS);
+  React.useEffect(() => {
+    let live = true;
+    fetchPublishedReviews().then((pub) => { if (live && pub.length) setList([...pub, ...REVIEWS]); });
+    return () => { live = false; };
+  }, []);
+  const loop = Array.from({ length: copies }, () => list).flat();
   const viewRef = React.useRef(null);
   const trackRef = React.useRef(null);
 
@@ -1402,9 +1410,9 @@ function KindWords({ t, m }) {
     const GAP = 20;
     const measure = () => {
       const cards = track.children;
-      if (cards.length < REVIEWS.length + 1) return;
+      if (cards.length < list.length + 1) return;
       // One copy = distance from the first card to the first card of the next copy.
-      half = cards[REVIEWS.length].offsetLeft - cards[0].offsetLeft;
+      half = cards[list.length].offsetLeft - cards[0].offsetLeft;
       if (!half) half = track.scrollWidth / copies + GAP / copies;
       const need = Math.ceil(view.clientWidth / half) + 2;
       if (need !== copies) setCopies(need);
@@ -1488,7 +1496,7 @@ function KindWords({ t, m }) {
       view.removeEventListener('wheel', wheel);
       view.removeEventListener('dragstart', noDragGhost);
     };
-  }, [copies]);
+  }, [copies, list.length]);
 
   return (
     <section id="kind-words" data-screen-label="Kind words" className="kw" style={{ position: 'relative', zIndex: 1, padding: `calc(clamp(40px, 6vw, 88px) * ${sf}) 0 calc(clamp(56px, 7vw, 96px) * ${sf})` }}>
@@ -1501,12 +1509,12 @@ function KindWords({ t, m }) {
       <div className="kw-viewport" ref={viewRef} aria-label="Reviews from Fettle clients – drag or swipe to spin">
         <div className="kw-track" ref={trackRef}>
           {loop.map((r, i) => (
-            <figure className="kw-card" key={i} aria-hidden={i >= REVIEWS.length ? 'true' : undefined}>
+            <figure className="kw-card" key={i} aria-hidden={i >= list.length ? 'true' : undefined}>
               <span className="kw-mark" aria-hidden="true">“</span>
               <blockquote>{r.q}</blockquote>
               <figcaption>
                 <span className="kw-who">{r.who}</span>
-                <span className="kw-where">{r.where} · Client since {r.since}</span>
+                <span className="kw-where">{r.meta ?? `${r.where} · Client since ${r.since}`}</span>
               </figcaption>
             </figure>
           ))}

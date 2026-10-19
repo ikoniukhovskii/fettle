@@ -63,10 +63,13 @@ Deno.serve(async (req) => {
       await send('I couldn’t find an email address for that. Either swipe-reply "done" to the customer’s enquiry alert, or send:\n\n/done Jane Smith jane@email.com fixed the bathroom tap', msg.message_id);
       return new Response('ok');
     }
+    // Postcode district for the website quote (e.g. "SW10"), if the alert has a postcode in it.
+    const area = (quoted.match(/\b([A-Z]{1,2}\d[A-Z\d]?)\s*\d[A-Z]{2}\b/i)?.[1]
+      ?? quoted.match(/postcode\s*[:\-–]?\s*([A-Z]{1,2}\d[A-Z\d]?)\b/i)?.[1] ?? '').toUpperCase();
     const res = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/reviews`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'create', source: 'telegram', password: Deno.env.get('INSIGHTS_PASSWORD'), name, email, job, force }),
+      body: JSON.stringify({ action: 'create', source: 'telegram', password: Deno.env.get('INSIGHTS_PASSWORD'), name, email, job, area, force }),
     }).catch(() => null);
     const j = res ? await res.json().catch(() => ({})) : {};
     if (res?.ok) {

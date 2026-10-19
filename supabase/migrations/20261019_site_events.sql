@@ -25,6 +25,7 @@ create policy "anyone can add an event" on public.site_events
   with check (type in ('postcode_check', 'lead', 'video_call_click', 'call_click', 'whatsapp_click'));
 
 grant insert on public.site_events to anon, authenticated;
+grant select, insert, update, delete on public.site_events to service_role;  -- lets the insights function read it
 -- No select policy on purpose: the data is private to you.
 
 -- Tidy-up (matches the privacy page): events older than 12 months can be deleted with

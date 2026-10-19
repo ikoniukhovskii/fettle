@@ -60,6 +60,7 @@ import Page from '../layouts/Page.astro';
 
 
 <style is:global>
+  .fettle-tiles { filter: grayscale(1) sepia(.25) brightness(1.06) contrast(.9); }
   .ins { padding: clamp(48px, 7vw, 88px) 0 clamp(64px, 8vw, 110px); }
   .ins-h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 5vw, 56px); line-height: 1.04; letter-spacing: -.02em; margin: 0; }
   .ins-lede { max-width: 60ch; color: var(--ink-60); margin: 14px 0 30px; }
@@ -182,7 +183,7 @@ import Page from '../layouts/Page.astro';
     const L: any = Leaf;
     if (!map) {
       map = L.map('ins-map', { scrollWheelZoom: false }).setView([51.495, -0.18], 11);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 18 }).addTo(map);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 18, className: 'fettle-tiles' }).addTo(map);
       L.circleMarker([51.4835, -0.183], { radius: 6, color: '#2B2723', weight: 2, fillColor: '#F1E8D8', fillOpacity: 1 }).addTo(map).bindTooltip('Fettle · SW10');
     }
     if (layer) layer.remove();

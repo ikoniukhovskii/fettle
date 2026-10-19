@@ -8,5 +8,5 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://www.fettlelondon.com',
   trailingSlash: 'never',
-  integrations: [react(), sitemap({ filter: (page) => !page.includes('/membership/welcome') && !page.includes('/insights') })]
+  integrations: [react(), sitemap({ filter: (page) => !page.includes('/membership/welcome') && !page.includes('/insights') && !page.includes('/review') && !page.includes('/send-review') })]
 });

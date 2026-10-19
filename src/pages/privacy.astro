@@ -27,6 +27,7 @@ import Page from '../layouts/Page.astro';
             <li><strong>When you check a postcode:</strong> the area part of your postcode (for example &ldquo;SW10&rdquo;), so we can tell you whether we cover it, and which page you were on.</li>
             <li><strong>When you get in touch or tap to call:</strong> a note that it happened (an enquiry, a tap on our phone number, WhatsApp or the video-call link), with the page and time. If you&rsquo;ve accepted analytics cookies, these are linked by a random ID kept in your browser; otherwise nothing links one visit to the next.</li>
             <li><strong>When we visit:</strong> notes on what needs doing at your home, so we can price and plan the work.</li>
+            <li><strong>After a job:</strong> one short &ldquo;How did we do?&rdquo; email (and at most one reminder), and the rating and any comment you choose to give. We only show your words on our website if you tick the box saying we can, and then with your first name only.</li>
             <li><strong>When you browse:</strong> anonymous visit counts (which pages are viewed, roughly where from). No cookies, and nothing that identifies you.</li>
             {TRACKING_ENABLED && <li><strong>Only if you agree to analytics cookies:</strong> how you use the site (pages, clicks, device, approximate location) through the services listed below, so we can improve it and measure our adverts.</li>}
           </ul>
@@ -51,6 +52,7 @@ import Page from '../layouts/Page.astro';
             {TRACKERS.metaPixel && <li><strong>Meta (Facebook &amp; Instagram)</strong> &ndash; measures visits from our adverts, only if you accept analytics cookies.</li>}
             {TRACKERS.clarity && <li><strong>Microsoft Clarity</strong> &ndash; anonymous heatmaps and session replays that show how pages are used, only if you accept analytics cookies.</li>}
             <li><strong>Stripe</strong> &ndash; takes membership payments by card or Direct Debit. Your card or bank details go straight to Stripe; we never see or store them.</li>
+            <li><strong>Resend</strong> &ndash; sends our emails to you, such as replies to enquiries and the &ldquo;How did we do?&rdquo; email after a job.</li>
             <li><strong>Postcodes.io</strong> &ndash; checks that a postcode you enter is real. Only the postcode is sent.</li>
             <li><strong>Google (Gmail) and WhatsApp</strong> &ndash; if you email or message us, those conversations are held by those services.</li>
           </ul>

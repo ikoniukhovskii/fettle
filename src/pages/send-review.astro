@@ -1,0 +1,161 @@
+---
+// Private: after a job, enter the customer's name + email and they get the
+// "How did we do?" email at 6:30pm. Same password as /insights.
+import Page from '../layouts/Page.astro';
+---
+
+<Page title="Ask for a review | Fettle London" description="Private review requests." noindex>
+  <section class="sr">
+    <div class="wrap sr-wrap">
+      <p class="eyebrow">Private · only for you</p>
+      <h1 class="sr-h1">Job done? Ask for a review.</h1>
+      <p class="sr-lede">They get a Fettle “How did we do?” email at 6:30pm today (straight away if it’s already evening), and one reminder three days later if they don’t answer. Every rating pings you on Telegram.</p>
+
+      <form class="sr-card sr-login" id="sr-login" hidden>
+        <label for="sr-pass">Password <em>(same as Insights)</em></label>
+        <div class="sr-row">
+          <input id="sr-pass" type="password" autocomplete="current-password" required />
+          <button class="btn primary" type="submit">Open</button>
+        </div>
+        <p class="sr-err" id="sr-lerr" hidden></p>
+      </form>
+
+      <div id="sr-body" hidden>
+        <form class="sr-card" id="sr-form">
+          <label>Customer’s name<input id="sr-name" type="text" maxlength="80" autocomplete="off" placeholder="Jane Smith" required /></label>
+          <label>Their email<input id="sr-email" type="email" maxlength="160" autocomplete="off" placeholder="jane@email.com" required /></label>
+          <label>What did we do? <em>(optional – shows in the email)</em><input id="sr-job" type="text" maxlength="160" autocomplete="off" placeholder="fixed the bathroom tap and hung two mirrors" /></label>
+          <fieldset class="sr-when">
+            <legend>Send it</legend>
+            <label><input type="radio" name="when" value="evening" checked /> This evening, 6:30pm</label>
+            <label><input type="radio" name="when" value="now" /> Right now</label>
+          </fieldset>
+          <button class="btn primary" type="submit" id="sr-go">Schedule the review email</button>
+          <p class="sr-msg" id="sr-msg" hidden></p>
+        </form>
+
+        <div class="sr-card">
+          <h2>Recent requests</h2>
+          <div class="sr-scroll"><table class="sr-t" id="sr-list"></table></div>
+        </div>
+        <p><button type="button" class="sr-link" id="sr-logout">Sign out on this device</button></p>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style is:global>
+  .sr { padding: clamp(44px, 7vw, 88px) 0 clamp(64px, 8vw, 110px); }
+  .sr-wrap { max-width: 860px; }
+  .sr-h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(34px, 5vw, 52px); line-height: 1.05; letter-spacing: -.02em; margin: 0; }
+  .sr-lede { color: var(--ink-60); margin: 14px 0 26px; max-width: 62ch; }
+  .sr-card { background: var(--white); border-radius: 20px; padding: 22px; border: 1px solid var(--ink-08); margin-bottom: 16px; }
+  .sr-card h2 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0 0 10px; }
+  .sr-card > label, .sr-login label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 14px; }
+  .sr-card em { font-style: normal; font-weight: 400; color: var(--ink-60); }
+  .sr-card input[type=text], .sr-card input[type=email], .sr-card input[type=password] { display: block; width: 100%; box-sizing: border-box; margin-top: 7px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--ink-12); background: var(--cream); font: inherit; font-weight: 400; }
+  .sr-login { max-width: 420px; }
+  .sr-row { display: flex; gap: 10px; }
+  .sr-row input { flex: 1; margin-top: 0 !important; }
+  .sr-when { border: 0; padding: 0; margin: 4px 0 18px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .sr-when legend { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .sr-when label { font-size: 15px; display: inline-flex; gap: 8px; align-items: center; }
+  .sr-when input { accent-color: var(--rust); }
+  .sr-err { color: var(--brick); font-size: 14px; margin: 12px 0 0; }
+  .sr-msg { margin: 14px 0 0; font-size: 15px; }
+  .sr-msg.ok { color: var(--sage); font-weight: 600; }
+  .sr-msg.bad { color: var(--brick); }
+  .sr-msg button { margin-left: 8px; }
+  .sr-scroll { overflow-x: auto; }
+  .sr-t { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .sr-t th { text-align: left; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-40); font-weight: 600; padding: 6px 10px 8px 0; border-bottom: 1px solid var(--ink-12); white-space: nowrap; }
+  .sr-t td { padding: 9px 10px 9px 0; border-bottom: 1px dashed var(--ink-12); vertical-align: top; }
+  .sr-t .stars { color: var(--rust); letter-spacing: 1px; white-space: nowrap; }
+  .sr-t .fb { color: var(--ink-60); font-size: 13px; max-width: 280px; }
+  .sr-t .tag { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--tan-pill); white-space: nowrap; }
+  .sr-t .tag.good { background: var(--sage-tint); color: var(--sage); }
+  .sr-t .tag.bad { background: var(--rust-tint); color: var(--brick); }
+  .sr-link { border: 0; background: none; color: var(--ink-60); text-decoration: underline; cursor: pointer; font: inherit; font-size: 14px; }
+  .sr-empty { color: var(--ink-60); font-size: 14px; }
+</style>
+
+<script>
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
+  const KEY = 'fettle-insights'; // shared with /insights, so one login covers both
+  const $ = (id: string) => document.getElementById(id) as any;
+  const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+
+  async function call(body: Record<string, unknown>) {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ ...body, password: localStorage.getItem(KEY) || '' }),
+    }).catch(() => null);
+    const j = res ? await res.json().catch(() => ({})) : { error: 'Couldn’t reach the server.' };
+    if (res?.status === 401) { localStorage.removeItem(KEY); showLogin(j.error); throw new Error(j.error); }
+    if (!res || !res.ok) { const e: any = new Error(j.error || 'Something went wrong.'); e.duplicate = j.duplicate; throw e; }
+    return j;
+  }
+  function showLogin(msg?: string) {
+    $('sr-login').hidden = false; $('sr-body').hidden = true;
+    if (msg) { $('sr-lerr').textContent = msg; $('sr-lerr').hidden = false; }
+  }
+
+  const fmt = (iso: string | null) => iso ? new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' }) : '';
+  function statusTag(r: any) {
+    if (r.rating) return `<span class="tag ${r.rating >= 4 ? 'good' : 'bad'}">Rated</span>`;
+    const map: Record<string, string> = { scheduled: `Sends ${fmt(r.send_at)}`, sent: r.opened_at ? 'Opened' : 'Sent', reminded: r.opened_at ? 'Opened' : 'Reminded', cancelled: 'Cancelled', failed: 'Email failed' };
+    return `<span class="tag ${r.status === 'failed' ? 'bad' : ''}">${esc(map[r.status] || r.status)}</span>`;
+  }
+
+  async function list() {
+    const { requests } = await call({ action: 'list' });
+    $('sr-login').hidden = true; $('sr-body').hidden = false;
+    if (!requests.length) { $('sr-list').innerHTML = '<tr><td class="sr-empty">No requests yet – your first one will show here.</td></tr>'; return; }
+    $('sr-list').innerHTML = '<tr><th>When</th><th>Customer</th><th>Status</th><th>Rating</th><th>What they said</th><th></th></tr>' + requests.map((r: any) => `
+      <tr>
+        <td>${fmt(r.created_at)}${r.source === 'qr' ? '<br><span class="tag">QR card</span>' : r.source === 'telegram' ? '<br><span class="tag">Telegram</span>' : ''}</td>
+        <td><b>${esc(r.name || '–')}</b><br><span class="fb">${esc(r.email || '')}${r.job ? `<br>${esc(r.job)}` : ''}</span></td>
+        <td>${statusTag(r)}${r.google_clicked_at ? '<br><span class="tag good">Went to Google</span>' : ''}</td>
+        <td class="stars">${r.rating ? '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating) : ''}</td>
+        <td class="fb">${esc(r.feedback || '')}${r.feedback && r.can_publish ? '<br><span class="tag good">OK for website</span>' : ''}</td>
+        <td>${r.status === 'scheduled' || (r.status === 'sent' && !r.rating) ? `<button type="button" class="sr-link" data-cancel="${r.id}">Cancel</button>` : ''}</td>
+      </tr>`).join('');
+  }
+
+  $('sr-list').addEventListener('click', async (e: Event) => {
+    const id = (e.target as HTMLElement).dataset?.cancel;
+    if (!id) return;
+    await call({ action: 'cancel', id: Number(id) }).catch(() => {});
+    list();
+  });
+
+  $('sr-login').addEventListener('submit', async (e: Event) => {
+    e.preventDefault();
+    localStorage.setItem(KEY, ($('sr-pass') as HTMLInputElement).value);
+    $('sr-lerr').hidden = true;
+    list().catch(() => {});
+  });
+  $('sr-logout').addEventListener('click', () => { localStorage.removeItem(KEY); showLogin(); });
+
+  async function submit(force = false) {
+    const msg = $('sr-msg'); msg.hidden = true; msg.className = 'sr-msg';
+    const when = (document.querySelector('input[name=when]:checked') as HTMLInputElement).value;
+    $('sr-go').disabled = true;
+    try {
+      const j = await call({ action: 'create', name: $('sr-name').value, email: $('sr-email').value, job: $('sr-job').value, when, force });
+      const at = new Date(j.send_at);
+      msg.textContent = `✓ Done – ${at.getTime() <= Date.now() + 60000 ? 'the email is on its way now' : `it goes out ${fmt(j.send_at)}`}.`;
+      msg.classList.add('ok'); msg.hidden = false;
+      ($('sr-form') as HTMLFormElement).reset();
+      list();
+    } catch (err: any) {
+      msg.classList.add('bad'); msg.hidden = false;
+      msg.innerHTML = esc(err.message) + (err.duplicate ? ' <button type="button" class="btn secondary" id="sr-force">Send anyway</button>' : '');
+      $('sr-force')?.addEventListener('click', () => submit(true));
+    } finally { $('sr-go').disabled = false; }
+  }
+  $('sr-form').addEventListener('submit', (e: Event) => { e.preventDefault(); submit(); });
+
+  if (localStorage.getItem(KEY)) list().catch(() => {}); else showLogin();
+</script>

@@ -1,7 +1,10 @@
 // Fettle website chat – Supabase Edge Function "telegram-webhook".
 // Telegram calls this when you message the Fettle Enquiries bot. A swipe-reply
 // to a chat message is delivered to that customer's website chat.
-// Secrets: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, TELEGRAM_WEBHOOK_SECRET.
+// Job finished? Swipe-reply "done" to the customer's enquiry alert (or send
+// "/done Jane Smith jane@email.com fixed the tap") and they get the "How did we do?"
+// review email at 6:30pm (see the "reviews" function).
+// Secrets: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, TELEGRAM_WEBHOOK_SECRET, INSIGHTS_PASSWORD.
 // Deploy with "Verify JWT" OFF (Telegram can't send a Supabase token; the secret header protects it).
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -33,6 +36,45 @@ Deno.serve(async (req) => {
   const text: string = (msg.text ?? '').trim();
   const repliedTo: number | undefined = msg.reply_to_message?.message_id;
   if (!text) return new Response('ok');
+
+  // ---- "done" → ask the customer for a review ----
+  if (/^\/?done\b/i.test(text)) {
+    let rest = text.replace(/^\/?done\b/i, '').trim();
+    const force = /^again\b/i.test(rest);
+    if (force) rest = rest.replace(/^again\b/i, '').trim();
+    const quoted: string = msg.reply_to_message?.text ?? msg.reply_to_message?.caption ?? '';
+    const EMAIL = /[^\s@<>()"',;:]+@[^\s@<>()"',;:]+\.[a-z]{2,}/i;
+    let email = '', name = '', job = rest;
+    const own = rest.match(EMAIL);
+    if (own) {
+      email = own[0];
+      name = rest.slice(0, own.index).trim();
+      job = rest.slice((own.index ?? 0) + own[0].length).replace(/^[\s–—:-]+/, '').trim();
+    } else {
+      email = quoted.match(EMAIL)?.[0] ?? '';
+      name = quoted.match(/(?:^|\n)\s*(?:👤\s*)?(?:name|from)\s*[:\-–]\s*([^\n]+)/i)?.[1]?.trim() ?? '';
+    }
+    if (!email) {
+      await send('I couldn’t find an email address for that. Either swipe-reply "done" to the customer’s enquiry alert, or send:\n\n/done Jane Smith jane@email.com fixed the bathroom tap', msg.message_id);
+      return new Response('ok');
+    }
+    const res = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create', source: 'telegram', password: Deno.env.get('INSIGHTS_PASSWORD'), name, email, job, force }),
+    }).catch(() => null);
+    const j = res ? await res.json().catch(() => ({})) : {};
+    if (res?.ok) {
+      const at = new Date(j.send_at);
+      const when = at.getTime() <= Date.now() + 60_000 ? 'now' : at.toLocaleString('en-GB', { weekday: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+      await send(`⭐ Review request for ${name || email}${job ? ` (${job})` : ''} – email goes out ${when === 'now' ? 'now' : `at ${when}`}. One reminder in 3 days if they don't answer.`, msg.message_id);
+    } else if (j.duplicate) {
+      await send(`${j.error}\n\nReply "done again" to send it anyway.`, msg.message_id);
+    } else {
+      await send(`Couldn’t set up the review request: ${j.error ?? 'the reviews function didn’t answer'}.`, msg.message_id);
+    }
+    return new Response('ok');
+  }
 
   if (!repliedTo) {
     await send('To answer a website chat, swipe-reply to one of its messages so I know which customer it’s for.');

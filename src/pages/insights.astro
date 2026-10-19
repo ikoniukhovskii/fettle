@@ -1,0 +1,222 @@
+---
+import Page from '../layouts/Page.astro';
+---
+
+<Page title="Insights | Fettle London" description="Private visitor insights." noindex>
+  <section class="ins">
+    <div class="wrap">
+      <p class="eyebrow">Private · only for you</p>
+      <h1 class="ins-h1">Who’s been looking.</h1>
+      <p class="ins-lede">Postcode checks, enquiries and clicks from real visitors. Your own devices (opened once with <code>?me</code>) are kept out of the numbers.</p>
+
+      <form class="ins-login" id="ins-login" hidden>
+        <label for="ins-pass">Password</label>
+        <div class="ins-row">
+          <input id="ins-pass" type="password" autocomplete="current-password" required />
+          <button class="btn primary" type="submit">Open</button>
+        </div>
+        <p class="ins-err" id="ins-err" hidden></p>
+      </form>
+
+      <div id="ins-body" hidden>
+        <div class="ins-bar">
+          <div class="ins-range" role="radiogroup" aria-label="Period">
+            <button type="button" data-days="7">7 days</button>
+            <button type="button" data-days="30">30 days</button>
+            <button type="button" data-days="90" aria-checked="true">90 days</button>
+          </div>
+          <label class="ins-toggle"><input type="checkbox" id="ins-mine" /> Show my own checks too</label>
+        </div>
+
+        <div class="ins-tiles" id="ins-tiles"></div>
+
+        <div class="ins-grid">
+          <div class="ins-card ins-mapcard">
+            <h2>Where the interest is</h2>
+            <p class="ins-sub">Bubble size = number of postcode checks. Rust = inside your area, grey = outside.</p>
+            <div id="ins-map"></div>
+          </div>
+          <div class="ins-card">
+            <h2>By area</h2>
+            <table class="ins-t" id="ins-areas"></table>
+          </div>
+        </div>
+
+        <div class="ins-card">
+          <h2>Latest activity</h2>
+          <p class="ins-sub">To watch someone’s visit: Clarity → Recordings → Filters → Custom tags → <b>fettle_vid</b> = their ID. Only visitors who accepted cookies have a recording.</p>
+          <div class="ins-scroll"><table class="ins-t" id="ins-events"></table></div>
+        </div>
+
+        <details class="ins-card ins-legacy">
+          <summary>Old counter (before 19 October 2026 – can’t tell who)</summary>
+          <table class="ins-t" id="ins-legacy"></table>
+        </details>
+        <p class="ins-foot"><button type="button" id="ins-logout" class="ins-link">Sign out on this device</button></p>
+      </div>
+    </div>
+  </section>
+</Page>
+
+
+<style is:global>
+  .ins { padding: clamp(48px, 7vw, 88px) 0 clamp(64px, 8vw, 110px); }
+  .ins-h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 5vw, 56px); line-height: 1.04; letter-spacing: -.02em; margin: 0; }
+  .ins-lede { max-width: 60ch; color: var(--ink-60); margin: 14px 0 30px; }
+  .ins-lede code { background: var(--tan-pill); padding: 1px 6px; border-radius: 6px; }
+  .ins-login { max-width: 420px; background: var(--white); padding: 24px; border-radius: 20px; border: 1px solid var(--ink-08); }
+  .ins-login label { font-weight: 600; font-size: 14px; display: block; margin-bottom: 8px; }
+  .ins-row { display: flex; gap: 10px; }
+  .ins-row input { flex: 1; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--ink-12); background: var(--cream); font: inherit; }
+  .ins-err { color: var(--brick); margin: 12px 0 0; font-size: 14px; }
+  .ins-bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  .ins-range { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--white); border: 1px solid var(--ink-08); }
+  .ins-range button { border: 0; background: transparent; padding: 9px 16px; border-radius: 999px; font: 600 14px/1 var(--font-body); color: var(--ink-60); cursor: pointer; }
+  .ins-range button[aria-checked="true"] { background: var(--ink); color: var(--cream); }
+  .ins-toggle { font-size: 14px; color: var(--ink-60); display: inline-flex; gap: 8px; align-items: center; }
+  .ins-tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
+  .ins-tile { background: var(--white); border-radius: 18px; padding: 18px 20px; border: 1px solid var(--ink-08); }
+  .ins-tile b { display: block; font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; }
+  .ins-tile span { font-size: 13px; color: var(--ink-60); }
+  .ins-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .ins-card { background: var(--white); border-radius: 20px; padding: 22px 22px 18px; border: 1px solid var(--ink-08); margin-bottom: 16px; }
+  .ins-grid .ins-card { margin-bottom: 0; }
+  .ins-card h2 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0 0 4px; }
+  .ins-sub { font-size: 13.5px; color: var(--ink-60); margin: 0 0 14px; }
+  #ins-map { height: 440px; border-radius: 14px; overflow: hidden; background: var(--cream); }
+  .ins-t { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .ins-t th { text-align: left; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-40); font-weight: 600; padding: 6px 10px 8px 0; border-bottom: 1px solid var(--ink-12); }
+  .ins-t td { padding: 8px 10px 8px 0; border-bottom: 1px dashed var(--ink-12); vertical-align: top; }
+  .ins-t td.num { font-family: var(--font-display); font-weight: 700; }
+  .ins-scroll { max-height: 520px; overflow: auto; }
+  .tag { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--tan-pill); color: var(--ink); white-space: nowrap; }
+  .tag.lead { background: var(--rust); color: var(--white); }
+  .tag.me { background: var(--ink); color: var(--cream); }
+  .tag.rec { background: var(--sage-tint); color: var(--sage); }
+  .vid { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--ink-60); cursor: copy; }
+  .ins-legacy summary { cursor: pointer; font-weight: 600; }
+  .ins-legacy table { margin-top: 12px; }
+  .ins-foot { margin-top: 8px; }
+  .ins-link { border: 0; background: none; color: var(--ink-60); text-decoration: underline; cursor: pointer; font: inherit; font-size: 14px; }
+  .ins-empty { color: var(--ink-60); font-size: 14px; padding: 10px 0; }
+  @media (max-width: 900px) { .ins-tiles { grid-template-columns: repeat(2, 1fr); } .ins-grid { grid-template-columns: 1fr; } #ins-map { height: 340px; } }
+</style>
+
+<script>
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
+  import Leaf from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+  const KEY = 'fettle-insights';
+  const $ = (id: string) => document.getElementById(id)!;
+  const login = $('ins-login') as HTMLFormElement, body = $('ins-body'), err = $('ins-err');
+  let days = 90, data: any = null, map: any = null, layer: any = null;
+  const centroids: Record<string, [number, number] | null> = {};
+  const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  const LABEL: Record<string, string> = { postcode_check: 'Postcode check', lead: 'Enquiry', video_call_click: 'Video call link', call_click: 'Tapped phone', whatsapp_click: 'WhatsApp' };
+
+  async function load() {
+    const pass = localStorage.getItem(KEY) || '';
+    if (!pass) { login.hidden = false; body.hidden = true; return; }
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/insights`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ password: pass, days }),
+    }).catch(() => null);
+    const j = res ? await res.json().catch(() => ({})) : { error: 'Couldn’t reach the server.' };
+    if (!res || !res.ok) {
+      if (res && res.status === 401) localStorage.removeItem(KEY);
+      login.hidden = false; body.hidden = true; err.textContent = j.error || 'Something went wrong.'; err.hidden = false; return;
+    }
+    data = j; login.hidden = true; body.hidden = false; err.hidden = true;
+    render();
+  }
+
+  async function centroid(area: string) {
+    if (area in centroids) return centroids[area];
+    try {
+      const r = await fetch(`https://api.postcodes.io/outcodes/${encodeURIComponent(area)}`);
+      const j = await r.json();
+      centroids[area] = j?.result ? [j.result.latitude, j.result.longitude] : null;
+    } catch { centroids[area] = null; }
+    return centroids[area];
+  }
+
+  async function render() {
+    const mine = ($('ins-mine') as HTMLInputElement).checked;
+    const ev = (data.events as any[]).filter((e) => mine || !e.is_owner);
+    const checks = ev.filter((e) => e.type === 'postcode_check' && e.area);
+    const visitors = new Set(ev.map((e) => e.visitor_id)).size;
+    const leads = ev.filter((e) => e.type === 'lead').length;
+    const vc = ev.filter((e) => e.type === 'video_call_click').length;
+    const calls = ev.filter((e) => e.type === 'call_click' || e.type === 'whatsapp_click').length;
+    $('ins-tiles').innerHTML = [
+      [checks.length, 'postcode checks'], [visitors, 'visitors who did something'], [leads, 'enquiries'], [vc, 'video-call link clicks'], [calls, 'phone / WhatsApp taps'],
+    ].map(([n, l]) => `<div class="ins-tile"><b>${n}</b><span>${l}</span></div>`).join('');
+
+    // by area
+    const by = new Map<string, { n: number; v: Set<string>; covered: boolean | null; last: string; leads: number }>();
+    for (const e of checks) {
+      const a = by.get(e.area) || { n: 0, v: new Set(), covered: e.covered, last: e.created_at, leads: 0 };
+      a.n++; a.v.add(e.visitor_id); if (e.created_at > a.last) a.last = e.created_at; by.set(e.area, a);
+    }
+    for (const e of ev.filter((x) => x.type === 'lead')) {
+      const a = [...by.entries()].find(([, v]) => v.v.has(e.visitor_id)); if (a) a[1].leads++;
+    }
+    const rows = [...by.entries()].sort((x, y) => y[1].n - x[1].n);
+    $('ins-areas').innerHTML = rows.length
+      ? `<tr><th>Area</th><th>Checks</th><th>People</th><th>Enquired</th><th>Last</th></tr>` + rows.map(([a, v]) => `<tr><td><b>${esc(a)}</b>${v.covered === false ? ' <span class="tag">outside</span>' : ''}</td><td class="num">${v.n}</td><td>${v.v.size}</td><td>${v.leads || ''}</td><td style="white-space:nowrap">${new Date(v.last).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</td></tr>`).join('')
+      : `<tr><td class="ins-empty">No postcode checks yet in this period.</td></tr>`;
+
+    // events
+    $('ins-events').innerHTML = ev.length
+      ? `<tr><th>When</th><th>What</th><th>Area</th><th>Page</th><th>Visitor</th></tr>` + ev.slice(0, 400).map((e) => `<tr>
+          <td>${new Date(e.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
+          <td><span class="tag ${e.type === 'lead' ? 'lead' : ''}">${esc(LABEL[e.type] || e.type)}</span>${e.detail && e.type !== 'postcode_check' ? `<br><span class="ins-sub">${esc(e.detail)}</span>` : ''}</td>
+          <td>${esc(e.area || '')}</td><td>${esc(e.page)}</td>
+          <td>${e.is_owner ? '<span class="tag me">You</span>' : `<span class="vid" title="Click to copy" data-vid="${esc(e.visitor_id)}">${esc(e.visitor_id)}</span>${e.consented ? ' <span class="tag rec">recording</span>' : ''}`}</td></tr>`).join('')
+      : `<tr><td class="ins-empty">Nothing yet in this period.</td></tr>`;
+
+    $('ins-legacy').innerHTML = `<tr><th>Area</th><th>Checks (all time, incl. you)</th></tr>` + (data.legacy as any[]).map((r) => `<tr><td>${esc(r.area)}</td><td class="num">${r.check_count}</td></tr>`).join('');
+
+    // map
+    const L: any = Leaf;
+    if (!map) {
+      map = L.map('ins-map', { scrollWheelZoom: false }).setView([51.495, -0.18], 11);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 18 }).addTo(map);
+      L.circleMarker([51.4835, -0.183], { radius: 6, color: '#2B2723', weight: 2, fillColor: '#F1E8D8', fillOpacity: 1 }).addTo(map).bindTooltip('Fettle · SW10');
+    }
+    if (layer) layer.remove();
+    layer = L.layerGroup().addTo(map);
+    const max = Math.max(1, ...rows.map(([, v]) => v.n));
+    const pts: [number, number][] = [];
+    for (const [a, v] of rows) {
+      const c = await centroid(a);
+      if (!c) continue;
+      pts.push(c);
+      const r = 8 + 26 * Math.sqrt(v.n / max);
+      const col = v.covered === false ? '#8A847C' : '#B34426';
+      L.circleMarker(c, { radius: r, color: col, weight: 1.5, fillColor: col, fillOpacity: 0.35 })
+        .addTo(layer)
+        .bindTooltip(`<b>${esc(a)}</b><br>${v.n} check${v.n > 1 ? 's' : ''} · ${v.v.size} ${v.v.size > 1 ? 'people' : 'person'}${v.leads ? ` · ${v.leads} enquir${v.leads > 1 ? 'ies' : 'y'}` : ''}`);
+    }
+    if (pts.length > 1) map.fitBounds(L.latLngBounds([...pts, [51.4835, -0.183]]).pad(0.25));
+  }
+
+  login.addEventListener('submit', (e) => {
+    e.preventDefault();
+    localStorage.setItem(KEY, ($('ins-pass') as HTMLInputElement).value);
+    load();
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-days]').forEach((b) => b.addEventListener('click', () => {
+    days = Number(b.dataset.days);
+    document.querySelectorAll('[data-days]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+    load();
+  }));
+  $('ins-mine').addEventListener('change', () => data && render());
+  $('ins-events').addEventListener('click', (e) => {
+    const v = (e.target as HTMLElement).closest('[data-vid]') as HTMLElement | null;
+    if (v) { navigator.clipboard?.writeText(v.dataset.vid || ''); v.textContent = 'copied'; setTimeout(() => (v.textContent = v.dataset.vid || ''), 1200); }
+  });
+  $('ins-logout').addEventListener('click', () => { localStorage.removeItem(KEY); location.reload(); });
+  load();
+</script>

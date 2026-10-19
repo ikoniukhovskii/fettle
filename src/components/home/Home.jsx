@@ -1,6 +1,7 @@
 import React from 'react';
 import { lookupCoords, milesFromBase, travelBand, travelNote } from '../../data/travel';
 import { createClient } from '@supabase/supabase-js';
+import { logEvent, isOwner } from '../../data/track';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../data/supabase-config';
 import heroDrawingRoomAsset from '../../assets/img/hero-drawing-room.webp';
 const heroDrawingRoom = heroDrawingRoomAsset.src;
@@ -434,7 +435,9 @@ function QuietPostcode({ id, t }) {
       return;
     }
 
-    if (!SERVICE_AREA_LETTERS.has(areaLetters(area))) {
+    const covered = SERVICE_AREA_LETTERS.has(areaLetters(area));
+    logEvent('postcode_check', { area, covered, detail: 'home' });
+    if (!covered) {
       setChecking(false);
       setResult({ area, postcode: parsed.postcode, covered: false, message: outOfAreaMessage(area) });
       return;
@@ -442,7 +445,8 @@ function QuietPostcode({ id, t }) {
     let previousCount = 0;
     const coordsPromise = lookupCoords(parsed.postcode || area);
     try {
-      previousCount = await bumpAreaCheckCount(area);
+      // Your own checks don't change the public "we've worked here" counter.
+      previousCount = isOwner() ? 0 : await bumpAreaCheckCount(area);
     } catch {
       previousCount = 0; // can't reach the shared count — still show a friendly result
     }

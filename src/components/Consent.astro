@@ -67,7 +67,7 @@ const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[na
         var b = e.target.closest('[data-consent]'); if (!b) return;
         var yes = b.getAttribute('data-consent') === 'yes';
         set(yes); hide();
-        if (yes) load();
+        if (yes) { load(); window.dispatchEvent(new Event('fettle:consent')); }
       });
     })();
   </script>

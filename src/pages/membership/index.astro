@@ -418,6 +418,8 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   import { PLANS, EXTRAS } from '../../data/membership';
   import { ONLINE_JOIN_MAX_MILES } from '../../data/payments';
   import { lookupCoords, milesFromBase } from '../../data/travel';
+  import { logEvent } from '../../data/track';
+  let lastLoggedPc = '';
 
 
   // "Sound familiar?" – each line is crossed off as it scrolls up past the middle of the screen,
@@ -579,6 +581,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     const pc = pcInput?.value.trim().toUpperCase() ?? '';
     if (!/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/.test(pc)) return setFar(false);
     const c = await lookupCoords(pc);
+    if (pc !== lastLoggedPc) { lastLoggedPc = pc; logEvent('postcode_check', { area: pc.replace(/\s*\d[A-Z]{2}$/, '').trim(), covered: c ? milesFromBase(c.lat, c.lon) <= ONLINE_JOIN_MAX_MILES : undefined, detail: 'membership' }); }
     if (c) setFar(milesFromBase(c.lat, c.lon) > ONLINE_JOIN_MAX_MILES, pc.replace(/\s*\d[A-Z]{2}$/, ''));
   };
   pcInput?.addEventListener('input', () => { clearTimeout(pcTimer); pcTimer = window.setTimeout(checkPostcode, 450); });

@@ -111,6 +111,56 @@ const footerCols = [
   </footer>
 
   <script>
+    /* Header: a full-width bar at the top of the page; on scroll it eases into a rounded
+       white pill, exactly like the homepage header (same easing, speed and shadow).
+       The header's height never changes, so nothing on the page jumps. */
+    (() => {
+      const header = document.querySelector<HTMLElement>('.site-header');
+      const bar = header?.querySelector<HTMLElement>('.bar');
+      if (!header || !bar) return;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const lerp = (a: number, b: number, p: number) => a + (b - a) * p;
+      const easeOut = (p: number) => 1 - Math.pow(1 - p, 3);
+      let cur = 0, target = 0, raf = 0, full = 0, pill = 0;
+      const measure = () => {
+        full = (header.querySelector('.wrap') as HTMLElement).clientWidth;
+        // Pill hugs the logo + links, never wider than the page column.
+        const natural = bar.querySelector<HTMLElement>('.brand')!.offsetWidth + bar.querySelector<HTMLElement>('nav')!.scrollWidth + 56 + 44;
+        pill = Math.min(full, Math.max(natural, Math.min(920, window.innerWidth - 28)));
+      };
+      const apply = (raw: number) => {
+        const p = easeOut(raw);
+        bar.style.maxWidth = `${lerp(full, pill, p)}px`;
+        bar.style.margin = '0 auto';
+        header.style.paddingTop = `${lerp(0, 12, p)}px`;
+        bar.style.padding = `${lerp(18, 12, p)}px ${lerp(0, 22, p)}px`;
+        bar.style.borderRadius = `${lerp(0, 20, p)}px`;
+        bar.style.background = `rgba(255,255,255,${p.toFixed(3)})`;
+        bar.style.boxShadow = `0 8px 24px rgba(43,39,35,${(0.1 * p).toFixed(3)}), 0 2px 6px rgba(43,39,35,${(0.06 * p).toFixed(3)})`;
+        header.style.background = `rgba(241,232,216,${(0.86 * (1 - p)).toFixed(3)})`;
+        header.style.borderBottomColor = `rgba(43,39,35,${(0.12 * (1 - p)).toFixed(3)})`;
+      };
+      const tick = () => {
+        cur += (target - cur) * 0.16;
+        if (Math.abs(cur - target) <= 0.001) cur = target;
+        apply(cur);
+        raf = cur === target ? 0 : requestAnimationFrame(tick);
+      };
+      const onScroll = () => {
+        const t = window.scrollY > 60 ? 1 : 0;
+        if (t === target) return;
+        target = t;
+        if (reduce) { cur = t; apply(cur); return; }
+        if (!raf) raf = requestAnimationFrame(tick);
+      };
+      measure();
+      target = cur = window.scrollY > 60 ? 1 : 0;
+      apply(cur);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', () => { measure(); apply(cur); });
+      document.fonts?.ready.then(() => { measure(); apply(cur); });
+    })();
+
     document.querySelector('.foot-totop')?.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });

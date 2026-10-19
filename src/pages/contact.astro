@@ -132,6 +132,7 @@ import { VIDEO_CALL_URL } from '../data/booking';
   import { createClient } from '@supabase/supabase-js';
   import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
   import { lookupCoords, milesFromBase, travelBand, travelNote } from '../data/travel';
+  import { logEvent } from '../data/track';
 
   const supabase = createClient(
     SUPABASE_URL,
@@ -211,10 +212,12 @@ import { VIDEO_CALL_URL } from '../data/booking';
   // travel adds – so it's never a surprise on the quote.
   const travelEl = document.getElementById('cf-travel');
   let travelSummary = '';
+  let lastLogged = '';
   async function updateTravel(raw: string) {
     travelSummary = '';
     if (!travelEl) return;
     const pc = normalisePostcode(raw);
+    if (pc && pc !== lastLogged) { lastLogged = pc; logEvent('postcode_check', { area: pc.split(' ')[0], covered: isLondon(pc), detail: 'contact' }); }
     if (!pc || !isLondon(pc)) { travelEl.hidden = true; return; }
     const coords = await lookupCoords(pc);
     if (!coords) { travelEl.hidden = true; return; }

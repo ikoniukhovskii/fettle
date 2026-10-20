@@ -1,6 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
 import { VIDEO_CALL_URL } from '../data/booking';
+import CoverageMap from '../components/CoverageMap.astro';
 ---
 
 <Page title="Contact a London Handyman – Get a Quote | Fettle London" description="If you’ve something that needs doing, drop us a line. We’ll answer plainly, and if there’s room on the list near you, we’ll say so.">
@@ -63,6 +64,16 @@ import { VIDEO_CALL_URL } from '../data/booking';
           </div>
 
           <div class="info-stack">
+            <div class="info-card">
+              <div class="head">
+                <span class="ic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+                </span>
+                <h3>Where we work</h3>
+              </div>
+              <p>Pop your postcode in the form and it&rsquo;ll show up here, with what travel costs.</p>
+              <div style="margin-top:12px"><CoverageMap id="cov-contact" compact checker={false} /></div>
+            </div>
             <div class="info-card">
               <div class="head">
                 <span class="ic" aria-hidden="true">
@@ -218,7 +229,9 @@ import { VIDEO_CALL_URL } from '../data/booking';
     if (!travelEl) return;
     const pc = normalisePostcode(raw);
     if (pc && pc !== lastLogged) { lastLogged = pc; logEvent('postcode_check', { area: pc.split(' ')[0], covered: isLondon(pc), detail: 'contact' }); }
+    if (pc && !isLondon(pc)) document.dispatchEvent(new CustomEvent('fettle:postcode', { detail: { postcode: pc, covered: false } }));
     if (!pc || !isLondon(pc)) { travelEl.hidden = true; return; }
+    document.dispatchEvent(new CustomEvent('fettle:postcode', { detail: { postcode: pc, covered: true } }));
     const coords = await lookupCoords(pc);
     if (!coords) { travelEl.hidden = true; return; }
     const miles = milesFromBase(coords.lat, coords.lon);

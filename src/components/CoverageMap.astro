@@ -1,0 +1,266 @@
+---
+// A real, draggable street map of where we work, tinted to match the site.
+// - Rust rings show the travel bands (no charge, then £15, then £25).
+// - Every neighbourhood dot opens a little card linking to its page.
+// - Type a postcode: the map glides to it, drops a pin with a dashed line back to our base,
+//   and says plainly whether we can get there and what travel costs.
+// On the contact page there's no box of its own: the form's postcode field drives it.
+import { HOODS, REGIONS, hoodUrl } from '../data/areas';
+import { BASE, TRAVEL_BANDS } from '../data/travel';
+
+interface Props {
+  highlight?: string; // a hood slug to centre on and emphasise
+  region?: string; // a region slug to centre on and emphasise
+  caption?: string;
+  checker?: boolean; // show the postcode box (default true)
+  compact?: boolean; // smaller, for the contact page sidebar
+  id?: string;
+}
+const { highlight, region, caption, checker = true, compact = false, id = 'cov' } = Astro.props;
+
+const COLORS: Record<string, string> = { 'southwest-london': '#B34426', 'west-london': '#6E8A6B', 'central-london': '#2B2723' };
+const hoods = HOODS.map((h) => ({ slug: h.slug, name: h.name, region: h.region, lat: h.lat, lon: h.lon, url: hoodUrl(h), postcodes: h.postcodes, color: COLORS[h.region] }));
+const bands = TRAVEL_BANDS.filter((b) => Number.isFinite(b.maxMiles)).map((b) => ({ miles: b.maxMiles, fee: b.fee }));
+const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? null, region: region ?? null });
+---
+
+<figure class:list={['cov-map', { compact }]} data-conf={conf} id={id}>
+  {checker && (
+    <form class="cov-form" novalidate>
+      <label for={`${id}-pc`}>Can we get to you?</label>
+      <div class="cov-row">
+        <input id={`${id}-pc`} name="postcode" type="text" inputmode="text" autocomplete="postal-code" placeholder="Your postcode, e.g. SW6 2AB" aria-describedby={`${id}-res`} />
+        <button class="btn primary" type="submit">Check</button>
+      </div>
+    </form>
+  )}
+  <div class="cov-stage">
+    <div class="cov-canvas" role="region" aria-label="Map of the areas Fettle covers around our base in Chelsea"></div>
+    <div class="cov-result" id={`${id}-res`} aria-live="polite" hidden></div>
+  </div>
+  <figcaption class="map-key">
+    {!compact && REGIONS.map((r) => <span><i style={`background:${COLORS[r.slug]}`}></i>{r.name}</span>)}
+    <span><i class="ring"></i>No travel charge within {bands[0].miles} miles</span>
+    {caption && <span class="cap">{caption}</span>}
+  </figcaption>
+</figure>
+
+<script>
+  import Leaf from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+  import { lookupCoords, milesFromBase, travelBand, isCoveredArea } from '../data/travel';
+  import { logEvent } from '../data/track';
+
+  const L: any = Leaf;
+  const MILE = 1609.34;
+  const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+
+  // Which side of the dot a name sits, so close neighbours don't overlap.
+  const DIR: Record<string, string> = {
+    'earls-court': 'left', fulham: 'left', hammersmith: 'left', 'holland-park': 'left', putney: 'left', 'notting-hill': 'left',
+    'south-kensington': 'top', belgravia: 'top', chelsea: 'bottom', battersea: 'bottom',
+  };
+
+  function parse(raw: string) {
+    const c = raw.trim().toUpperCase().replace(/\s+/g, '');
+    const full = c.match(/^([A-Z]{1,2}\d[A-Z\d]?)(\d[A-Z]{2})$/);
+    if (full) return { outward: full[1], label: `${full[1]} ${full[2]}` };
+    if (/^[A-Z]{1,2}\d[A-Z\d]?$/.test(c)) return { outward: c, label: c };
+    return null;
+  }
+
+  function hoodFor(hoods: any[], outward: string) {
+    return hoods.find((h) => h.postcodes.includes(outward));
+  }
+
+  function init(fig: HTMLElement) {
+    const conf = JSON.parse(fig.dataset.conf || '{}');
+    const { hoods, bands, base, highlight, region } = conf;
+    const canvas = fig.querySelector('.cov-canvas') as HTMLElement;
+    const resEl = fig.querySelector('.cov-result') as HTMLElement;
+    const compact = fig.classList.contains('compact');
+
+    const map = L.map(canvas, {
+      scrollWheelZoom: false,
+      dragging: !L.Browser.mobile, // on phones, one finger scrolls the page; pinch to zoom
+      tap: false,
+      zoomSnap: 0.25,
+      zoomControl: true,
+      attributionControl: true,
+    });
+    map.attributionControl.setPrefix('');
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 18,
+      className: 'fettle-tiles',
+    }).addTo(map);
+
+    // Travel rings, biggest first so the inner one sits on top.
+    [...bands].reverse().forEach((b: any, i: number) => {
+      const inner = i === bands.length - 1;
+      L.circle([base.lat, base.lon], {
+        radius: b.miles * MILE,
+        color: inner ? '#B34426' : '#97381E',
+        weight: inner ? 2 : 1.25,
+        opacity: inner ? 0.75 : 0.4,
+        dashArray: inner ? '6 7' : '3 7',
+        fillColor: '#B34426',
+        fillOpacity: inner ? 0.07 : 0.025,
+        interactive: false,
+      }).addTo(map);
+      const label = b.fee === 0 ? `No travel charge · ${b.miles} mi` : `£${b.fee} travel · ${b.miles} mi`;
+      L.marker([base.lat + b.miles / 69.05, base.lon], {
+        icon: L.divIcon({ className: 'cov-ring-label', html: `<span class="${inner ? 'free' : ''}">${label}</span>`, iconSize: null }),
+        interactive: false,
+        keyboard: false,
+      }).addTo(map);
+    });
+
+    // Neighbourhood dots.
+    const focus = (h: any) => (highlight ? h.slug === highlight : region ? h.region === region : true);
+    const dots: any[] = [];
+    for (const h of hoods) {
+      const on = focus(h);
+      const big = h.slug === highlight;
+      const m = L.circleMarker([h.lat, h.lon], {
+        radius: big ? 10 : 7,
+        color: '#FFFFFF',
+        weight: 2,
+        fillColor: h.color,
+        fillOpacity: on ? 1 : 0.45,
+        opacity: on ? 1 : 0.6,
+      }).addTo(map);
+      m.bindTooltip(h.name, {
+        permanent: true,
+        direction: DIR[h.slug] || 'right',
+        offset: DIR[h.slug] === 'left' ? [-8, 0] : DIR[h.slug] === 'top' ? [0, -8] : DIR[h.slug] === 'bottom' ? [0, 8] : [8, 0],
+        className: `cov-label${on ? '' : ' faded'}${big ? ' big' : ''}`,
+      });
+      const miles = milesFromBase(h.lat, h.lon);
+      m.bindPopup(
+        `<div class="cov-pop"><span class="pc">${esc(h.postcodes.join(' · '))}</span><b>${esc(h.name)}</b><span>${miles.toFixed(1)} miles from our base · no travel charge</span><a href="${esc(h.url)}">Handyman in ${esc(h.name)} →</a></div>`,
+        { closeButton: false, offset: [0, -4] }
+      );
+      dots.push({ h, m });
+    }
+
+    // Our base.
+    L.marker([base.lat, base.lon], {
+      icon: L.divIcon({ className: 'cov-base', html: '<span class="f">F</span><span class="t">Our base</span>', iconSize: [24, 24], iconAnchor: [12, 12] }),
+      keyboard: false,
+      zIndexOffset: 1000,
+    }).addTo(map).bindPopup('<div class="cov-pop"><b>Fettle · our base</b><span>Chelsea, London SW10</span></div>', { closeButton: false });
+
+    // Starting view.
+    const pts: [number, number][] = [[base.lat, base.lon]];
+    if (highlight) {
+      const h = hoods.find((x: any) => x.slug === highlight);
+      if (h) pts.push([h.lat, h.lon]);
+    } else if (region) {
+      hoods.filter((x: any) => x.region === region).forEach((x: any) => pts.push([x.lat, x.lon]));
+    } else {
+      hoods.forEach((x: any) => pts.push([x.lat, x.lon]));
+    }
+    const start = L.latLngBounds(pts);
+    const fit = () => {
+      if (highlight) map.setView(start.getCenter(), compact ? 12.5 : 13.25);
+      else map.fitBounds(start.pad(compact ? 0.35 : 0.12), { maxZoom: 14 });
+    };
+    fit();
+
+    // Hide names when zoomed far out, so the map doesn't turn into a word cloud.
+    const relabel = () => canvas.classList.toggle('no-labels', map.getZoom() < 12.75);
+    map.on('zoomend', relabel);
+    relabel();
+
+    // The postcode pin.
+    let pinLayer: any = null;
+    async function check(raw: string, opts: { coveredOverride?: boolean; log?: boolean; detail?: string } = {}) {
+      const p = parse(raw);
+      if (!p) {
+        show('warn', 'That doesn’t look like a postcode.', 'Try something like SW6 2AB, or just the first half, like SW6.');
+        return;
+      }
+      resEl.hidden = false;
+      resEl.className = 'cov-result busy';
+      resEl.innerHTML = `<p class="t">Finding ${esc(p.label)}…</p>`;
+      const coords = await lookupCoords(p.label);
+      if (!coords) {
+        show('warn', `We couldn’t find ${esc(p.label)}.`, 'Double-check it, or just send it to us – we’ll take a look.');
+        return;
+      }
+      const miles = milesFromBase(coords.lat, coords.lon);
+      const covered = opts.coveredOverride ?? isCoveredArea(p.outward);
+      if (opts.log !== false) logEvent('postcode_check', { area: p.outward, covered, detail: opts.detail || 'areas-map' });
+      const band = travelBand(miles);
+      const hood = hoodFor(hoods, p.outward);
+      const col = covered ? '#B34426' : '#6B655E';
+
+      if (pinLayer) pinLayer.remove();
+      pinLayer = L.layerGroup().addTo(map);
+      L.polyline([[base.lat, base.lon], [coords.lat, coords.lon]], { color: col, weight: 2.5, dashArray: '2 8', lineCap: 'round', opacity: 0.9, interactive: false }).addTo(pinLayer);
+      L.marker([coords.lat, coords.lon], {
+        icon: L.divIcon({
+          className: `cov-pin${covered ? '' : ' out'}`,
+          html: `<svg viewBox="0 0 32 42" width="32" height="42" aria-hidden="true"><path d="M16 1C8 1 2 7 2 15c0 10 14 25 14 25s14-15 14-25C30 7 24 1 16 1z" fill="${col}" stroke="#fff" stroke-width="2"/><circle cx="16" cy="15" r="5.5" fill="#F1E8D8"/></svg><span>${esc(p.label)}</span>`,
+          iconSize: [32, 42],
+          iconAnchor: [16, 41],
+        }),
+        keyboard: false,
+        zIndexOffset: 2000,
+      }).addTo(pinLayer);
+      canvas.classList.add('pinned');
+      // Keep the pin and our base clear of the result card (top-right on wide screens).
+      const overlay = getComputedStyle(resEl).position === 'absolute';
+      const side = overlay ? Math.min(resEl.offsetWidth || 440, canvas.offsetWidth * 0.5) + 40 : 50;
+      map.flyToBounds(L.latLngBounds([[base.lat, base.lon], [coords.lat, coords.lon]]), {
+        maxZoom: 13.25, duration: 0.9, paddingTopLeft: [60, 60], paddingBottomRight: [side, 50],
+      });
+
+      const quote = `/contact?postcode=${encodeURIComponent(p.label)}`;
+      const dist = `${esc(p.label)} is ${miles < 0.1 ? 'right next to' : `${miles.toFixed(1)} miles from`} our base in Chelsea`;
+      if (!covered) {
+        show('out', 'Sorry – that’s outside our patch for now.', `${dist}, outside the areas we cover. If it’s a bigger job, ask anyway – we’ll say plainly.`,
+          compact ? '' : `<a class="btn secondary" href="/contact">Ask anyway</a>`);
+        return;
+      }
+      const travel = band.fee === 0 ? 'no travel charge' : `a £${band.fee} travel charge on the job${band.halfDayOnly ? ', booked as half-days or longer' : ''}`;
+      const head = band.fee === 0 ? 'Yes – we can get to you.' : 'Yes – we cover you.';
+      const links = compact ? '' :
+        (hood ? `<a class="btn secondary" href="${esc(hood.url)}">Handyman in ${esc(hood.name)}</a>` : '') + `<a class="btn primary" href="${quote}">Get a quote</a>`;
+      show('ok', head, `${dist} – ${travel}.`, links);
+    }
+
+    function show(kind: string, head: string, body: string, actions = '') {
+      resEl.hidden = false;
+      resEl.className = `cov-result ${kind}`;
+      const mark = kind === 'ok' ? '✓' : kind === 'out' ? '×' : '!';
+      resEl.innerHTML = `<span class="mark" aria-hidden="true">${mark}</span><div><p class="t">${head}</p><p class="d">${body}</p>${actions ? `<div class="a">${actions}</div>` : ''}</div><button class="x" type="button" aria-label="Clear">×</button>`;
+      resEl.querySelector('.x')?.addEventListener('click', () => {
+        resEl.hidden = true;
+        if (pinLayer) { pinLayer.remove(); pinLayer = null; }
+        canvas.classList.remove('pinned');
+        fit();
+      });
+    }
+
+    const form = fig.querySelector('.cov-form') as HTMLFormElement | null;
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = form.querySelector('input') as HTMLInputElement;
+      input.blur();
+      check(input.value);
+    });
+
+    // The contact page sends its postcode field here.
+    document.addEventListener('fettle:postcode', (e: any) => {
+      if (!fig.classList.contains('compact')) return;
+      check(e.detail.postcode, { coveredOverride: e.detail.covered, log: false });
+    });
+
+    // Leaflet needs a nudge if the map was laid out while hidden or resized.
+    new ResizeObserver(() => map.invalidateSize()).observe(canvas);
+  }
+
+  document.querySelectorAll<HTMLElement>('.cov-map').forEach(init);
+</script>

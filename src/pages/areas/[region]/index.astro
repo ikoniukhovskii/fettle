@@ -1,6 +1,6 @@
 ---
 import Page from '../../../layouts/Page.astro';
-import AreaMap from '../../../components/AreaMap.astro';
+import CoverageMap from '../../../components/CoverageMap.astro';
 import { REGIONS, hoodsIn, hoodUrl, hoodTravel } from '../../../data/areas';
 import { areaSchema } from '../../../data/schema';
 import { VIDEO_CALL_URL } from '../../../data/booking';
@@ -50,7 +50,7 @@ const description = `Handyman and home maintenance across ${region.name}: ${hood
       </div>
 
       <div class="area-section">
-        <AreaMap region={region.slug} caption={`${region.name} highlighted – every neighbourhood is within 4 miles of our base.`} />
+        <CoverageMap id="cov-region" region={region.slug} caption={`${region.name} highlighted – every neighbourhood here is within 4 miles of our base.`} />
       </div>
 
       <div class="area-section">

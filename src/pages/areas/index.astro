@@ -1,6 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
-import AreaMap from '../../components/AreaMap.astro';
+import CoverageMap from '../../components/CoverageMap.astro';
 import { REGIONS, hoodsIn, hoodUrl, hoodTravel } from '../../data/areas';
 import { AREAS } from '../../data/services';
 ---
@@ -16,7 +16,7 @@ import { AREAS } from '../../data/services';
 
   <section class="page-body">
     <div class="wrap">
-      <AreaMap />
+      <CoverageMap id="cov-hub" caption="Tap any dot to see that neighbourhood. Drag and zoom to look around." />
 
       {REGIONS.map((r) => (
         <section class="region-block">

@@ -1,6 +1,6 @@
 ---
 import Page from '../../../layouts/Page.astro';
-import AreaMap from '../../../components/AreaMap.astro';
+import CoverageMap from '../../../components/CoverageMap.astro';
 import { HOODS, regionOf, hoodUrl, hoodBySlug, hoodTravel } from '../../../data/areas';
 import { SERVICES } from '../../../data/services';
 import { VIDEO_CALL_URL } from '../../../data/booking';
@@ -99,7 +99,7 @@ const travelLine = travel.fee === 0 ? 'No travel charge' : `Travel charge £${tr
           ))}
         </div>
         <div style="margin-top:22px">
-          <AreaMap highlight={hood.slug} caption={`${hood.name} is ${travel.miles} miles from our base.`} />
+          <CoverageMap id="cov-hood" highlight={hood.slug} caption={`${hood.name} is ${travel.miles} miles from our base.`} />
         </div>
       </div>
 

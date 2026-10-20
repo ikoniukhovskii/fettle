@@ -1,0 +1,84 @@
+/* London street signs that float on the page. */
+@font-face { font-family: 'Fettle Sign'; font-style: normal; font-display: swap; font-weight: 400; src: url('/fonts/tenor-sans-400.woff2') format('woff2'); }
+@font-face { font-family: 'Fettle Gothic'; font-style: normal; font-display: swap; font-weight: 400; src: url('/fonts/unifraktur-400.woff2') format('woff2'); }
+
+.ss { container-type: inline-size; width: 100%; --sign-red: #C0262D; --sign-black: #1C1A19; --sign-green: #2E8B57; }
+.ss-plate {
+  position: relative;
+  background:
+    radial-gradient(120% 90% at var(--gx, 30%) var(--gy, 20%), rgba(255,255,255, calc(.55 * var(--glare, 0))), transparent 55%),
+    linear-gradient(170deg, #FFFFFF 0%, #F7F5EF 60%, #EFECE4 100%);
+  border-radius: 3.4cqw;
+  padding: 5.2cqw 7cqw 5cqw;
+  box-shadow:
+    inset 0 0 0 1.9cqw #FBFAF6,
+    inset 0 0 0 3cqw var(--sign-black),
+    0 1px 0 rgba(255,255,255,.6) inset,
+    0 2px 3px rgba(43,39,35,.18),
+    0 18px 38px -12px rgba(43,39,35,.38);
+  color: var(--sign-black);
+  text-align: center;
+  user-select: none;
+}
+.ss p { margin: 0; }
+.ss-screw { position: absolute; width: 2.1cqw; height: 2.1cqw; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #F3F1EC 0 25%, #A8A39A 60%, #7D776E 100%); box-shadow: 0 .3cqw .4cqw rgba(0,0,0,.25); }
+.ss-screw.tl { top: 4.4cqw; left: 4.4cqw; } .ss-screw.tr { top: 4.4cqw; right: 4.4cqw; }
+.ss-screw.bl { bottom: 4.4cqw; left: 4.4cqw; } .ss-screw.br { bottom: 4.4cqw; right: 4.4cqw; }
+
+.ss-name { font-family: 'Fettle Sign', 'Tenor Sans', 'Optima', 'Gill Sans', sans-serif; font-size: var(--fs); line-height: 1.04; letter-spacing: .02em; -webkit-text-stroke: .055em currentColor; paint-order: stroke fill; }
+.ss-line { display: block; white-space: nowrap; }
+.ss-pc { color: var(--sign-red); font-size: .74em; margin-left: .35em; letter-spacing: .03em; }
+
+/* Kensington & Chelsea: red gothic header */
+.ss-gothic { font-family: 'Fettle Gothic', 'UnifrakturMaguntia', serif; color: #B5302A; font-size: 5.5cqw; line-height: 1.25; white-space: nowrap; margin-bottom: 2.6cqw !important; -webkit-text-stroke: 0; }
+
+/* Westminster: small red caps beneath a rule */
+.ss--westminster .ss-plate { padding-bottom: 4cqw; }
+.ss-wcc { margin-top: 2.6cqw !important; padding-top: 2cqw; border-top: .5cqw solid var(--sign-black); font: 600 3.6cqw/1 'Work Sans', sans-serif; letter-spacing: .22em; text-transform: uppercase; color: var(--sign-red); }
+
+/* Camden: bold sans, green borough name top-left */
+.ss--camden .ss-plate { text-align: left; padding-left: 8.5cqw; }
+.ss--camden .ss-name { font-family: 'Work Sans', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: 0; -webkit-text-stroke: 0; line-height: 1; }
+.ss-camden { display: flex; align-items: center; gap: 1.6cqw; font: 700 5cqw/1 'Work Sans', sans-serif; color: var(--sign-green); letter-spacing: -.01em; margin-bottom: 2.6cqw !important; }
+
+/* "London Borough of …": small red top-left, postcode bottom-right */
+.ss-small { font: 500 4.3cqw/1.2 'Work Sans', sans-serif; color: #A8282C; text-align: left; margin-bottom: 2.4cqw !important; }
+.ss-small.ss-center { text-align: center; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+.ss--lb .ss-name, .ss--city .ss-name { text-align: left; }
+.ss--city .ss-name { text-align: center; }
+.ss-foot { text-align: right; margin-top: 1.4cqw !important; }
+.ss--lb .ss-foot .ss-pc { font: 600 5.4cqw/1 'Work Sans', sans-serif; }
+.ss-boro { font: 700 6.4cqw/1 'Work Sans', sans-serif; color: #B3262B; }
+.ss--richmond .ss-name { text-align: left; }
+
+/* ---- Floating ---- */
+.sign-float { position: absolute; z-index: 2; pointer-events: auto; will-change: transform; transform-style: preserve-3d; }
+.sign-float .ss { transform: perspective(900px) rotate(var(--rz, 0deg)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(var(--sc, 1)); transition: opacity .6s ease; }
+.sign-float.is-waiting .ss { opacity: 0; }
+.sign-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+
+/* Hero sign: beside the page heading */
+.page-hero .wrap { position: relative; }
+.sign-hero { position: absolute; right: 0; top: 50%; width: clamp(280px, 30vw, 380px); transform: translateY(-50%); }
+.has-hero-sign .page-hero h1, .has-hero-sign .page-hero .lede { max-width: min(56ch, calc(100% - clamp(300px, 33vw, 420px))); }
+@media (max-width: 980px) {
+  .sign-hero { position: relative; top: auto; right: auto; transform: none; width: min(300px, 78vw); margin: 30px 0 0 4px; }
+  .has-hero-sign .page-hero h1, .has-hero-sign .page-hero .lede { max-width: none; }
+}
+
+/* Home: the sign hangs on the wall in the hero photo */
+.home-sign-spot { position: absolute; top: clamp(110px, 17svh, 190px); right: max(24px, 7vw); width: clamp(220px, 23vw, 330px); z-index: 3; }
+.home-sign-spot .sign-hero { position: relative; top: auto; right: auto; transform: none; width: 100%; margin: 0; }
+@media (max-width: 720px) { .home-sign-spot { top: 96px; right: 18px; width: 190px; } }
+
+/* Scattered signs: in the margins, down the page */
+.sign-scatter { --w: clamp(150px, calc((100vw - 1040px) / 2 - 36px), 200px); width: var(--w); }
+.sign-scatter.left { left: max(-30px, calc(((100vw - 1040px) / 2 - var(--w)) / 2)); }
+.sign-scatter.right { right: max(-30px, calc(((100vw - 1040px) / 2 - var(--w)) / 2)); }
+@media (max-width: 1180px) { .sign-scatter { --w: 150px; } }
+@media (max-width: 720px) { .sign-scatter { --w: 128px; } .sign-scatter.left { left: -34px; } .sign-scatter.right { right: -34px; } }
+
+/* Compare modes (preview only): ?signs=hero | scatter | both */
+html[data-signs="hero"] .sign-scatter, html[data-signs="scatter"] .sign-hero { display: none; }
+
+@media (prefers-reduced-motion: reduce) { .sign-float .ss { transition: none; } }

@@ -1,0 +1,47 @@
+---
+// One London street sign, drawn in HTML/CSS (crisp at any size, no images).
+// Lettering and layout follow each council's style; no crests or logos.
+import type { Sign } from '../data/signs';
+
+interface Props { sign: Sign; class?: string }
+const { sign, class: cls } = Astro.props;
+const { street, postcode, borough, style } = sign;
+
+// Long names break like the real thing: "UVERDALE / ROAD SW10".
+const words = street.toUpperCase().split(' ');
+let lines = [words.join(' ')];
+if (street.length > 11 && words.length > 1) {
+  // Two lines, split where they're most even (the postcode rides on the second).
+  let best = Infinity;
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+    const w = Math.max(a.length, b.length + postcode.length * 0.75 + 1);
+    if (w < best) { best = w; lines = [a, b]; }
+  }
+}
+const longest = Math.max(...lines.map((l, i) => l.length + (i === lines.length - 1 && style !== 'richmond' && style !== 'lb' ? postcode.length * 0.75 + 1 : 0)));
+// Font size as a share of the sign's width, so it fills the plate like a real sign.
+const size = Math.min(style === 'camden' ? 12.5 : 14, 80 / (longest * (style === 'camden' ? 0.7 : 0.78)));
+const rbkc = ['The Royal Borough of Kensington', 'and Chelsea'];
+---
+
+<div class:list={['ss', `ss--${style}`, cls]} aria-label={`${street}, ${postcode}`} role="img">
+  <div class="ss-plate">
+    <i class="ss-screw tl"></i><i class="ss-screw tr"></i><i class="ss-screw bl"></i><i class="ss-screw br"></i>
+    {style === 'rbkc' && <p class="ss-hdr ss-gothic">{rbkc[0]}<br />{rbkc[1]}</p>}
+    {style === 'camden' && <p class="ss-hdr ss-camden">{borough}</p>}
+    {(style === 'lb') && <p class="ss-hdr ss-small">{borough}</p>}
+    {style === 'city' && <p class="ss-hdr ss-small ss-center">{borough}</p>}
+    <p class="ss-name" style={`--fs:${size.toFixed(2)}cqw`}>
+      {lines.map((l, i) => (
+        <span class="ss-line">
+          {l}
+          {i === lines.length - 1 && ['rbkc', 'westminster', 'camden', 'city'].includes(style) && <span class="ss-pc">{postcode}</span>}
+        </span>
+      ))}
+    </p>
+    {style === 'lb' && <p class="ss-foot"><span class="ss-pc">{postcode}</span></p>}
+    {style === 'richmond' && <p class="ss-foot"><span class="ss-boro">{borough}</span></p>}
+    {style === 'westminster' && <p class="ss-foot ss-wcc">{borough}</p>}
+  </div>
+</div>

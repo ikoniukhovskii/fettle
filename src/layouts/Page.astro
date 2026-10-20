@@ -5,6 +5,7 @@ import Base from './Base.astro';
 import { SERVICES } from '../data/services';
 import { SOCIALS } from '../data/schema';
 import { FOOTER_AREAS } from '../data/areas';
+import StreetSigns from '../components/StreetSigns.astro';
 import '../styles/site.css';
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 }
 const { title, description, noindex } = Astro.props;
 const path = Astro.url.pathname;
+const showSigns = !/^\/(privacy|terms|cookies|insights|review|send-review|membership\/welcome|404)/.test(path);
 
 const nav = [
   { label: 'What we fix', href: '/services' },
@@ -77,6 +79,7 @@ const footerCols = [
   </header>
 
   <main>
+    {showSigns && <StreetSigns path={path} />}
     <slot />
   </main>
 

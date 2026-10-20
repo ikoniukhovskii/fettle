@@ -96,12 +96,40 @@ function pick(list: ApiPlace[], wanted: string): ApiPlace | null {
 }
 
 async function outcodeAt(lat: number, lon: number): Promise<string> {
+  // Nearest postcode first; if there's none within 2km (parks, the river), the nearest postcode district.
   try {
     const r = await fetch(`https://api.postcodes.io/postcodes?lon=${lon}&lat=${lat}&limit=1&radius=2000`);
+    const j = await r.json();
+    if (j?.result?.[0]?.outcode) return j.result[0].outcode;
+  } catch {}
+  try {
+    const r = await fetch(`https://api.postcodes.io/outcodes?lon=${lon}&lat=${lat}&limit=1&radius=25000`);
     const j = await r.json();
     return j?.result?.[0]?.outcode ?? '';
   } catch {
     return '';
+  }
+}
+
+// Photon (OpenStreetMap search, free, no key): knows estates, stations, streets and landmarks –
+// "Canary Wharf", "Brick Lane", "Battersea Power Station" – and forgives typos. Results are
+// nudged towards our base and kept to London and its edges.
+const LONDON_BOX = '-0.70,51.20,0.45,51.80';
+type PhotonHit = { name: string; lat: number; lon: number; postcode?: string; district?: string };
+async function photon(q: string): Promise<PhotonHit | null> {
+  try {
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lat=51.4835&lon=-0.183&limit=5&lang=en&bbox=${LONDON_BOX}`;
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const j = await r.json();
+    const f = (j?.features ?? []).find((x: any) => x?.properties?.countrycode === 'GB' && x?.geometry?.coordinates);
+    if (!f) return null;
+    const pr = f.properties;
+    const [lon, lat] = f.geometry.coordinates;
+    const name = pr.name || pr.street || pr.district || pr.city || q;
+    return { name, lat, lon, postcode: pr.postcode, district: pr.district || pr.locality || pr.city };
+  } catch {
+    return null;
   }
 }
 
@@ -114,20 +142,35 @@ async function finish(p: ApiPlace, corrected: boolean): Promise<Place> {
 export async function findPlace(raw: string): Promise<Place | null> {
   const q = raw.trim().replace(/\s+/g, ' ');
   if (q.length < 2) return null;
+  const nq = norm(q);
 
-  // 1. As typed.
+  // 1. A town or district, as typed (Ordnance Survey names).
   let hit = pick(await searchApi(q), q);
   if (hit) return finish(hit, false);
 
-  // 2. A typo of a London place we know.
+  // 2. Anything else on the map: estates, stations, streets, landmarks (OpenStreetMap).
+  const ph = await photon(q);
+  let phPlace: Place | null = null;
+  if (ph) {
+    const pcOut = ph.postcode ? ph.postcode.trim().toUpperCase().split(/\s+/)[0] : '';
+    const outcode = /^[A-Z]{1,2}\d[A-Z\d]?$/.test(pcOut) ? pcOut : await outcodeAt(ph.lat, ph.lon);
+    const nn = norm(ph.name);
+    const corrected = !(nn.includes(nq) || nq.includes(nn));
+    phPlace = { name: ph.name, lat: ph.lat, lon: ph.lon, outcode, corrected, area: ph.district };
+    if (!corrected && outcode) return phPlace;
+  }
+
+  // 3. A typo of a London place we know ("bexlyheath", "Fluham").
   const fixed = closestName(q, LONDON_PLACES);
-  if (fixed) {
+  if (fixed && norm(fixed) !== nq) {
     hit = pick(await searchApi(fixed), fixed);
     if (hit) return finish(hit, true);
   }
 
-  // 3. A typo of anything else: fetch names starting the same way and take the closest.
-  const nq = norm(q);
+  // Photon's own typo-forgiving guess.
+  if (phPlace && phPlace.outcode) return phPlace;
+
+  // 4. A typo of any other town: fetch names starting the same way and take the closest.
   for (const stem of [q.slice(0, 3), q.slice(0, 2)]) {
     if (stem.length < 2) continue;
     const list = await searchApi(stem, 100);
@@ -140,4 +183,3 @@ export async function findPlace(raw: string): Promise<Place | null> {
   }
   return null;
 }
-

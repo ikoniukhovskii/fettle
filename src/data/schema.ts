@@ -80,3 +80,24 @@ export function faqSchema(faqs: { q: string; a: string }[]) {
 export const SOCIALS: { label: string; href: string }[] = [
   { label: 'Facebook', href: FACEBOOK_URL },
 ];
+
+// Neighbourhood pages: the same business, serving one named area (and its postcodes).
+export function areaSchema(h: { name: string; url: string; description: string; postcodes: string[] }, crumbs: { name: string; url: string }[]) {
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: `Handyman and home maintenance in ${h.name}`,
+      serviceType: 'Handyman',
+      description: h.description,
+      url: `${SITE}${h.url}`,
+      provider: { '@id': `${SITE}/#business` },
+      areaServed: { '@type': 'Place', name: `${h.name}, London`, address: { '@type': 'PostalAddress', addressLocality: 'London', postalCode: h.postcodes.join(', '), addressCountry: 'GB' } },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: `${SITE}${c.url}` })),
+    },
+  ];
+}

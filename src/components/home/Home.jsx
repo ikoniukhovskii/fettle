@@ -38,6 +38,7 @@ import teamSergioAsset from '../../assets/img/team-sergio.webp';
 const teamSergio = teamSergioAsset.src;
 import { SERVICES } from '../../data/services';
 import { SOCIALS } from '../../data/schema';
+import { FOOTER_AREAS, hoodForPostcode, hoodUrl } from '../../data/areas';
 
 /* Fettle — photo-led editorial landing page.
    One full-bleed photograph as the entire hero, giant wordmark anchored to
@@ -580,6 +581,16 @@ function QuietPostcode({ id, t }) {
               </a>
               .
             </span>
+            {(() => {
+              const hood = result.covered ? hoodForPostcode(result.postcode || result.area) : null;
+              return hood ? (
+                <span style={{ display: 'block', marginTop: 10, fontSize: 15 * bs }}>
+                  <a href={hoodUrl(hood)} className="quiet-link" style={{ color: 'var(--brick)', fontWeight: 600 }}>
+                    See what we do in {hood.name} →
+                  </a>
+                </span>
+              ) : null;
+            })()}
           </p>
         )}
         {result && result.invalid && (
@@ -1807,6 +1818,7 @@ const FOOT_COLS = [
       { label: 'Contact', href: '/contact' },
     ],
   },
+  { head: 'Areas', links: FOOTER_AREAS },
   {
     head: 'Legal',
     links: [

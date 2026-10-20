@@ -1,0 +1,71 @@
+---
+// A simple, to-scale map of the neighbourhoods we have pages for, centred on our Chelsea base.
+// Dots are placed by real latitude/longitude; every dot links to its page.
+import { HOODS, REGIONS, hoodUrl } from '../data/areas';
+import { BASE } from '../data/travel';
+
+interface Props {
+  highlight?: string; // a hood slug to emphasise
+  region?: string; // a region slug to emphasise
+  caption?: string;
+}
+const { highlight, region, caption } = Astro.props;
+
+const W = 760, H = 470, PAD = 70;
+const pts = [...HOODS.map((h) => ({ lat: h.lat, lon: h.lon })), BASE];
+const kx = Math.cos((BASE.lat * Math.PI) / 180);
+const xs = pts.map((p) => p.lon * kx), ys = pts.map((p) => p.lat);
+const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+const s = Math.min((W - PAD * 2) / (maxX - minX), (H - PAD * 2) / (maxY - minY));
+const ox = (W - (maxX - minX) * s) / 2, oy = (H - (maxY - minY) * s) / 2;
+const px = (lon: number) => ox + (lon * kx - minX) * s;
+const py = (lat: number) => oy + (maxY - lat) * s;
+
+const COLORS: Record<string, string> = { 'southwest-london': '#B34426', 'west-london': '#6E8A6B', 'central-london': '#2B2723' };
+// Label placement: most labels sit to the right; a few go left or above to avoid neighbours.
+const LEFT = new Set(['earls-court', 'fulham', 'hammersmith', 'holland-park', 'putney', 'notting-hill']);
+const ABOVE = new Set(['south-kensington', 'belgravia']);
+const BELOW = new Set(['chelsea', 'battersea']);
+const bx = px(BASE.lon), by = py(BASE.lat);
+// One mile, for the scale bar.
+const mile = (1 / 69) * s; // ≈ 69 miles per degree of latitude
+---
+
+<figure class="area-map">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Map of the London neighbourhoods Fettle covers, around our base in Chelsea">
+    <rect x="0" y="0" width={W} height={H} rx="14" fill="#F7F1E6" />
+    {[1, 2].map((m) => (
+      <circle cx={bx} cy={by} r={m * mile} fill="none" stroke="rgba(43,39,35,.14)" stroke-dasharray="4 6" />
+    ))}
+    <text x={bx + 2 * mile * 0.71 + 6} y={by - 2 * mile * 0.71 - 6} font-size="11" fill="rgba(43,39,35,.45)" font-family="Work Sans, sans-serif">2 miles</text>
+    {HOODS.map((h) => {
+      const x = px(h.lon), y = py(h.lat);
+      const on = highlight ? h.slug === highlight : region ? h.region === region : true;
+      const left = LEFT.has(h.slug), above = ABOVE.has(h.slug), below = BELOW.has(h.slug);
+      const tx = above || below ? x : left ? x - 12 : x + 12;
+      const ty = above ? y - 13 : below ? y + 22 : y + 4.5;
+      const anchor = above || below ? 'middle' : left ? 'end' : 'start';
+      return (
+        <a href={hoodUrl(h)} aria-label={`Handyman in ${h.name}`}>
+          <circle class="dot" cx={x} cy={y} r={h.slug === highlight ? 9 : 6.5} fill={COLORS[h.region]} opacity={on ? 1 : 0.28} />
+          <text x={tx} y={ty} text-anchor={anchor} font-size={h.slug === highlight ? 16 : 14} font-weight={h.slug === highlight ? 800 : 600} font-family="Bricolage Grotesque, sans-serif" fill="#2B2723" opacity={on ? 1 : 0.4}>{h.name}</text>
+        </a>
+      );
+    })}
+    <g>
+      <rect x={bx - 11} y={by - 11} width="22" height="22" rx="6" fill="#B34426" />
+      <text x={bx} y={by + 5} text-anchor="middle" font-size="14" font-weight="800" font-family="Bricolage Grotesque, sans-serif" fill="#F1E8D8">F</text>
+      <text x={bx} y={by + 30} text-anchor="middle" font-size="11.5" font-weight="600" letter-spacing="1" font-family="Work Sans, sans-serif" fill="#B34426">OUR BASE</text>
+    </g>
+    <g transform={`translate(${W - 28 - mile}, ${H - 28})`}>
+      <line x1="0" y1="0" x2={mile} y2="0" stroke="rgba(43,39,35,.5)" stroke-width="2" />
+      <line x1="0" y1="-4" x2="0" y2="4" stroke="rgba(43,39,35,.5)" stroke-width="2" />
+      <line x1={mile} y1="-4" x2={mile} y2="4" stroke="rgba(43,39,35,.5)" stroke-width="2" />
+      <text x={mile / 2} y="-8" text-anchor="middle" font-size="11" fill="rgba(43,39,35,.55)" font-family="Work Sans, sans-serif">1 mile</text>
+    </g>
+  </svg>
+  <figcaption class="map-key">
+    {REGIONS.map((r) => <span><i style={`background:${COLORS[r.slug]}`}></i>{r.name}</span>)}
+    <span>{caption ?? 'Every neighbourhood here is within 4 miles of our base – no travel charge.'}</span>
+  </figcaption>
+</figure>

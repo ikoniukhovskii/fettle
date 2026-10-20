@@ -4,6 +4,7 @@
 import Base from './Base.astro';
 import { SERVICES } from '../data/services';
 import { SOCIALS } from '../data/schema';
+import { FOOTER_AREAS } from '../data/areas';
 import '../styles/site.css';
 
 interface Props {
@@ -44,6 +45,7 @@ const footerCols = [
       { label: 'Contact', href: '/contact' },
     ],
   },
+  { heading: 'Areas', links: FOOTER_AREAS },
   {
     heading: 'Legal',
     links: [

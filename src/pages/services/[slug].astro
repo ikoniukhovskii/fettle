@@ -2,6 +2,7 @@
 import Page from '../../layouts/Page.astro';
 import { SERVICES, AREAS } from '../../data/services';
 import { serviceSchema } from '../../data/schema';
+import { REGIONS, hoodsIn, hoodUrl } from '../../data/areas';
 
 export function getStaticPaths() {
   return SERVICES.map((service) => ({ params: { slug: service.slug }, props: { service } }));
@@ -56,13 +57,16 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
           </>
         )}
 
-        <h2 style="margin-top:40px">Areas we cover</h2>
-        <ul>
-          {AREAS.map((a) => (
+        <h2 style="margin-top:40px">{service.name} near you</h2>
+        <ul class="area-links">
+          {REGIONS.map((r) => (
+            <li><strong><a href={`/areas/${r.slug}`} style="color:inherit">{r.name}:</a></strong> {hoodsIn(r).map((h, i) => <>{i > 0 && ' · '}<a href={hoodUrl(h)}>{h.name}</a></>)}</li>
+          ))}
+          {AREAS.filter((a) => !REGIONS.some((r) => r.name === a.region)).map((a) => (
             <li><strong>{a.region}:</strong> {a.places}</li>
           ))}
         </ul>
-        <p class="muted">Not sure if you’re on our patch? Get in touch and we’ll tell you plainly.</p>
+        <p class="muted">Not sure if you’re on our patch? <a href="/areas">See every area we cover</a>, or get in touch and we’ll tell you plainly.</p>
 
         <p style="margin-top:24px"><a class="btn primary" href="/contact">Get a quote</a> &nbsp; <a class="btn secondary" href="/how-it-works">How it works</a></p>
 

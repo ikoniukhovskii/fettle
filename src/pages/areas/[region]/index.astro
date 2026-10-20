@@ -1,0 +1,70 @@
+---
+import Page from '../../../layouts/Page.astro';
+import AreaMap from '../../../components/AreaMap.astro';
+import { REGIONS, hoodsIn, hoodUrl, hoodTravel } from '../../../data/areas';
+import { areaSchema } from '../../../data/schema';
+import { VIDEO_CALL_URL } from '../../../data/booking';
+
+export function getStaticPaths() {
+  return REGIONS.map((region) => ({ params: { region: region.slug }, props: { region } }));
+}
+const { region } = Astro.props;
+const hoods = hoodsIn(region);
+const others = REGIONS.filter((r) => r.slug !== region.slug);
+const url = `/areas/${region.slug}`;
+const postcodes = hoods.flatMap((h) => h.postcodes);
+const description = `Handyman and home maintenance across ${region.name}: ${hoods.map((h) => h.name).join(', ')}. No travel charge, free 10-minute video quote.`.slice(0, 160);
+---
+
+<Page title={`Handyman in ${region.name} – ${hoods.map((h) => h.name).slice(0, 3).join(', ')} & more | Fettle London`} description={description}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(areaSchema({ name: region.name, url, description, postcodes }, [{ name: 'Areas we cover', url: '/areas' }, { name: region.name, url }]))} />
+
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow crumbs"><a href="/areas">Areas</a><span class="sep">/</span><span>{region.name}</span></p>
+      <h1>Handyman in {region.name}</h1>
+      <p class="lede">{region.lede}</p>
+      <div class="area-facts">
+        <span class="pill rust"><span class="dot"></span>{postcodes.join(' · ')}</span>
+        <span class="pill"><span class="dot"></span>No travel charge</span>
+        <span class="pill"><span class="dot"></span>Free 10-min video call</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-body">
+    <div class="wrap">
+      <p style="max-width:62ch;font-size:17px;line-height:1.7;margin:0 0 28px">{region.intro}</p>
+      <div class="hood-grid">
+        {hoods.map((h) => {
+          const t = hoodTravel(h);
+          return (
+            <a class="hood-card" href={hoodUrl(h)}>
+              <span class="pc">{h.postcodes.join(' · ')}</span>
+              <h3>{h.name}</h3>
+              <p>{h.lede}</p>
+              <div class="meta"><span>{t.miles} miles · <b>{t.fee === 0 ? 'no travel charge' : `£${t.fee} travel`}</b></span><span class="go">Handyman in {h.name} →</span></div>
+            </a>
+          );
+        })}
+      </div>
+
+      <div class="area-section">
+        <AreaMap region={region.slug} caption={`${region.name} highlighted – every neighbourhood is within 4 miles of our base.`} />
+      </div>
+
+      <div class="area-section">
+        <h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(26px,3.4vw,36px);margin:0 0 14px">Also covering</h2>
+        <div class="svc-links">
+          {others.map((r) => <a href={`/areas/${r.slug}`}>{r.name} <span aria-hidden="true">→</span></a>)}
+          <a href="/areas">All areas <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+
+      <div class="area-section" style="text-align:center">
+        <p style="margin:0 0 18px;color:var(--ink-60)">Show us the job on a free video call and we can usually price it there and then.</p>
+        <p style="margin:0"><a class="btn primary" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free video call</a> &nbsp; <a class="btn secondary" href="/contact">Contact</a></p>
+      </div>
+    </div>
+  </section>
+</Page>

@@ -209,10 +209,11 @@ input:focus-visible {
 .foot-top-grid {
   display: grid;
   --brand-col: auto;
-  grid-template-columns: minmax(200px, 1.1fr) repeat(4, minmax(120px, 0.85fr));
+  grid-template-columns: minmax(200px, 1.1fr) repeat(5, minmax(110px, 0.8fr));
   gap: clamp(24px, 3.2vw, 48px);
   padding-bottom: clamp(40px, 5vw, 60px);
 }
+@media (max-width: 1060px) { .foot-top-grid { grid-template-columns: repeat(3, 1fr); --brand-col: 1 / -1; } }
 @media (max-width: 860px) {
   .foot-top-grid { grid-template-columns: 1fr 1fr; --brand-col: 1 / -1; }
 }

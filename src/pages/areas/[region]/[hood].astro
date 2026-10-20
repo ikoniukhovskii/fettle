@@ -1,0 +1,112 @@
+---
+import Page from '../../../layouts/Page.astro';
+import AreaMap from '../../../components/AreaMap.astro';
+import { HOODS, regionOf, hoodUrl, hoodBySlug, hoodTravel } from '../../../data/areas';
+import { SERVICES } from '../../../data/services';
+import { VIDEO_CALL_URL } from '../../../data/booking';
+import { areaSchema } from '../../../data/schema';
+
+export function getStaticPaths() {
+  return HOODS.map((hood) => ({ params: { region: hood.region, hood: hood.slug }, props: { hood } }));
+}
+
+const { hood } = Astro.props;
+const region = regionOf(hood);
+const travel = hoodTravel(hood);
+const near = hood.near.map(hoodBySlug).filter(Boolean) as typeof HOODS;
+const url = hoodUrl(hood);
+const crumbs = [
+  { name: 'Areas we cover', url: '/areas' },
+  { name: region.name, url: `/areas/${region.slug}` },
+  { name: hood.name, url },
+];
+const travelLine = travel.fee === 0 ? 'No travel charge' : `Travel charge £${travel.fee}${travel.halfDayOnly ? ' · half-days or longer' : ''}`;
+---
+
+<Page title={hood.title} description={hood.description}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(areaSchema({ name: hood.name, url, description: hood.description, postcodes: hood.postcodes }, crumbs))} />
+
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow crumbs">
+        <a href="/areas">Areas</a><span class="sep">/</span><a href={`/areas/${region.slug}`}>{region.name}</a>
+      </p>
+      <h1>Handyman in {hood.name}</h1>
+      <p class="lede">{hood.lede}</p>
+      <div class="area-facts">
+        <span class="pill rust"><span class="dot"></span>{hood.postcodes.join(' · ')}</span>
+        <span class="pill"><span class="dot"></span>{travel.miles} miles from our base</span>
+        <span class="pill"><span class="dot"></span>{travelLine}</span>
+        <span class="pill"><span class="dot"></span>Same faces every visit</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-body">
+    <div class="wrap">
+      <div class="area-split">
+        <div class="area-homes">
+          <h2>Homes in {hood.name}</h2>
+          <p>{hood.homes}</p>
+          <p class="muted" style="color:var(--ink-60)">One small, permanent team does the lot – no subcontracted strangers, dust sheets down and a tidy finish.</p>
+        </div>
+        <aside class="area-panel">
+          <h3>Prices in {hood.name}</h3>
+          <dl>
+            <dt>Video call quote</dt><dd>Free</dd>
+            <dt>Visit &amp; quote</dt><dd>£30, off the job</dd>
+            <dt>Half day</dt><dd>from £140</dd>
+            <dt>Full day</dt><dd>from £260</dd>
+            <dt>Membership</dt><dd>from £29/month</dd>
+            <dt>Travel</dt><dd>{travel.fee === 0 ? 'Free' : `£${travel.fee}`}</dd>
+          </dl>
+          <a class="btn primary" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free 10-minute video call</a>
+          <a class="btn secondary" href={`/contact?postcode=${encodeURIComponent(hood.postcodes[0])}`}>Get a quote</a>
+        </aside>
+      </div>
+
+      <div class="area-section">
+        <h2>What we’re often asked to do in {hood.name}</h2>
+        <p class="sub">The jobs that come up again and again in {hood.name} homes. Anything else on your list, just ask.</p>
+        <div class="grid three">
+          {hood.jobs.map((j) => (
+            <div class="card">
+              <h3>{j.title}</h3>
+              <p>{j.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="area-section">
+        <h2>Everything we do in {hood.name}</h2>
+        <div class="svc-links">
+          {SERVICES.map((s) => <a href={`/services/${s.slug}`}>{s.name} <span aria-hidden="true">→</span></a>)}
+          <a href="/membership">Home maintenance membership <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+
+      <div class="area-section">
+        <h2>Nearby</h2>
+        <p class="sub">We cover the whole of {region.name} and beyond. Neighbours of {hood.name}:</p>
+        <div class="hood-grid">
+          {near.map((n) => (
+            <a class="hood-card" href={hoodUrl(n)}>
+              <span class="pc">{n.postcodes.join(' · ')}</span>
+              <h3>{n.name}</h3>
+              <div class="meta"><span>{hoodTravel(n).miles} miles · <b>{hoodTravel(n).fee === 0 ? 'no travel charge' : `£${hoodTravel(n).fee} travel`}</b></span><span class="go">→</span></div>
+            </a>
+          ))}
+        </div>
+        <div style="margin-top:22px">
+          <AreaMap highlight={hood.slug} caption={`${hood.name} is ${travel.miles} miles from our base.`} />
+        </div>
+      </div>
+
+      <div class="area-section" style="text-align:center">
+        <p style="margin:0 0 18px;color:var(--ink-60)">Not sure if a job is for us? Show us on a video call and we’ll tell you plainly.</p>
+        <p style="margin:0"><a class="btn primary" href="/contact">Contact</a> &nbsp; <a class="btn secondary" href={`/areas/${region.slug}`}>More in {region.name}</a></p>
+      </div>
+    </div>
+  </section>
+</Page>

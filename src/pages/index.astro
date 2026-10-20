@@ -3,12 +3,9 @@ import Base from '../layouts/Base.astro';
 import Home, { FAQS } from '../components/home/Home.jsx';
 import { faqSchema } from '../data/schema';
 import '../styles/home.css';
-import StreetSigns from '../components/StreetSigns.astro';
 ---
 
 <Base title="Fettle London – Handyman & Home Maintenance in Chelsea & London" description="Fettle London is a small, permanent handyman and home maintenance team based in Chelsea, SW10: painting, plastering, plumbing, cleaning, fences, floors and odd jobs. Free 10-minute video quote.">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema(FAQS))} />
   <Home client:load />
-  <div class="home-sign-spot" data-sign-spot></div>
-  <StreetSigns path="/" />
 </Base>

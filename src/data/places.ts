@@ -91,7 +91,8 @@ function pick(list: ApiPlace[], wanted: string): ApiPlace | null {
   const same = list.filter((p) => norm(p.name_1) === w);
   const pool = same.length ? same : list.filter((p) => norm(p.name_1).startsWith(w));
   if (!pool.length) return null;
-  const score = (p: ApiPlace) => (p.region === 'London' ? 0 : 1000) + milesFromBase(p.latitude, p.longitude);
+  // Nearest to our base wins: London first, then the closest anywhere else.
+  const score = (p: ApiPlace) => (p.region === 'London' ? 0 : 500) + milesFromBase(p.latitude, p.longitude);
   return [...pool].sort((a, b) => score(a) - score(b))[0];
 }
 
@@ -144,12 +145,15 @@ export async function findPlace(raw: string): Promise<Place | null> {
   if (q.length < 2) return null;
   const nq = norm(q);
 
-  // 1. A town or district, as typed (Ordnance Survey names).
-  let hit = pick(await searchApi(q), q);
-  if (hit) return finish(hit, false);
+  // 1. A town or district, as typed (Ordnance Survey names) – and, at the same time, the
+  //    OpenStreetMap search, which only looks in and around London. Many names repeat across
+  //    the country (there are dozens of Richmonds), so a London match always wins over a far one.
+  const [osList, ph] = await Promise.all([searchApi(q, 100), photon(q)]);
+  let hit = pick(osList, q);
+  const phExact = ph && norm(ph.name) === nq;
+  if (hit && (milesFromBase(hit.latitude, hit.longitude) < 30 || !phExact)) return finish(hit, false);
 
   // 2. Anything else on the map: estates, stations, streets, landmarks (OpenStreetMap).
-  const ph = await photon(q);
   let phPlace: Place | null = null;
   if (ph) {
     const pcOut = ph.postcode ? ph.postcode.trim().toUpperCase().split(/\s+/)[0] : '';
@@ -159,6 +163,9 @@ export async function findPlace(raw: string): Promise<Place | null> {
     phPlace = { name: ph.name, lat: ph.lat, lon: ph.lon, outcode, corrected, area: ph.district };
     if (!corrected && outcode) return phPlace;
   }
+
+  // An OS match far away, but nothing better nearby: use it (someone in Manchester typing Manchester).
+  if (hit && !phPlace) return finish(hit, false);
 
   // 3. A typo of a London place we know ("bexlyheath", "Fluham").
   const fixed = closestName(q, LONDON_PLACES);

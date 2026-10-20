@@ -43,6 +43,7 @@ export const SIGNS = {
   kingStreet: s('King Street', 'W6', 'London Borough of Hammersmith & Fulham', 'lb'),
   putneyHigh: s('Putney High Street', 'SW15', 'London Borough of Wandsworth', 'lb'),
   northcote: s('Northcote Road', 'SW11', 'London Borough of Wandsworth', 'lb'),
+  batterseaPark: s('Battersea Park Road', 'SW11', 'London Borough of Wandsworth', 'lb'),
   oldYork: s('Old York Road', 'SW18', 'London Borough of Wandsworth', 'lb'),
   claphamHigh: s('Clapham High Street', 'SW4', 'London Borough of Lambeth', 'lb'),
   lambethWalk: s('Lambeth Walk', 'SE11', 'London Borough of Lambeth', 'lb'),
@@ -56,46 +57,22 @@ export const SIGNS = {
 } satisfies Record<string, Sign>;
 type K = keyof typeof SIGNS;
 
-// The hero sign for each neighbourhood page.
+// One sign per location page, each its own street.
 const HOOD: Record<string, K> = {
-  chelsea: 'kingsRoad', fulham: 'fulhamRoadSW6', battersea: 'northcote', putney: 'putneyHigh', wandsworth: 'oldYork',
+  chelsea: 'kingsRoad', fulham: 'fulhamRoadSW6', battersea: 'batterseaPark', putney: 'putneyHigh', wandsworth: 'oldYork',
   clapham: 'claphamHigh', kensington: 'kensingtonChurch', 'south-kensington': 'oldBrompton', 'earls-court': 'earlsCourt',
   'notting-hill': 'portobello', 'holland-park': 'hollandPark', hammersmith: 'kingStreet', pimlico: 'warwickWay',
   belgravia: 'eatonSquare', westminster: 'whitehall',
 };
-const REGION: Record<string, K[]> = {
-  'southwest-london': ['kingsRoad', 'putneyHigh', 'fulhamRoadSW6', 'claphamHigh'],
-  'west-london': ['portobello', 'kingStreet', 'kensingtonChurch', 'hollandPark'],
-  'central-london': ['whitehall', 'eatonSquare', 'warwickWay', 'savileRow'],
-};
-// Other pages: [hero, ...scattered]
-const PAGES: Record<string, K[]> = {
-  '/': ['kingsRoad', 'nottingHillGate', 'abbeyRoad', 'churchRoad', 'camdenHigh'],
-  '/areas': ['nottingHillGate', 'abbeyRoad', 'camdenHigh', 'brickLane', 'houghton', 'lambethWalk', 'upperStreet', 'fleetStreet'],
-  '/services': ['fulhamRoadSW10', 'portobello', 'lambethWalk', 'kewGreen'],
-  '/about': ['uverdale', 'cheyneWalk', 'flaskWalk'],
-  '/how-it-works': ['kensingtonHigh', 'boroughHigh', 'kingsway'],
-  '/membership': ['cheyneWalk', 'eatonSquare', 'kewGreen'],
-  '/contact': ['fulhamRoadSW10', 'sloaneSquare', 'upperStreet'],
-  '/testimonials': ['nottingHillGate', 'northcote', 'carnaby'],
-};
-const SERVICE_POOL: K[] = ['cheyneWalk', 'portobello', 'savileRow', 'northcote', 'kingsway', 'kensingtonHigh', 'upperStreet', 'claphamHigh', 'flaskWalk', 'boroughHigh', 'kewGreen', 'carnaby'];
+const REGION: Record<string, K> = { 'southwest-london': 'northcote', 'west-london': 'kensingtonHigh', 'central-london': 'savileRow' };
+const HUB: K = 'fulhamRoadSW10'; // our base
 
 /** Signs for a page path: the first is the hero sign, the rest float further down. */
 export function signsFor(path: string): Sign[] {
   const p = path.replace(/\/$/, '') || '/';
+  if (p === '/areas') return [SIGNS[HUB]];
   const m = p.match(/^\/areas\/([^/]+)(?:\/([^/]+))?$/);
-  let keys: K[] | undefined;
-  if (m && m[2] && HOOD[m[2]]) {
-    const region = REGION[m[1]] ?? [];
-    keys = [HOOD[m[2]], ...region.filter((k) => k !== HOOD[m[2]]).slice(0, 2)];
-  } else if (m && REGION[m[1]]) keys = REGION[m[1]];
-  else if (PAGES[p]) keys = PAGES[p];
-  else if (p.startsWith('/services/')) {
-    // A steady, different pick for each service page.
-    let h = 0;
-    for (const c of p) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-    keys = [0, 1, 2].map((i) => SERVICE_POOL[(h + i * 5) % SERVICE_POOL.length]);
-  }
-  return (keys ?? []).map((k) => SIGNS[k]);
+  if (!m) return [];
+  const k = m[2] ? HOOD[m[2]] : REGION[m[1]];
+  return k ? [SIGNS[k]] : [];
 }

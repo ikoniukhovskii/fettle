@@ -15,7 +15,7 @@ interface Props {
 }
 const { title, description, noindex } = Astro.props;
 const path = Astro.url.pathname;
-const showSigns = !/^\/(privacy|terms|cookies|insights|review|send-review|membership\/welcome|404)/.test(path);
+const showSigns = /^\/areas(\/|$)/.test(path); // street signs: location pages only
 
 const nav = [
   { label: 'What we fix', href: '/services' },

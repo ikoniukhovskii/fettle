@@ -1,82 +1,101 @@
-/* London street signs that float on the page. */
-@font-face { font-family: 'Fettle Sign'; font-style: normal; font-display: swap; font-weight: 400; src: url('/fonts/tenor-sans-400.woff2') format('woff2'); }
-@font-face { font-family: 'Fettle Gothic'; font-style: normal; font-display: swap; font-weight: 400; src: url('/fonts/unifraktur-400.woff2') format('woff2'); }
+/* London street signs on the area pages: enamelled plates that slide in, spin and tilt. */
+@font-face { font-family: 'Fettle Sign'; font-style: normal; font-display: swap; font-weight: 500; src: url('/fonts/rosario-500.woff2') format('woff2'); }
+@font-face { font-family: 'Fettle Gothic'; font-style: normal; font-display: swap; font-weight: 500; src: url('/fonts/grenze-gotisch-500.woff2') format('woff2'); }
 
-.ss { container-type: inline-size; width: 100%; --sign-red: #C0262D; --sign-black: #1C1A19; --sign-green: #2E8B57; }
+.ss { container-type: inline-size; width: 100%; position: relative; --sign-red: #B8232B; --sign-black: #141312; --sign-green: #2F8A4F; }
+
+/* The plate: white vitreous enamel over steel. Layers, top to bottom: moving glare, a faint
+   sheen, fine grain, a touch of road grime towards the bottom edge, then the enamel itself. */
 .ss-plate {
   position: relative;
   background:
-    radial-gradient(120% 90% at var(--gx, 30%) var(--gy, 20%), rgba(255,255,255, calc(.55 * var(--glare, 0))), transparent 55%),
-    linear-gradient(170deg, #FFFFFF 0%, #F7F5EF 60%, #EFECE4 100%);
-  border-radius: 3.4cqw;
-  padding: 5.2cqw 7cqw 5cqw;
+    radial-gradient(90% 70% at var(--gx, 22%) var(--gy, 12%), rgba(255,255,255, calc(.10 + .55 * var(--glare, 0))), transparent 60%),
+    linear-gradient(115deg, transparent 38%, rgba(255,255,255,.55) 47%, transparent 56%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .33 0 0 0 0 .3 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, rgba(120,110,95,0) 70%, rgba(120,110,95,.08) 100%),
+    linear-gradient(172deg, #FFFFFE 0%, #F6F4EE 55%, #ECE8DF 100%);
+  border-radius: 2.6cqw;
+  padding: 6cqw 8cqw 5.6cqw;
+  /* white margin, the black enamel line, then the plate's pressed edge */
   box-shadow:
-    inset 0 0 0 1.9cqw #FBFAF6,
-    inset 0 0 0 3cqw var(--sign-black),
-    0 1px 0 rgba(255,255,255,.6) inset,
-    0 2px 3px rgba(43,39,35,.18),
-    0 18px 38px -12px rgba(43,39,35,.38);
+    inset 0 0 0 1.6cqw #FAF8F3,
+    inset 0 0 0 2.75cqw var(--sign-black),
+    inset 0 .35cqw 0 rgba(255,255,255,.9),
+    inset 0 -.5cqw .6cqw rgba(60,52,40,.18),
+    0 0 0 .25cqw #D9D4CA,
+    0 .3cqw 0 .25cqw #BDB7AB;
   color: var(--sign-black);
   text-align: center;
   user-select: none;
+  backface-visibility: hidden;
 }
 .ss p { margin: 0; }
-.ss-screw { position: absolute; width: 2.1cqw; height: 2.1cqw; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #F3F1EC 0 25%, #A8A39A 60%, #7D776E 100%); box-shadow: 0 .3cqw .4cqw rgba(0,0,0,.25); }
-.ss-screw.tl { top: 4.4cqw; left: 4.4cqw; } .ss-screw.tr { top: 4.4cqw; right: 4.4cqw; }
-.ss-screw.bl { bottom: 4.4cqw; left: 4.4cqw; } .ss-screw.br { bottom: 4.4cqw; right: 4.4cqw; }
 
-.ss-name { font-family: 'Fettle Sign', 'Tenor Sans', 'Optima', 'Gill Sans', sans-serif; font-size: var(--fs); line-height: 1.04; letter-spacing: .02em; -webkit-text-stroke: .055em currentColor; paint-order: stroke fill; }
+/* Domed screw heads with a slot */
+.ss-screw { position: absolute; width: 2.6cqw; height: 2.6cqw; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #FFFFFF 0 14%, #C9C4BA 38%, #8E887E 72%, #5E5952 100%);
+  box-shadow: 0 .25cqw .35cqw rgba(0,0,0,.35), inset 0 -.2cqw .25cqw rgba(0,0,0,.25); }
+.ss-screw::after { content: ''; position: absolute; left: 18%; right: 18%; top: 46%; height: 10%; background: rgba(50,46,40,.65); border-radius: 1px; transform: rotate(var(--slot, 35deg)); }
+.ss-screw.tl { top: 1.25cqw; left: 1.25cqw; --slot: 30deg; } .ss-screw.tr { top: 1.25cqw; right: 1.25cqw; --slot: -20deg; }
+.ss-screw.bl { bottom: 1.25cqw; left: 1.25cqw; --slot: 75deg; } .ss-screw.br { bottom: 1.25cqw; right: 1.25cqw; --slot: 10deg; }
+
+/* Street name: the councils' flared sans */
+.ss-name { font-family: 'Fettle Sign', 'Optima', 'Candara', sans-serif; font-weight: 500; -webkit-text-stroke: .012em currentColor; font-size: var(--fs); line-height: 1.02; letter-spacing: .015em; font-variant-numeric: lining-nums; text-shadow: 0 .02em 0 rgba(0,0,0,.08); }
 .ss-line { display: block; white-space: nowrap; }
-.ss-pc { color: var(--sign-red); font-size: .74em; margin-left: .35em; letter-spacing: .03em; }
+.ss-pc { color: var(--sign-red); font-size: .8em; margin-left: .45em; letter-spacing: .02em; }
 
-/* Kensington & Chelsea: red gothic header */
-.ss-gothic { font-family: 'Fettle Gothic', 'UnifrakturMaguntia', serif; color: #B5302A; font-size: 5.5cqw; line-height: 1.25; white-space: nowrap; margin-bottom: 2.6cqw !important; -webkit-text-stroke: 0; }
+/* Kensington & Chelsea: the red blackletter header */
+.ss-gothic { font-family: 'Fettle Gothic', 'Old English Text MT', serif; font-weight: 500; color: #A9232A; font-size: 6.4cqw; line-height: 1.12; white-space: nowrap; margin-bottom: 2cqw !important; }
 
 /* Westminster: small red caps beneath a rule */
-.ss--westminster .ss-plate { padding-bottom: 4cqw; }
-.ss-wcc { margin-top: 2.6cqw !important; padding-top: 2cqw; border-top: .5cqw solid var(--sign-black); font: 600 3.6cqw/1 'Work Sans', sans-serif; letter-spacing: .22em; text-transform: uppercase; color: var(--sign-red); }
+.ss-wcc { margin-top: 2.4cqw !important; padding-top: 1.9cqw; border-top: .45cqw solid var(--sign-black); font: 600 3.6cqw/1 'Work Sans', sans-serif; letter-spacing: .22em; text-transform: uppercase; color: var(--sign-red); }
 
-/* Camden: bold sans, green borough name top-left */
-.ss--camden .ss-plate { text-align: left; padding-left: 8.5cqw; }
-.ss--camden .ss-name { font-family: 'Work Sans', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: 0; -webkit-text-stroke: 0; line-height: 1; }
-.ss-camden { display: flex; align-items: center; gap: 1.6cqw; font: 700 5cqw/1 'Work Sans', sans-serif; color: var(--sign-green); letter-spacing: -.01em; margin-bottom: 2.6cqw !important; }
+/* Camden: bold grotesque, green borough name top-left */
+.ss--camden .ss-plate { text-align: left; padding-left: 9cqw; }
+.ss--camden .ss-name { font-family: 'Work Sans', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -.005em; line-height: .98; }
+.ss-camden { font: 700 5.2cqw/1 'Work Sans', sans-serif; color: var(--sign-green); letter-spacing: -.01em; margin-bottom: 2.6cqw !important; }
 
 /* "London Borough of …": small red top-left, postcode bottom-right */
-.ss-small { font: 500 4.3cqw/1.2 'Work Sans', sans-serif; color: #A8282C; text-align: left; margin-bottom: 2.4cqw !important; }
+.ss-small { font: 500 clamp(2.9cqw, calc(150cqw / var(--hl, 34)), 4.4cqw)/1.2 'Work Sans', sans-serif; color: #A8232A; text-align: left; white-space: nowrap; margin-bottom: 2.2cqw !important; }
 .ss-small.ss-center { text-align: center; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
-.ss--lb .ss-name, .ss--city .ss-name { text-align: left; }
-.ss--city .ss-name { text-align: center; }
+.ss--lb .ss-name, .ss--richmond .ss-name { text-align: left; }
 .ss-foot { text-align: right; margin-top: 1.4cqw !important; }
 .ss--lb .ss-foot .ss-pc { font: 600 5.4cqw/1 'Work Sans', sans-serif; }
 .ss-boro { font: 700 6.4cqw/1 'Work Sans', sans-serif; color: #B3262B; }
-.ss--richmond .ss-name { text-align: left; }
 
-/* ---- Floating ---- */
-.sign-float { position: absolute; z-index: 2; pointer-events: auto; will-change: transform; transform-style: preserve-3d; }
-.sign-float { perspective: 1000px; padding: 14px; margin: -14px; } /* a little room so the tilt starts just before the edge */
-.sign-float .ss { transform: rotate(var(--rz, -4deg)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, -8deg)) scale(var(--sc, 1)); transform-origin: 50% 50%; }
-/* Arrival: slide in from the right and expand, with a little overshoot */
-.sign-float.is-waiting .ss-plate { opacity: 0; transform: translateX(90px) scale(.5) rotate(9deg); }
-.sign-float.is-in .ss-plate { animation: sign-arrive .95s cubic-bezier(.2,.9,.25,1.1) both; }
+/* ---- On the page ---- */
+.sign-float { position: absolute; z-index: 2; padding: 16px; margin: -16px; perspective: 1100px; }
+.sign-float .ss { transform-style: preserve-3d; transform: rotate(var(--rz, -4deg)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, -8deg)) scale(var(--sc, 1)); }
+/* The shadow is its own layer, cast on the page: it moves away from the raised edge and
+   softens as the sign lifts, so the tilt reads as real depth. */
+.ss-shadow { position: absolute; inset: 16px; border-radius: 12px; background: rgba(43,33,24,.42); filter: blur(var(--sb, 16px)); opacity: var(--so, .85);
+  transform: translate(var(--sx, 10px), var(--sy, 20px)) rotate(var(--rz, -4deg)) scale(var(--ss, .96)); z-index: -1; pointer-events: none; }
+.ss-shadow::after { content: ''; position: absolute; inset: 4%; border-radius: inherit; background: rgba(43,33,24,.35); filter: blur(4px); transform: translate(calc(var(--sx, 10px) * -.6), calc(var(--sy, 20px) * -.6)); }
+
+/* Arrival: slides in from the right, spins round to face you and grows, with a small overshoot */
+.sign-float.is-waiting .ss-plate, .sign-float.is-waiting .ss-shadow { opacity: 0; }
+.sign-float.is-in .ss-plate { animation: sign-arrive 1.15s cubic-bezier(.2,.85,.25,1) both; transform-origin: 30% 50%; }
+.sign-float.is-in .ss-shadow { animation: shadow-arrive 1.15s cubic-bezier(.2,.85,.25,1) both; }
 @keyframes sign-arrive {
-  0% { opacity: 0; transform: translateX(90px) scale(.5) rotate(9deg); }
-  45% { opacity: 1; }
-  70% { transform: translateX(-6px) scale(1.04) rotate(-1.5deg); }
+  0% { opacity: 0; transform: translateX(140px) rotateY(-80deg) rotateZ(10deg) scale(.55); }
+  35% { opacity: 1; }
+  62% { transform: translateX(-8px) rotateY(14deg) rotateZ(-2deg) scale(1.05); }
+  82% { transform: translateX(2px) rotateY(-4deg) rotateZ(.5deg) scale(.995); }
   100% { opacity: 1; transform: none; }
 }
+@keyframes shadow-arrive {
+  0% { opacity: 0; transform: translate(150px, 60px) scale(.5); filter: blur(30px); }
+  62% { opacity: .5; transform: translate(-20px, 34px) rotate(-2deg) scale(1.02); filter: blur(24px); }
+  100% { opacity: var(--so, .85); }
+}
 
-/* Hero sign: beside the page heading */
-.page-hero .wrap { position: relative; }
-.sign-hero { position: absolute; right: 0; top: 50%; width: clamp(280px, 30vw, 380px); transform: translateY(-50%); }
-.has-hero-sign .page-hero h1, .has-hero-sign .page-hero .lede { max-width: min(56ch, calc(100% - clamp(300px, 33vw, 420px))); }
+/* Beside the page heading, centred in the space it has */
+.page-hero { position: relative; }
+.sign-hero { top: 50%; right: max(24px, calc((100% - 1040px) / 2)); width: clamp(300px, 33vw, 440px); translate: 0 -50%; }
+.has-hero-sign .page-hero h1, .has-hero-sign .page-hero .lede { max-width: min(56ch, calc(100% - clamp(320px, 36vw, 470px))); }
 @media (max-width: 980px) {
-  .sign-hero { position: relative; top: auto; right: auto; transform: none; width: min(300px, 78vw); margin: 30px 0 0 4px; }
+  .sign-hero { position: relative; top: auto; right: auto; translate: none; width: min(340px, 84vw); margin: 18px 0 -10px 8px; }
   .has-hero-sign .page-hero h1, .has-hero-sign .page-hero .lede { max-width: none; }
 }
 
-/* Home: the sign hangs on the wall in the hero photo */
-.home-sign-spot { position: absolute; top: clamp(110px, 17svh, 190px); right: max(24px, 7vw); width: clamp(220px, 23vw, 330px); z-index: 3; }
-.home-sign-spot .sign-hero { position: relative; top: auto; right: auto; transform: none; width: 100%; margin: 0; }
-@media (max-width: 720px) { .home-sign-spot { top: 96px; right: 18px; width: 190px; } }
-
-@media (prefers-reduced-motion: reduce) { .sign-float .ss-plate { animation: none !important; opacity: 1 !important; transform: none !important; } }
+@media (prefers-reduced-motion: reduce) { .sign-float .ss-plate, .sign-float .ss-shadow { animation: none !important; opacity: 1 !important; } }

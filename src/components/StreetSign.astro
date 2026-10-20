@@ -21,16 +21,16 @@ if (street.length > 11 && words.length > 1) {
 }
 const longest = Math.max(...lines.map((l, i) => l.length + (i === lines.length - 1 && style !== 'richmond' && style !== 'lb' ? postcode.length * 0.75 + 1 : 0)));
 // Font size as a share of the sign's width, so it fills the plate like a real sign.
-const size = Math.min(style === 'camden' ? 12.5 : 14, 80 / (longest * (style === 'camden' ? 0.7 : 0.78)));
+const size = Math.min(style === 'camden' ? 13 : 15, 82 / (longest * (style === 'camden' ? 0.7 : 0.66)));
 const rbkc = ['The Royal Borough of Kensington', 'and Chelsea'];
 ---
 
-<div class:list={['ss', `ss--${style}`, cls]} aria-label={`${street}, ${postcode}`} role="img">
+<div class:list={['ss', `ss--${style}`, cls]} aria-label={`Street sign: ${street}, ${postcode}`} role="img">
   <div class="ss-plate">
     <i class="ss-screw tl"></i><i class="ss-screw tr"></i><i class="ss-screw bl"></i><i class="ss-screw br"></i>
     {style === 'rbkc' && <p class="ss-hdr ss-gothic">{rbkc[0]}<br />{rbkc[1]}</p>}
     {style === 'camden' && <p class="ss-hdr ss-camden">{borough}</p>}
-    {(style === 'lb') && <p class="ss-hdr ss-small">{borough}</p>}
+    {(style === 'lb') && <p class="ss-hdr ss-small" style={`--hl:${borough.length}`}>{borough}</p>}
     {style === 'city' && <p class="ss-hdr ss-small ss-center">{borough}</p>}
     <p class="ss-name" style={`--fs:${size.toFixed(2)}cqw`}>
       {lines.map((l, i) => (

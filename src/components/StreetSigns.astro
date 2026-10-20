@@ -12,6 +12,7 @@ const hero = signs[0];
 
 {hero && (
   <div class="sign-float sign-hero is-waiting" data-sign="hero" data-rot="-4" data-depth="0.35">
+    <span class="ss-shadow" aria-hidden="true"></span>
     <StreetSign sign={hero} />
   </div>
 )}
@@ -20,7 +21,7 @@ const hero = signs[0];
 
   // Put the sign beside the page heading (or on the wall in the home hero).
   const wrap = document.querySelector<HTMLElement>('[data-sign="hero"]');
-  const spot = document.querySelector<HTMLElement>('[data-sign-spot]') || document.querySelector<HTMLElement>('.page-hero .wrap');
+  const spot = matchMedia('(max-width: 980px)').matches ? document.querySelector<HTMLElement>('.page-hero .wrap') : document.querySelector<HTMLElement>('.page-hero');
   if (wrap && spot) {
     spot.appendChild(wrap);
     document.body.classList.add('has-hero-sign');
@@ -50,9 +51,16 @@ const hero = signs[0];
           const d = target[k] - cur[k];
           if (Math.abs(d) > 0.001) { cur[k] += d * 0.14; moving = true; } else cur[k] = target[k];
         }
-        const st = card.style;
+        const st = wrap.style;
         st.setProperty('--rz', `${cur.rz.toFixed(2)}deg`); st.setProperty('--rx', `${cur.rx.toFixed(2)}deg`);
         st.setProperty('--ry', `${cur.ry.toFixed(2)}deg`); st.setProperty('--sc', cur.s.toFixed(3));
+        // Shadow: light from the top left. The edge that lifts throws its shadow further out.
+        const lift = (cur.s - 1) / 0.03; // 0 at rest, 1 when pressed
+        st.setProperty('--sx', `${(10 - cur.ry * 0.9).toFixed(1)}px`);
+        st.setProperty('--sy', `${(20 + cur.rx * 0.9 + lift * 8).toFixed(1)}px`);
+        st.setProperty('--sb', `${(16 + lift * 10).toFixed(1)}px`);
+        st.setProperty('--so', (0.85 - lift * 0.2).toFixed(2));
+        st.setProperty('--ss', (0.96 - lift * 0.02).toFixed(3));
         raf = moving ? requestAnimationFrame(apply) : 0;
       };
       const kick = () => { if (!raf) raf = requestAnimationFrame(apply); };
@@ -63,14 +71,14 @@ const hero = signs[0];
         const x = Math.max(-0.5, Math.min(0.5, (e.clientX - r.left) / r.width - 0.5));
         const y = Math.max(-0.5, Math.min(0.5, (e.clientY - r.top) / r.height - 0.5));
         target = { rz: 0, rx: -y * 2 * MAX, ry: x * 2 * MAX, s: 1.03 };
-        card.style.setProperty('--gx', `${(x + 0.5) * 100}%`);
-        card.style.setProperty('--gy', `${(y + 0.5) * 100}%`);
-        card.style.setProperty('--glare', '1');
+        wrap.style.setProperty('--gx', `${(x + 0.5) * 100}%`);
+        wrap.style.setProperty('--gy', `${(y + 0.5) * 100}%`);
+        wrap.style.setProperty('--glare', '1');
         kick();
       });
       wrap.addEventListener('pointerleave', () => {
         target = { ...rest };
-        card.style.setProperty('--glare', '0');
+        wrap.style.setProperty('--glare', '0');
         kick();
       });
       // Phones: no cursor, so it sways gently as the page scrolls.

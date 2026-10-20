@@ -5,6 +5,7 @@ import { HOODS, regionOf, hoodUrl, hoodBySlug, hoodTravel } from '../../../data/
 import { SERVICES } from '../../../data/services';
 import { VIDEO_CALL_URL } from '../../../data/booking';
 import { areaSchema } from '../../../data/schema';
+import { CONGESTION_CHARGE } from '../../../data/travel';
 
 export function getStaticPaths() {
   return HOODS.map((hood) => ({ params: { region: hood.region, hood: hood.slug }, props: { hood } }));
@@ -21,6 +22,7 @@ const crumbs = [
   { name: hood.name, url },
 ];
 const travelLine = travel.fee === 0 ? 'No travel charge' : `Travel charge £${travel.fee}${travel.halfDayOnly ? ' · half-days or longer' : ''}`;
+const ccLine = `Congestion Charge £${CONGESTION_CHARGE}/day`;
 ---
 
 <Page title={hood.title} description={hood.description}>
@@ -37,6 +39,7 @@ const travelLine = travel.fee === 0 ? 'No travel charge' : `Travel charge £${tr
         <span class="pill rust"><span class="dot"></span>{hood.postcodes.join(' · ')}</span>
         <span class="pill"><span class="dot"></span>{travel.miles} miles from our base</span>
         <span class="pill"><span class="dot"></span>{travelLine}</span>
+        {travel.congestion && <span class="pill"><span class="dot"></span>{ccLine}</span>}
         <span class="pill"><span class="dot"></span>Same faces every visit</span>
       </div>
     </div>
@@ -59,6 +62,7 @@ const travelLine = travel.fee === 0 ? 'No travel charge' : `Travel charge £${tr
             <dt>Full day</dt><dd>from £260</dd>
             <dt>Membership</dt><dd>from £29/month</dd>
             <dt>Travel</dt><dd>{travel.fee === 0 ? 'Free' : `£${travel.fee}`}</dd>
+            {travel.congestion && <><dt>Congestion Charge</dt><dd>£{CONGESTION_CHARGE}/day, at cost</dd></>}
           </dl>
           <a class="btn primary" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free 10-minute video call</a>
           <a class="btn secondary" href={`/contact?postcode=${encodeURIComponent(hood.postcodes[0])}`}>Get a quote</a>
@@ -94,7 +98,7 @@ const travelLine = travel.fee === 0 ? 'No travel charge' : `Travel charge £${tr
             <a class="hood-card" href={hoodUrl(n)}>
               <span class="pc">{n.postcodes.join(' · ')}</span>
               <h3>{n.name}</h3>
-              <div class="meta"><span>{hoodTravel(n).miles} miles · <b>{hoodTravel(n).fee === 0 ? 'no travel charge' : `£${hoodTravel(n).fee} travel`}</b></span><span class="go">→</span></div>
+              <div class="meta"><span>{hoodTravel(n).miles} miles · <b>{hoodTravel(n).fee === 0 ? 'no travel charge' : `£${hoodTravel(n).fee} travel`}{hoodTravel(n).congestion ? ` + £${CONGESTION_CHARGE} congestion` : ''}</b></span><span class="go">→</span></div>
             </a>
           ))}
         </div>

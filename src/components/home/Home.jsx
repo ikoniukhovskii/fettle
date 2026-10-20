@@ -1,5 +1,5 @@
 import React from 'react';
-import { lookupCoords, milesFromBase, travelBand, travelNote } from '../../data/travel';
+import { lookupCoords, milesFromBase, travelBand, travelNote, inCongestionZone } from '../../data/travel';
 import { createClient } from '@supabase/supabase-js';
 import { logEvent, isOwner } from '../../data/track';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../data/supabase-config';
@@ -453,7 +453,7 @@ function QuietPostcode({ id, t }) {
       previousCount = 0; // can't reach the shared count — still show a friendly result
     }
     const coords = await coordsPromise;
-    const travel = coords ? travelNote(area, travelBand(milesFromBase(coords.lat, coords.lon))) : null;
+    const travel = coords ? travelNote(area, travelBand(milesFromBase(coords.lat, coords.lon)), inCongestionZone(coords.lat, coords.lon)) : null;
     setChecking(false);
     const message =
       previousCount === 0
@@ -1611,7 +1611,7 @@ export const FAQS = [
   },
   {
     q: 'Do you charge for travel?',
-    a: 'Not if you are close by. We are based in Chelsea, and anywhere within about 4 miles has no travel charge. A little further out, up to 6 miles, we add £15 to the job. Beyond that, we book work as half-days or longer, with £25 up to 9 miles and £40 further afield. It covers time on the road and parking, it is never added to the £30 visit, and you will see it on your quote before anything starts. If a job is inside the Congestion Charge zone during charging hours, that is added at cost.',
+    a: 'Not if you are close by. We are based in Chelsea, and anywhere within about 4 miles has no travel charge. A little further out, up to 6 miles, we add £15 to the job. Beyond that, we book work as half-days or longer, with £25 up to 9 miles and £40 further afield. It covers time on the road and parking, it is never added to the £30 visit, and you will see it on your quote before anything starts. If the job is inside the Congestion Charge zone (Mayfair, Soho, Marylebone, Westminster, the City and so on), the £18 daily charge is added at cost for each day we drive in – even though some of it is close to Chelsea.',
   },
   {
     q: 'What sort of jobs do you take on?',

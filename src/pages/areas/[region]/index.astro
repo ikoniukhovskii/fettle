@@ -4,6 +4,7 @@ import CoverageMap from '../../../components/CoverageMap.astro';
 import { REGIONS, hoodsIn, hoodUrl, hoodTravel } from '../../../data/areas';
 import { areaSchema } from '../../../data/schema';
 import { VIDEO_CALL_URL } from '../../../data/booking';
+import { CONGESTION_CHARGE } from '../../../data/travel';
 
 export function getStaticPaths() {
   return REGIONS.map((region) => ({ params: { region: region.slug }, props: { region } }));
@@ -43,7 +44,7 @@ const description = `Handyman and home maintenance across ${region.name}: ${hood
               <span class="pc">{h.postcodes.join(' · ')}</span>
               <h3>{h.name}</h3>
               <p>{h.lede}</p>
-              <div class="meta"><span>{t.miles} miles · <b>{t.fee === 0 ? 'no travel charge' : `£${t.fee} travel`}</b></span><span class="go">Handyman in {h.name} →</span></div>
+              <div class="meta"><span>{t.miles} miles · <b>{t.fee === 0 ? 'no travel charge' : `£${t.fee} travel`}{t.congestion ? ` + £${CONGESTION_CHARGE} congestion` : ''}</b></span><span class="go">Handyman in {h.name} →</span></div>
             </a>
           );
         })}

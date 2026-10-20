@@ -3,6 +3,7 @@ import Page from '../../layouts/Page.astro';
 import CoverageMap from '../../components/CoverageMap.astro';
 import { REGIONS, hoodsIn, hoodUrl, hoodTravel } from '../../data/areas';
 import { AREAS } from '../../data/services';
+import { CONGESTION_CHARGE } from '../../data/travel';
 ---
 
 <Page title="Areas We Cover – Handyman in Chelsea, Kensington, Fulham & London | Fettle London" description="Handyman and home maintenance across southwest, west and central London: Chelsea, Fulham, Kensington, Battersea, Notting Hill, Pimlico and more. No travel charge.">
@@ -34,7 +35,7 @@ import { AREAS } from '../../data/services';
                 <a class="hood-card" href={hoodUrl(h)}>
                   <span class="pc">{h.postcodes.join(' · ')}</span>
                   <h3>{h.name}</h3>
-                  <div class="meta"><span>{t.miles} miles · <b>{t.fee === 0 ? 'no travel charge' : `£${t.fee} travel`}</b></span><span class="go">→</span></div>
+                  <div class="meta"><span>{t.miles} miles · <b>{t.fee === 0 ? 'no travel charge' : `£${t.fee} travel`}{t.congestion ? ` + £${CONGESTION_CHARGE} congestion` : ''}</b></span><span class="go">→</span></div>
                 </a>
               );
             })}
@@ -44,7 +45,7 @@ import { AREAS } from '../../data/services';
 
       <div class="area-section prose" style="max-width:none">
         <h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(26px,3.4vw,36px);margin:0 0 14px">Further afield</h2>
-        <p>We also look after homes across the rest of London. Further out, a small flat travel charge covers time on the road – you’ll always see it on your quote first.</p>
+        <p>We also look after homes across the rest of London. Further out, a small flat travel charge covers time on the road – you’ll always see it on your quote first. Inside the Congestion Charge zone (Mayfair, Soho, Marylebone, Westminster, the City and so on), the £{CONGESTION_CHARGE} daily charge is added at cost for each day we drive in.</p>
         <ul class="area-links">
           {AREAS.filter((a) => !['West London', 'Southwest London', 'Central London'].includes(a.region)).map((a) => (
             <li><strong>{a.region}:</strong> {a.places}</li>

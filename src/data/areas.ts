@@ -3,7 +3,7 @@
 // its postcodes, and a centre point used for the distance / travel-charge line and the hub map.
 // To add a neighbourhood: add it to HOODS with an existing region slug. Pages, links,
 // footer, sitemap and the postcode-checker link all pick it up automatically.
-import { milesFromBase, travelBand } from './travel';
+import { milesFromBase, travelBand, inCongestionZone } from './travel';
 
 export type Region = { slug: string; name: string; short: string; lede: string; intro: string };
 export type Job = { title: string; text: string };
@@ -378,8 +378,8 @@ export const HOODS: Hood[] = [
     lat: 51.4995,
     lon: -0.134,
     title: 'Handyman in Westminster SW1 – Flat Repairs & Maintenance | Fettle London',
-    description: 'Handyman services in Westminster, SW1: flat repairs, plumbing, painting and maintenance. No travel charge and a free 10-minute video quote.',
-    lede: 'Westminster is inside our no-travel-charge zone, and we’re used to working around porters, lifts and building hours.',
+    description: 'Handyman services in Westminster, SW1: flat repairs, plumbing, painting and maintenance. No travel charge (Congestion Charge at cost), free 10-minute video quote.',
+    lede: 'Westminster is close enough for no travel charge – just the £18 Congestion Charge, passed on at cost – and we’re used to working around porters, lifts and building hours.',
     homes:
       'Residential Westminster is mansion blocks, period flats and a few hidden-away houses in conservation squares. Most jobs are in flats, where tidy work and respect for neighbours matter as much as the fix.',
     jobs: [
@@ -402,7 +402,7 @@ export const hoodBySlug = (slug: string) => HOODS.find((h) => h.slug === slug);
 export function hoodTravel(h: Hood) {
   const miles = milesFromBase(h.lat, h.lon);
   const band = travelBand(miles);
-  return { miles: Math.round(miles * 10) / 10, fee: band.fee, halfDayOnly: band.halfDayOnly };
+  return { miles: Math.round(miles * 10) / 10, fee: band.fee, halfDayOnly: band.halfDayOnly, congestion: inCongestionZone(h.lat, h.lon) };
 }
 
 // Postcode checker → area page. Accepts a full postcode or an outward code ("SW10", "SW1X 7AA").

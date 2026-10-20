@@ -6,7 +6,7 @@
 //   and says plainly whether we can get there and what travel costs.
 // On the contact page there's no box of its own: the form's postcode field drives it.
 import { HOODS, REGIONS, hoodUrl } from '../data/areas';
-import { BASE, TRAVEL_BANDS } from '../data/travel';
+import { BASE, TRAVEL_BANDS, CONGESTION_ZONE, CONGESTION_CHARGE } from '../data/travel';
 
 interface Props {
   highlight?: string; // a hood slug to centre on and emphasise
@@ -21,7 +21,7 @@ const { highlight, region, caption, checker = true, compact = false, id = 'cov' 
 const COLORS: Record<string, string> = { 'southwest-london': '#B34426', 'west-london': '#6E8A6B', 'central-london': '#2B2723' };
 const hoods = HOODS.map((h) => ({ slug: h.slug, name: h.name, region: h.region, lat: h.lat, lon: h.lon, url: hoodUrl(h), postcodes: h.postcodes, color: COLORS[h.region] }));
 const bands = TRAVEL_BANDS.filter((b) => Number.isFinite(b.maxMiles)).map((b) => ({ miles: b.maxMiles, fee: b.fee }));
-const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? null, region: region ?? null });
+const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? null, region: region ?? null, ccz: CONGESTION_ZONE, cc: CONGESTION_CHARGE });
 ---
 
 <figure class:list={['cov-map', { compact }]} data-conf={conf} id={id}>
@@ -41,6 +41,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
   <figcaption class="map-key">
     {!compact && REGIONS.map((r) => <span><i style={`background:${COLORS[r.slug]}`}></i>{r.name}</span>)}
     <span><i class="ring"></i>No travel charge within {bands[0].miles} miles</span>
+    <span><i class="ccz"></i>Congestion Charge zone · +£{CONGESTION_CHARGE}/day</span>
     {caption && <span class="cap">{caption}</span>}
   </figcaption>
 </figure>
@@ -48,7 +49,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
 <script>
   import Leaf from 'leaflet';
   import 'leaflet/dist/leaflet.css';
-  import { lookupCoords, milesFromBase, travelBand, isCoveredArea } from '../data/travel';
+  import { lookupCoords, milesFromBase, travelBand, isCoveredArea, inCongestionZone } from '../data/travel';
   import { findPlace } from '../data/places';
   import { logEvent } from '../data/track';
 
@@ -76,7 +77,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
 
   function init(fig: HTMLElement) {
     const conf = JSON.parse(fig.dataset.conf || '{}');
-    const { hoods, bands, base, highlight, region } = conf;
+    const { hoods, bands, base, highlight, region, ccz, cc } = conf;
     const canvas = fig.querySelector('.cov-canvas') as HTMLElement;
     const resEl = fig.querySelector('.cov-result') as HTMLElement;
     const compact = fig.classList.contains('compact');
@@ -117,6 +118,14 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
       }).addTo(map);
     });
 
+    // The Congestion Charge zone, hatched in ink.
+    L.polygon(ccz, { color: '#2B2723', weight: 1.25, opacity: 0.55, dashArray: '1 5', fillColor: '#2B2723', fillOpacity: 0.07, interactive: false, className: 'cov-ccz' }).addTo(map);
+    const cczTop = ccz.reduce((a: number[], b: number[]) => (b[0] > a[0] ? b : a));
+    L.marker([cczTop[0] + 0.0012, cczTop[1] + 0.006], {
+      icon: L.divIcon({ className: 'cov-ring-label', html: `<span class="ccz">Congestion Charge +£${cc}/day</span>`, iconSize: null }),
+      interactive: false, keyboard: false,
+    }).addTo(map);
+
     // Neighbourhood dots.
     const focus = (h: any) => (highlight ? h.slug === highlight : region ? h.region === region : true);
     const dots: any[] = [];
@@ -139,7 +148,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
       });
       const miles = milesFromBase(h.lat, h.lon);
       m.bindPopup(
-        `<div class="cov-pop"><span class="pc">${esc(h.postcodes.join(' · '))}</span><b>${esc(h.name)}</b><span>${miles.toFixed(1)} miles from our base · no travel charge</span><a href="${esc(h.url)}">Handyman in ${esc(h.name)} →</a></div>`,
+        `<div class="cov-pop"><span class="pc">${esc(h.postcodes.join(' · '))}</span><b>${esc(h.name)}</b><span>${miles.toFixed(1)} miles from our base · no travel charge${inCongestionZone(h.lat, h.lon) ? ` · Congestion Charge £${cc}/day` : ''}</span><a href="${esc(h.url)}">Handyman in ${esc(h.name)} →</a></div>`,
         { closeButton: false, offset: [0, -4] }
       );
       dots.push({ h, m });
@@ -243,7 +252,9 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
           compact ? '' : `<a class="btn secondary" href="/contact">Ask anyway</a>`);
         return;
       }
-      const travel = band.fee === 0 ? 'no travel charge' : `a £${band.fee} travel charge on the job${band.halfDayOnly ? ', booked as half-days or longer' : ''}`;
+      const inCcz = inCongestionZone(coords.lat, coords.lon);
+      let travel = band.fee === 0 ? 'no travel charge' : `a £${band.fee} travel charge on the job${band.halfDayOnly ? ', booked as half-days or longer' : ''}`;
+      if (inCcz) travel += `${band.fee === 0 ? ', but' : ', plus'} it’s inside the Congestion Charge zone, so £${cc} is added for each day we drive in (at cost)`;
       const head = band.fee === 0 ? 'Yes – we can get to you.' : 'Yes – we cover you.';
       const links = compact ? '' :
         (hood ? `<a class="btn secondary" href="${esc(hood.url)}">Handyman in ${esc(hood.name)}</a>` : '') + `<a class="btn primary" href="${quote}">Get a quote</a>`;

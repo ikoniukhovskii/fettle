@@ -142,7 +142,7 @@ import CoverageMap from '../components/CoverageMap.astro';
 <script>
   import { createClient } from '@supabase/supabase-js';
   import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
-  import { lookupCoords, milesFromBase, travelBand, travelNote } from '../data/travel';
+  import { lookupCoords, milesFromBase, travelBand, travelNote, inCongestionZone, CONGESTION_CHARGE } from '../data/travel';
   import { logEvent } from '../data/track';
 
   const supabase = createClient(
@@ -236,9 +236,10 @@ import CoverageMap from '../components/CoverageMap.astro';
     if (!coords) { travelEl.hidden = true; return; }
     const miles = milesFromBase(coords.lat, coords.lon);
     const band = travelBand(miles);
-    travelEl.textContent = travelNote(pc.split(' ')[0], band);
+    const ccz = inCongestionZone(coords.lat, coords.lon);
+    travelEl.textContent = travelNote(pc.split(' ')[0], band, ccz);
     travelEl.hidden = false;
-    travelSummary = `Travel: ${band.fee ? '£' + band.fee : 'none'}${band.halfDayOnly ? ', half-day minimum' : ''} (~${miles.toFixed(1)} mi from SW10)`;
+    travelSummary = `Travel: ${band.fee ? '£' + band.fee : 'none'}${band.halfDayOnly ? ', half-day minimum' : ''} (~${miles.toFixed(1)} mi from SW10)${ccz ? ` + Congestion Charge £${CONGESTION_CHARGE}/day` : ''}`;
   }
   const postcodeInput = document.getElementById('cf-postcode') as HTMLInputElement | null;
   postcodeInput?.addEventListener('blur', () => updateTravel(postcodeInput.value));

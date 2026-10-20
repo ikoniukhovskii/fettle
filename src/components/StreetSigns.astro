@@ -1,16 +1,13 @@
 ---
-// The floating street signs for a page: one beside the heading ("hero") and a few in the
-// margins further down ("scatter"). Both tilt toward the cursor like the membership card
-// and drift as you scroll. Which ones show: ?signs=hero | scatter | both (remembered).
+// The floating street sign for a page, beside the heading (on the homepage, on the wall in
+// the hero photo). It tilts toward the cursor like the membership card and drifts as you scroll.
 import StreetSign from './StreetSign.astro';
 import { signsFor } from '../data/signs';
 import '../styles/signs.css';
 
 interface Props { path?: string }
 const signs = signsFor(Astro.props.path ?? Astro.url.pathname);
-const [hero, ...rest] = signs;
-const scatter = (rest.length ? rest : signs).slice(0, 4);
-const ROT = [-7, 6, -4, 8];
+const hero = signs[0];
 ---
 
 {hero && (
@@ -18,133 +15,75 @@ const ROT = [-7, 6, -4, 8];
     <StreetSign sign={hero} />
   </div>
 )}
-{scatter.length > 0 && (
-  <div class="sign-layer" data-sign-layer>
-    {scatter.map((s, i) => (
-      <div class:list={['sign-float sign-scatter is-waiting', i % 2 ? 'right' : 'left']} data-sign="scatter" data-rot={ROT[i % ROT.length]} data-depth={(0.6 + (i % 3) * 0.25).toFixed(2)} data-at={[0.24, 0.47, 0.68, 0.86][i] ?? 0.5}>
-        <StreetSign sign={s} />
-      </div>
-    ))}
-  </div>
-)}
-
 <script>
-  // Mode for comparing: ?signs=hero|scatter|both, remembered on this browser.
-  const html = document.documentElement;
-  let mode = 'both';
-  try {
-    const q = new URLSearchParams(location.search).get('signs');
-    if (q && ['hero', 'scatter', 'both'].includes(q)) localStorage.setItem('fettle-signs', q);
-    mode = localStorage.getItem('fettle-signs') || 'both';
-  } catch {}
-  html.dataset.signs = mode;
-
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  // Put the hero sign beside the page heading (or the home hero, if the page marks a spot).
-  const heroSign = document.querySelector<HTMLElement>('[data-sign="hero"]');
+  // Put the sign beside the page heading (or on the wall in the home hero).
+  const wrap = document.querySelector<HTMLElement>('[data-sign="hero"]');
   const spot = document.querySelector<HTMLElement>('[data-sign-spot]') || document.querySelector<HTMLElement>('.page-hero .wrap');
-  if (heroSign && spot && mode !== 'scatter') {
-    spot.appendChild(heroSign);
-    spot.closest('main, body')?.classList.add('has-hero-sign');
+  if (wrap && spot) {
+    spot.appendChild(wrap);
     document.body.classList.add('has-hero-sign');
-  } else heroSign?.remove();
+  } else wrap?.remove();
 
-  // Scattered signs: placed down the page in the margins.
-  const layer = document.querySelector<HTMLElement>('[data-sign-layer]');
-  const host = layer?.parentElement;
-  if (layer && host && mode !== 'hero') {
-    if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
-    const place = () => {
-      const h = host.scrollHeight;
-      layer.querySelectorAll<HTMLElement>('[data-sign="scatter"]').forEach((el) => {
-        el.style.top = `${Math.round(h * Number(el.dataset.at || 0.5))}px`;
-      });
-    };
-    place();
-    addEventListener('load', place);
-    new ResizeObserver(place).observe(host);
-  } else layer?.remove();
+  const card = wrap?.querySelector<HTMLElement>('.ss');
+  if (wrap && card) {
+    // 1. Arrive: slide in from the side and expand, once it's on screen.
+    const arrive = () => { wrap.classList.remove('is-waiting'); wrap.classList.add('is-in'); };
+    if (reduce) arrive();
+    else {
+      const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); setTimeout(arrive, 120); } }, { threshold: 0.2 });
+      io.observe(wrap);
+    }
 
-  // Motion: each sign leans toward the cursor and drifts with the scroll.
-  type S = { el: HTMLElement; card: HTMLElement; rot: number; depth: number; cur: number[]; tgt: number[]; vis: boolean };
-  const items: S[] = [...document.querySelectorAll<HTMLElement>('.sign-float')].map((el) => ({
-    el, card: el.querySelector<HTMLElement>('.ss')!, rot: Number(el.dataset.rot || 0), depth: Number(el.dataset.depth || 0.5),
-    cur: [0, 0, 0, 0, 0, 1], tgt: [0, 0, 0, 0, 0, 1], vis: true,
-  }));
-  // [rz, rx, ry, tx, ty, scale]
-  let px = -1e4, py = -1e4, lastY = scrollY, sway = 0, raf = 0;
-
-  const io = new IntersectionObserver((es) => es.forEach((e) => {
-    const it = items.find((i) => i.el === e.target);
-    if (!it) return;
-    it.vis = e.isIntersecting;
-    if (e.isIntersecting && it.el.classList.contains('is-waiting')) {
-      // Fly in: start tilted and low, ease to rest.
-      it.cur = [it.rot - 14, 18, -22, 0, 60, 0.9];
-      it.el.classList.remove('is-waiting');
+    // 2. Then the membership card's behaviour: at rest it leans a little; under the cursor,
+    //    the corner nearest you is pressed into the page, with a soft glare.
+    if (!reduce) {
+      const MAX = 16;
+      const rest = { rz: -4, rx: 0, ry: -8, s: 1 };
+      const cur = { ...rest };
+      let target = { ...rest };
+      let raf = 0;
+      const apply = () => {
+        let moving = false;
+        for (const k of ['rz', 'rx', 'ry', 's'] as const) {
+          const d = target[k] - cur[k];
+          if (Math.abs(d) > 0.001) { cur[k] += d * 0.14; moving = true; } else cur[k] = target[k];
+        }
+        const st = card.style;
+        st.setProperty('--rz', `${cur.rz.toFixed(2)}deg`); st.setProperty('--rx', `${cur.rx.toFixed(2)}deg`);
+        st.setProperty('--ry', `${cur.ry.toFixed(2)}deg`); st.setProperty('--sc', cur.s.toFixed(3));
+        raf = moving ? requestAnimationFrame(apply) : 0;
+      };
+      const kick = () => { if (!raf) raf = requestAnimationFrame(apply); };
       kick();
-    }
-  }), { rootMargin: '80px' });
-  items.forEach((i) => io.observe(i.el));
-
-  function targets() {
-    const vh = innerHeight;
-    for (const it of items) {
-      if (!it.vis) continue;
-      const r = it.el.getBoundingClientRect();
-      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-      // Scroll drift: the further from the middle of the screen, the more it lags.
-      const off = (cy - vh / 2) / vh;
-      const ty = reduce ? 0 : -off * 40 * it.depth;
-      let rz = it.rot + (reduce ? 0 : sway * it.depth);
-      let rx = reduce ? 0 : off * 10 * it.depth, ry = 0, tx = 0, sc = 1;
-      if (fine && !reduce) {
-        const dx = px - cx, dy = py - cy, d = Math.hypot(dx, dy);
-        const reach = Math.max(360, r.width * 1.6);
-        if (d < reach) {
-          const k = 1 - d / reach; // 1 when on top of it
-          const nx = Math.max(-1, Math.min(1, dx / (r.width / 2)));
-          const ny = Math.max(-1, Math.min(1, dy / (r.height / 2)));
-          // The corner nearest the cursor is pressed in, like the membership card.
-          ry = nx * 18 * k; rx = -ny * 18 * k; tx = nx * 8 * k; rz = it.rot * (1 - k * 0.8); sc = 1 + 0.04 * k;
-          it.card.style.setProperty('--gx', `${50 + nx * 40}%`);
-          it.card.style.setProperty('--gy', `${50 + ny * 40}%`);
-          it.card.style.setProperty('--glare', String(k));
-        } else it.card.style.setProperty('--glare', '0');
+      wrap.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
+        const r = card.getBoundingClientRect();
+        const x = Math.max(-0.5, Math.min(0.5, (e.clientX - r.left) / r.width - 0.5));
+        const y = Math.max(-0.5, Math.min(0.5, (e.clientY - r.top) / r.height - 0.5));
+        target = { rz: 0, rx: -y * 2 * MAX, ry: x * 2 * MAX, s: 1.03 };
+        card.style.setProperty('--gx', `${(x + 0.5) * 100}%`);
+        card.style.setProperty('--gy', `${(y + 0.5) * 100}%`);
+        card.style.setProperty('--glare', '1');
+        kick();
+      });
+      wrap.addEventListener('pointerleave', () => {
+        target = { ...rest };
+        card.style.setProperty('--glare', '0');
+        kick();
+      });
+      // Phones: no cursor, so it sways gently as the page scrolls.
+      if (!matchMedia('(hover: hover)').matches) {
+        let last = scrollY;
+        addEventListener('scroll', () => {
+          const dy = scrollY - last; last = scrollY;
+          target = { ...rest, rz: rest.rz + Math.max(-6, Math.min(6, dy * 0.4)), rx: Math.max(-8, Math.min(8, dy * 0.5)) };
+          kick();
+          clearTimeout((wrap as any)._t);
+          (wrap as any)._t = setTimeout(() => { target = { ...rest }; kick(); }, 140);
+        }, { passive: true });
       }
-      it.tgt = [rz, rx, ry, tx, ty, sc];
     }
   }
-
-  function frame() {
-    raf = 0;
-    sway *= 0.9;
-    targets();
-    let moving = Math.abs(sway) > 0.02;
-    for (const it of items) {
-      if (!it.vis) continue;
-      for (let k = 0; k < 6; k++) {
-        const d = it.tgt[k] - it.cur[k];
-        if (Math.abs(d) > 0.002) { it.cur[k] += d * 0.12; moving = true; } else it.cur[k] = it.tgt[k];
-      }
-      const [rz, rx, ry, tx, ty, sc] = it.cur;
-      const st = it.card.style;
-      st.setProperty('--rz', `${rz.toFixed(2)}deg`); st.setProperty('--rx', `${rx.toFixed(2)}deg`); st.setProperty('--ry', `${ry.toFixed(2)}deg`);
-      st.setProperty('--tx', `${tx.toFixed(1)}px`); st.setProperty('--ty', `${ty.toFixed(1)}px`); st.setProperty('--sc', sc.toFixed(3));
-    }
-    if (moving) kick();
-  }
-  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
-
-  addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { px = e.clientX; py = e.clientY; kick(); } }, { passive: true });
-  document.addEventListener('pointerleave', () => { px = py = -1e4; kick(); });
-  addEventListener('scroll', () => {
-    const dy = scrollY - lastY; lastY = scrollY;
-    if (!reduce) sway = Math.max(-7, Math.min(7, sway + dy * 0.05));
-    kick();
-  }, { passive: true });
-  addEventListener('resize', kick);
-  kick();
 </script>

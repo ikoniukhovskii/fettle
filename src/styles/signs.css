@@ -53,9 +53,17 @@
 
 /* ---- Floating ---- */
 .sign-float { position: absolute; z-index: 2; pointer-events: auto; will-change: transform; transform-style: preserve-3d; }
-.sign-float .ss { transform: perspective(900px) rotate(var(--rz, 0deg)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(var(--sc, 1)); transition: opacity .6s ease; }
-.sign-float.is-waiting .ss { opacity: 0; }
-.sign-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.sign-float { perspective: 1000px; padding: 14px; margin: -14px; } /* a little room so the tilt starts just before the edge */
+.sign-float .ss { transform: rotate(var(--rz, -4deg)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, -8deg)) scale(var(--sc, 1)); transform-origin: 50% 50%; }
+/* Arrival: slide in from the right and expand, with a little overshoot */
+.sign-float.is-waiting .ss-plate { opacity: 0; transform: translateX(90px) scale(.5) rotate(9deg); }
+.sign-float.is-in .ss-plate { animation: sign-arrive .95s cubic-bezier(.2,.9,.25,1.1) both; }
+@keyframes sign-arrive {
+  0% { opacity: 0; transform: translateX(90px) scale(.5) rotate(9deg); }
+  45% { opacity: 1; }
+  70% { transform: translateX(-6px) scale(1.04) rotate(-1.5deg); }
+  100% { opacity: 1; transform: none; }
+}
 
 /* Hero sign: beside the page heading */
 .page-hero .wrap { position: relative; }
@@ -71,14 +79,4 @@
 .home-sign-spot .sign-hero { position: relative; top: auto; right: auto; transform: none; width: 100%; margin: 0; }
 @media (max-width: 720px) { .home-sign-spot { top: 96px; right: 18px; width: 190px; } }
 
-/* Scattered signs: in the margins, down the page */
-.sign-scatter { --w: clamp(150px, calc((100vw - 1040px) / 2 - 36px), 200px); width: var(--w); }
-.sign-scatter.left { left: max(-30px, calc(((100vw - 1040px) / 2 - var(--w)) / 2)); }
-.sign-scatter.right { right: max(-30px, calc(((100vw - 1040px) / 2 - var(--w)) / 2)); }
-@media (max-width: 1180px) { .sign-scatter { --w: 150px; } }
-@media (max-width: 720px) { .sign-scatter { --w: 128px; } .sign-scatter.left { left: -34px; } .sign-scatter.right { right: -34px; } }
-
-/* Compare modes (preview only): ?signs=hero | scatter | both */
-html[data-signs="hero"] .sign-scatter, html[data-signs="scatter"] .sign-hero { display: none; }
-
-@media (prefers-reduced-motion: reduce) { .sign-float .ss { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sign-float .ss-plate { animation: none !important; opacity: 1 !important; transform: none !important; } }

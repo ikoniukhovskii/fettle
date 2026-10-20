@@ -29,7 +29,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
     <form class="cov-form" novalidate>
       <label for={`${id}-pc`}>Can we get to you?</label>
       <div class="cov-row">
-        <input id={`${id}-pc`} name="postcode" type="text" inputmode="text" autocomplete="postal-code" placeholder="Your postcode, e.g. SW6 2AB" aria-describedby={`${id}-res`} />
+        <input id={`${id}-pc`} name="postcode" type="text" inputmode="text" autocomplete="postal-code" placeholder="Postcode or area, e.g. SW6 2AB or Fulham" aria-describedby={`${id}-res`} />
         <button class="btn primary" type="submit">Check</button>
       </div>
     </form>
@@ -49,6 +49,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
   import Leaf from 'leaflet';
   import 'leaflet/dist/leaflet.css';
   import { lookupCoords, milesFromBase, travelBand, isCoveredArea } from '../data/travel';
+  import { findPlace } from '../data/places';
   import { logEvent } from '../data/track';
 
   const L: any = Leaf;
@@ -176,27 +177,44 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
     // The postcode pin.
     let pinLayer: any = null;
     async function check(raw: string, opts: { coveredOverride?: boolean; log?: boolean; detail?: string } = {}) {
-      const p = parse(raw);
-      if (!p) {
-        show('warn', 'That doesn’t look like a postcode.', 'Try something like SW6 2AB, or just the first half, like SW6.');
-        return;
-      }
+      const typed = raw.trim();
+      if (!typed) return;
+      const pc = parse(typed);
       resEl.hidden = false;
       resEl.className = 'cov-result busy';
-      resEl.innerHTML = `<p class="t">Finding ${esc(p.label)}…</p>`;
-      const coords = await lookupCoords(p.label);
-      if (!coords) {
-        show('warn', `We couldn’t find ${esc(p.label)}.`, 'Double-check it, or just send it to us – we’ll take a look.');
+      resEl.innerHTML = `<p class="t">Finding ${esc(pc ? pc.label : typed)}…</p>`;
+      // A postcode, or failing that a place name ("Fulham", "bexlyheath").
+      let p: { outward: string; label: string } | null = null;
+      let coords: { lat: number; lon: number } | null = null;
+      let note = '';
+      if (pc) {
+        coords = await lookupCoords(pc.label);
+        if (coords) p = pc;
+      }
+      if (!coords && /[a-z]{2}/i.test(typed)) {
+        const place = await findPlace(typed);
+        if (place && place.outcode) {
+          coords = { lat: place.lat, lon: place.lon };
+          p = { outward: place.outcode, label: place.name };
+          const box = fig.querySelector('.cov-form input') as HTMLInputElement | null;
+          if (place.corrected && box) box.value = place.name;
+          if (place.corrected) note = `<span class="fix">Showing <b>${esc(place.name)}</b> – we think that’s what you meant.</span>`;
+        }
+      }
+      if (!coords || !p) {
+        clearPin();
+        show('warn', `We couldn’t find “${esc(typed)}”.`, 'Try a postcode like SW6 2AB, or an area like Fulham. Or just send it to us – we’ll take a look.');
         return;
       }
+      const isPlace = !pc || p.label !== pc.label;
       const miles = milesFromBase(coords.lat, coords.lon);
       const covered = opts.coveredOverride ?? isCoveredArea(p.outward);
       if (opts.log !== false) logEvent('postcode_check', { area: p.outward, covered, detail: opts.detail || 'areas-map' });
       const band = travelBand(miles);
-      const hood = hoodFor(hoods, p.outward);
+      const hood = hoods.find((h: any) => h.name.toLowerCase() === p!.label.toLowerCase()) || hoodFor(hoods, p.outward);
       const col = covered ? '#B34426' : '#6B655E';
 
-      if (pinLayer) pinLayer.remove();
+      clearPin();
       pinLayer = L.layerGroup().addTo(map);
       L.polyline([[base.lat, base.lon], [coords.lat, coords.lon]], { color: col, weight: 2.5, dashArray: '2 8', lineCap: 'round', opacity: 0.9, interactive: false }).addTo(pinLayer);
       L.marker([coords.lat, coords.lon], {
@@ -212,15 +230,16 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
       canvas.classList.add('pinned');
       // Keep the pin and our base clear of the result card (top-right on wide screens).
       const overlay = getComputedStyle(resEl).position === 'absolute';
-      const side = overlay ? Math.min(resEl.offsetWidth || 440, canvas.offsetWidth * 0.5) + 40 : 50;
+      const side = overlay ? Math.min(420, canvas.offsetWidth * 0.48) + 50 : 50;
       map.flyToBounds(L.latLngBounds([[base.lat, base.lon], [coords.lat, coords.lon]]), {
         maxZoom: 13.25, duration: 0.9, paddingTopLeft: [60, 60], paddingBottomRight: [side, 50],
       });
 
-      const quote = `/contact?postcode=${encodeURIComponent(p.label)}`;
-      const dist = `${esc(p.label)} is ${miles < 0.1 ? 'right next to' : `${miles.toFixed(1)} miles from`} our base in Chelsea`;
+      const quote = `/contact?postcode=${encodeURIComponent(isPlace ? p.outward : p.label)}`;
+      const named = isPlace ? `${esc(p.label)} (${esc(p.outward)})` : esc(p.label);
+      const dist = `${named} is ${miles < 0.1 ? 'right next to' : `${miles.toFixed(1)} miles from`} our base in Chelsea`;
       if (!covered) {
-        show('out', 'Sorry – that’s outside our patch for now.', `${dist}, outside the areas we cover. If it’s a bigger job, ask anyway – we’ll say plainly.`,
+        show('out', 'Sorry – that’s outside our patch for now.', `${dist}, outside the areas we cover. If it’s a bigger job, ask anyway – we’ll say plainly.${note}`,
           compact ? '' : `<a class="btn secondary" href="/contact">Ask anyway</a>`);
         return;
       }
@@ -228,7 +247,12 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
       const head = band.fee === 0 ? 'Yes – we can get to you.' : 'Yes – we cover you.';
       const links = compact ? '' :
         (hood ? `<a class="btn secondary" href="${esc(hood.url)}">Handyman in ${esc(hood.name)}</a>` : '') + `<a class="btn primary" href="${quote}">Get a quote</a>`;
-      show('ok', head, `${dist} – ${travel}.`, links);
+      show('ok', head, `${dist} – ${travel}.${note}`, links);
+    }
+
+    function clearPin() {
+      if (pinLayer) { pinLayer.remove(); pinLayer = null; }
+      canvas.classList.remove('pinned');
     }
 
     function show(kind: string, head: string, body: string, actions = '') {

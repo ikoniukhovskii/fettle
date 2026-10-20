@@ -645,3 +645,5 @@ textarea:focus-visible {
 .cov-map.compact .cov-result { position: static; width: auto; max-width: none; margin-top: 10px; box-shadow: none; border: 1px solid rgba(43,39,35,.1); padding: 12px 36px 12px 12px; }
 .cov-map.compact .cov-result .t { font-size: 16px; }
 .cov-map.compact .map-key { font-size: 12px; }
+.cov-result .fix { display: block; margin-top: 8px; font-size: 13px; color: var(--brick); }
+.cov-result .fix b { font-weight: 700; }

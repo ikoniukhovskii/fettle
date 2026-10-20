@@ -86,7 +86,7 @@ export function travelNote(area: string, band: TravelBand, congestion = false): 
 }
 
 // The postcode areas we cover (same list as the homepage checker). Anything else gets a polite "too far".
-export const COVERED_AREAS = ['N', 'NW', 'W', 'SW', 'SE', 'TW', 'EC', 'WC'];
+export const COVERED_AREAS = ['N', 'NW', 'W', 'SW', 'SE', 'E', 'TW', 'EC', 'WC'];
 export function isCoveredArea(outwardOrPostcode: string): boolean {
   const letters = outwardOrPostcode.trim().toUpperCase().match(/^[A-Z]{1,2}/)?.[0] ?? '';
   return COVERED_AREAS.includes(letters);

@@ -21,6 +21,7 @@ export const AREAS: { region: string; places: string }[] = [
   { region: 'Southwest London', places: 'Fulham, Chelsea, Putney, Wandsworth, Battersea, Wimbledon' },
   { region: 'South London', places: 'Clapham, Balham, Brixton, Streatham, Dulwich' },
   { region: 'Central London', places: 'Marylebone, Fitzrovia, Bloomsbury, Westminster, Pimlico' },
+  { region: 'East London', places: 'Canary Wharf, Wapping, Shoreditch, Bow, Stratford' },
 ];
 
 export const SERVICES: Service[] = [

@@ -19,7 +19,7 @@ const KNOWLEDGE = `
 ABOUT FETTLE LONDON
 - A small, permanent handyman and home maintenance team looking after London homes since 2023. Run by Ilia (founder, does surveys and quotes). Leo handles maintenance and decorating; Sergio is the in-house plumber and does repairs. Same faces every visit. Fully insured.
 - Style: dust sheets down, shoes off, radio low, tidy finish.
-- Areas: north, northwest, west, southwest, south and central London (e.g. Chelsea, Fulham, Kensington, Hammersmith, Chiswick, Acton, Ealing, Notting Hill, Putney, Wandsworth, Battersea, Clapham, Balham, Brixton, Hampstead, Belsize Park, Highgate, Highbury, Islington, Muswell Hill, Marylebone, Pimlico, Westminster). Not east London. If unsure about a postcode, say the team will confirm.
+- Areas: north, northwest, west, southwest, south, east and central London (e.g. Chelsea, Fulham, Kensington, Hammersmith, Chiswick, Acton, Ealing, Notting Hill, Putney, Wandsworth, Battersea, Clapham, Balham, Brixton, Hampstead, Belsize Park, Highgate, Highbury, Islington, Muswell Hill, Marylebone, Pimlico, Westminster, Canary Wharf, Shoreditch, Stratford). East London (E postcodes) is covered with the usual distance-based travel charge – e.g. Canary Wharf E14 is about 7 miles, so £25 and half-days or longer. If unsure about a postcode, say the team will confirm.
 - Hours: Monday to Saturday, 8am–9pm. Closed Sunday.
 - Contact: phone/WhatsApp 07361 854124, email hello@fettlelondon.com, contact form at fettlelondon.com/contact.
 

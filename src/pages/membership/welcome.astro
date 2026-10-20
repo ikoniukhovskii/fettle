@@ -37,5 +37,13 @@ import { VIDEO_CALL_URL } from '../../data/booking';
   const plan = PLANS.find((p) => p.id === id);
   const el = document.getElementById('welcome-plan');
   if (plan && el) el.textContent = `${plan.name} – your home is in good hands.`;
-  window.dispatchEvent(new CustomEvent('fettle:lead', { detail: { kind: `membership paid – ${plan?.name ?? 'plan'}` } }));
+  // Count the thank-you page once, not every time the tab is reopened or reloaded (a phone or
+  // browser restoring an old tab overnight used to log a second "paid"). Stripe is the real record.
+  const KEY = 'fettle-welcome-logged';
+  let last = 0;
+  try { last = Number(localStorage.getItem(KEY)) || 0; } catch {}
+  if (Date.now() - last > 12 * 3600e3) {
+    try { localStorage.setItem(KEY, String(Date.now())); } catch {}
+    window.dispatchEvent(new CustomEvent('fettle:lead', { detail: { kind: `membership paid – ${plan?.name ?? 'plan'}` } }));
+  }
 </script>

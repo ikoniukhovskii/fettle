@@ -45,6 +45,7 @@ import Page from '../layouts/Page.astro';
         <div class="ins-card">
           <h2>Latest activity</h2>
           <p class="ins-sub">To watch someone’s visit: Clarity → Recordings → Filters → Custom tags → <b>fettle_vid</b> = their ID. Only visitors who accepted cookies have a recording.</p>
+          <p class="ins-sub">Spot one of your own tests? Press <b>That’s me</b> – every check from that visitor moves out of the numbers (nothing is deleted). Tick “Show my own checks too” to see them again and press <b>Not me</b> to undo.</p>
           <div class="ins-scroll"><table class="ins-t" id="ins-events"></table></div>
         </div>
 
@@ -93,6 +94,8 @@ import Page from '../layouts/Page.astro';
   .tag { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--tan-pill); color: var(--ink); white-space: nowrap; }
   .tag.lead { background: var(--rust); color: var(--white); }
   .tag.me { background: var(--ink); color: var(--cream); }
+  .ins-mark { margin-left: 6px; border: 1px solid var(--ink-08, rgba(43,39,35,.15)); background: var(--white); color: var(--ink-60); border-radius: 999px; font: inherit; font-size: 11.5px; font-weight: 600; padding: 2px 9px; cursor: pointer; white-space: nowrap; }
+  .ins-mark:hover { border-color: var(--rust); color: var(--rust); }
   .tag.rec { background: var(--sage-tint); color: var(--sage); }
   .vid { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--ink-60); cursor: copy; }
   .ins-legacy summary { cursor: pointer; font-weight: 600; }
@@ -129,6 +132,8 @@ import Page from '../layouts/Page.astro';
       login.hidden = false; body.hidden = true; err.textContent = j.error || 'Something went wrong.'; err.hidden = false; return;
     }
     data = j; login.hidden = true; body.hidden = false; err.hidden = true;
+    // Any browser you open /insights in is yours: mark it, so its checks never count.
+    try { localStorage.setItem('fettle-owner', '1'); } catch {}
     render();
   }
 
@@ -174,7 +179,7 @@ import Page from '../layouts/Page.astro';
           <td>${new Date(e.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
           <td><span class="tag ${e.type === 'lead' ? 'lead' : ''}">${esc(LABEL[e.type] || e.type)}</span>${e.detail && e.type !== 'postcode_check' ? `<br><span class="ins-sub">${esc(e.detail)}</span>` : ''}</td>
           <td>${esc(e.area || '')}</td><td>${esc(e.page)}</td>
-          <td>${e.is_owner ? '<span class="tag me">You</span>' : `<span class="vid" title="Click to copy" data-vid="${esc(e.visitor_id)}">${esc(e.visitor_id)}</span>${e.consented ? ' <span class="tag rec">recording</span>' : ''}`}</td></tr>`).join('')
+          <td>${e.is_owner ? `<span class="tag me">You</span> <button class="ins-mark" data-mark="${esc(e.visitor_id)}" data-owner="0">Not me</button>` : `<span class="vid" title="Click to copy" data-vid="${esc(e.visitor_id)}">${esc(e.visitor_id)}</span>${e.consented ? ' <span class="tag rec">recording</span>' : ''} <button class="ins-mark" data-mark="${esc(e.visitor_id)}" data-owner="1">That’s me</button>`}</td></tr>`).join('')
       : `<tr><td class="ins-empty">Nothing yet in this period.</td></tr>`;
 
     $('ins-legacy').innerHTML = `<tr><th>Area</th><th>Checks (all time, incl. you)</th></tr>` + (data.legacy as any[]).map((r) => `<tr><td>${esc(r.area)}</td><td class="num">${r.check_count}</td></tr>`).join('');
@@ -217,7 +222,22 @@ import Page from '../layouts/Page.astro';
   $('ins-events').addEventListener('click', (e) => {
     const v = (e.target as HTMLElement).closest('[data-vid]') as HTMLElement | null;
     if (v) { navigator.clipboard?.writeText(v.dataset.vid || ''); v.textContent = 'copied'; setTimeout(() => (v.textContent = v.dataset.vid || ''), 1200); }
+    const m = (e.target as HTMLElement).closest('[data-mark]') as HTMLButtonElement | null;
+    if (m) mark(m);
   });
+  async function mark(btn: HTMLButtonElement) {
+    const vid = btn.dataset.mark || '', owner = btn.dataset.owner === '1';
+    btn.disabled = true; btn.textContent = '…';
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/insights`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ password: localStorage.getItem(KEY) || '', action: 'mark', visitor_id: vid, owner }),
+    }).catch(() => null);
+    const j = res && res.ok ? await res.json().catch(() => ({})) : {};
+    if (!j.ok) { btn.disabled = false; btn.textContent = 'Try again'; return; }
+    for (const ev of data.events as any[]) if (ev.visitor_id === vid) ev.is_owner = owner; // update in place, no reload
+    render();
+  }
   $('ins-logout').addEventListener('click', () => { localStorage.removeItem(KEY); location.reload(); });
   load();
 </script>

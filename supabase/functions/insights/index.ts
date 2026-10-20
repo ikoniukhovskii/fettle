@@ -22,15 +22,25 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers });
   const secret = Deno.env.get('INSIGHTS_PASSWORD');
   if (!secret) return new Response(JSON.stringify({ error: 'INSIGHTS_PASSWORD is not set in Supabase secrets.' }), { status: 503, headers });
-  let body: { password?: string; days?: number } = {};
+  let body: { password?: string; days?: number; action?: string; visitor_id?: string; owner?: boolean } = {};
   try { body = await req.json(); } catch {}
   if (!body.password || !(await same(body.password, secret))) {
     await new Promise((r) => setTimeout(r, 800)); // slow down guessing
     return new Response(JSON.stringify({ error: 'Wrong password.' }), { status: 401, headers });
   }
+  const sbAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
+  // "That's me" / "Not me": flag (or unflag) every event from one visitor as Ilia's own.
+  // Nothing is deleted – flagged events are just left out of the numbers, and it can be undone.
+  if (body.action === 'mark') {
+    const vid = String(body.visitor_id || '').slice(0, 40);
+    if (!vid) return new Response(JSON.stringify({ error: 'No visitor given.' }), { status: 400, headers });
+    const { error, count } = await sbAdmin.from('site_events').update({ is_owner: !!body.owner }, { count: 'exact' }).eq('visitor_id', vid);
+    if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500, headers });
+    return new Response(JSON.stringify({ ok: true, updated: count ?? 0 }), { headers });
+  }
   const days = Math.min(Math.max(Number(body.days) || 90, 1), 365);
   const since = new Date(Date.now() - days * 864e5).toISOString();
-  const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
+  const sb = sbAdmin;
   const [{ data: events, error }, { data: legacy }] = await Promise.all([
     sb.from('site_events').select('created_at,type,area,covered,page,visitor_id,is_owner,consented,detail').gte('created_at', since).order('created_at', { ascending: false }).limit(2000),
     sb.from('postcode_checks').select('area,check_count').order('check_count', { ascending: false }),

@@ -99,8 +99,9 @@ export function logEvent(type: string, extra: { area?: string; covered?: boolean
       consented: consented(),
       detail: extra.detail ? extra.detail.slice(0, 200) : null,
     };
-    // Avoid logging tests running on this computer's localhost as real visits.
-    if (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) body.is_owner = true;
+    // Only the real site counts. Test copies (Vercel previews, localhost) are always yours –
+    // they're separate websites to the browser, so a device marked as yours there isn't marked.
+    if (!/^(www\.)?fettlelondon\.com$/.test(location.hostname)) body.is_owner = true;
     fetch(`${SUPABASE_URL}/rest/v1/site_events`, {
       method: 'POST',
       keepalive: true,

@@ -23,8 +23,12 @@ const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[na
       function get() { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } }
       function set(v) { try { localStorage.setItem(KEY, JSON.stringify({ analytics: v, at: Date.now() })); } catch (e) {} }
       function add(src, attrs) { var s = document.createElement('script'); s.async = true; s.src = src; for (var k in attrs || {}) s.setAttribute(k, attrs[k]); document.head.appendChild(s); }
+      function mine() {
+        try { return localStorage.getItem('fettle-owner') === '1' || !/^(www\.)?fettlelondon\.com$/.test(location.hostname); } catch (e) { return false; }
+      }
       function load() {
         if (loaded) return; loaded = true;
+        if (mine()) return; // your own devices and test copies: no Google, Meta or Clarity at all
         if (T.ga4) {
           window.dataLayer = window.dataLayer || [];
           window.gtag = function () { dataLayer.push(arguments); };

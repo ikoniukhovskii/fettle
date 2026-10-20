@@ -32,9 +32,20 @@ export function visitorId(): string {
   return pageId || (pageId = 'p-' + rid());
 }
 
-export function isOwner(): boolean {
-  return ls.get(OWNER_KEY) === '1';
+// Ilia's own device: marked with ?me, by opening /insights, or any test copy of the site
+// (Vercel previews, localhost). On these, nothing counts: no site events in the numbers,
+// no Clarity / Google / Meta, no Vercel Analytics, and enquiries arrive marked TEST.
+export function isTestHost(): boolean {
+  try { return !/^(www\.)?fettlelondon\.com$/.test(location.hostname); } catch { return false; }
 }
+export function isOwner(): boolean {
+  return ls.get(OWNER_KEY) === '1' || isTestHost();
+}
+export function markOwner(on: boolean) {
+  if (on) { ls.set(OWNER_KEY, '1'); ls.set('va-disable', 'true'); }
+  else { ls.del(OWNER_KEY); ls.del('va-disable'); }
+}
+export const TEST_PREFIX = '🧪 TEST – sent from your own device';
 
 // Handle ?me / ?me=off, and tag Clarity once it's loaded.
 export function initTracking() {
@@ -42,13 +53,16 @@ export function initTracking() {
     const q = new URLSearchParams(location.search);
     if (q.has('me')) {
       const off = q.get('me') === 'off';
-      off ? ls.del(OWNER_KEY) : ls.set(OWNER_KEY, '1');
+      markOwner(!off);
       note(off ? 'This device is no longer marked as yours.' : 'This device is now marked as Ilia’s – your checks won’t count in the numbers.');
       q.delete('me');
       const url = location.pathname + (q.toString() ? `?${q}` : '') + location.hash;
       history.replaceState(null, '', url);
     }
   } catch {}
+  // Keep Vercel Analytics in step with the mark (it reads "va-disable").
+  if (isOwner()) ls.set('va-disable', 'true');
+  ownerBadge();
   const tagClarity = () => {
     const c = (window as any).clarity;
     if (!c || !consented()) return false;
@@ -78,6 +92,19 @@ export function initTracking() {
   }, { capture: true });
 }
 
+// A small, quiet pill so you always know this device isn't counted.
+function ownerBadge() {
+  if (!isOwner() || document.getElementById('fettle-owner-badge')) return;
+  const d = document.createElement('a');
+  d.id = 'fettle-owner-badge';
+  d.href = '/insights';
+  d.title = isTestHost() ? 'Test copy of the site – nothing here is counted' : 'This device is marked as yours – nothing you do is counted. Open with ?me=off to undo.';
+  d.textContent = isTestHost() ? 'Test copy · not counted' : 'You · not counted';
+  d.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:2147483000;background:rgba(43,39,35,.88);color:#F1E8D8;padding:6px 11px;border-radius:999px;font:600 11px/1 "Work Sans",sans-serif;letter-spacing:.04em;text-decoration:none;opacity:.75';
+  const place = () => document.body.appendChild(d);
+  document.body ? place() : addEventListener('DOMContentLoaded', place);
+}
+
 function note(text: string) {
   const d = document.createElement('div');
   d.textContent = text;
@@ -99,9 +126,6 @@ export function logEvent(type: string, extra: { area?: string; covered?: boolean
       consented: consented(),
       detail: extra.detail ? extra.detail.slice(0, 200) : null,
     };
-    // Only the real site counts. Test copies (Vercel previews, localhost) are always yours –
-    // they're separate websites to the browser, so a device marked as yours there isn't marked.
-    if (!/^(www\.)?fettlelondon\.com$/.test(location.hostname)) body.is_owner = true;
     fetch(`${SUPABASE_URL}/rest/v1/site_events`, {
       method: 'POST',
       keepalive: true,

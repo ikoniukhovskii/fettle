@@ -143,7 +143,7 @@ import CoverageMap from '../components/CoverageMap.astro';
   import { createClient } from '@supabase/supabase-js';
   import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
   import { lookupCoords, milesFromBase, travelBand, travelNote, inCongestionZone, CONGESTION_CHARGE } from '../data/travel';
-  import { logEvent } from '../data/track';
+  import { logEvent, isOwner, TEST_PREFIX } from '../data/track';
 
   const supabase = createClient(
     SUPABASE_URL,
@@ -291,7 +291,7 @@ import CoverageMap from '../components/CoverageMap.astro';
       full_name: name.value.trim(),
       email: email.value.trim(),
       postcode: postcode.value.trim(),
-      topic: topic.value.trim(),
+      topic: (isOwner() ? `${TEST_PREFIX} – ` : '') + topic.value.trim(),
       message: [message.value.trim(), travelSummary && `[${travelSummary}]`].filter(Boolean).join('\n\n'),
     });
 

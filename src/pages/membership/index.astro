@@ -418,7 +418,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
   import { PLANS, EXTRAS } from '../../data/membership';
   import { ONLINE_JOIN_MAX_MILES } from '../../data/payments';
   import { lookupCoords, milesFromBase } from '../../data/travel';
-  import { logEvent } from '../../data/track';
+  import { logEvent, isOwner, TEST_PREFIX } from '../../data/track';
   let lastLoggedPc = '';
 
 
@@ -642,7 +642,7 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
       full_name: name,
       email,
       postcode,
-      topic: `Membership request – ${plan?.name} (${priceLabel})${extra ? ` – extra: ${extra.label}` : ''}`,
+      topic: `${isOwner() ? TEST_PREFIX + ' – ' : ''}Membership request – ${plan?.name} (${priceLabel})${extra ? ` – extra: ${extra.label}` : ''}`,
       message: [`Phone: ${phone}`, notes].filter(Boolean).join('\n\n'),
     });
     btn.disabled = false;

@@ -102,7 +102,11 @@ function cors(origin: string | null) {
 const short = (id: string) => id.slice(0, 4).toUpperCase();
 const isUuid = (s: unknown) => typeof s === 'string' && /^[0-9a-f-]{36}$/i.test(s);
 
+// Set per request: chats from Ilia's own devices (or test copies of the site) arrive marked TEST.
+let testPrefix = '';
+
 async function telegram(text: string, sessionId?: string) {
+  text = testPrefix + text;
   const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
   const chatId = Deno.env.get('TELEGRAM_CHAT_ID');
   if (!token || !chatId) return;
@@ -197,6 +201,7 @@ Deno.serve(async (req) => {
   } catch {
     return new Response(JSON.stringify({ error: 'bad json' }), { status: 400, headers });
   }
+  testPrefix = body.test === true ? '🧪 TEST – your own device\n' : '';
   const action = body.action;
   let sessionId = isUuid(body.sessionId) ? (body.sessionId as string) : null;
   const reply = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers });

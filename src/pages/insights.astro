@@ -108,6 +108,7 @@ import Page from '../layouts/Page.astro';
 
 <script>
   import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../data/supabase-config';
+  import { markOwner, visitorId, consented } from '../data/track';
   import Leaf from 'leaflet';
   import 'leaflet/dist/leaflet.css';
   const KEY = 'fettle-insights';
@@ -133,7 +134,23 @@ import Page from '../layouts/Page.astro';
     }
     data = j; login.hidden = true; body.hidden = false; err.hidden = true;
     // Any browser you open /insights in is yours: mark it, so its checks never count.
-    try { localStorage.setItem('fettle-owner', '1'); } catch {}
+    // Its past activity too (when it kept an ID, i.e. accepted cookies) – once per browser.
+    markOwner(true);
+    try {
+      if (consented() && !localStorage.getItem('fettle-owner-backfilled')) {
+        const vid = visitorId();
+        fetch(`${SUPABASE_URL}/functions/v1/insights`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+          body: JSON.stringify({ password: pass, action: 'mark', visitor_id: vid, owner: true }),
+        }).then((r) => r.json()).then((j) => {
+          if (j && j.ok) {
+            localStorage.setItem('fettle-owner-backfilled', '1');
+            if (j.updated) { for (const ev of data.events as any[]) if (ev.visitor_id === vid) ev.is_owner = true; render(); }
+          }
+        }).catch(() => {});
+      }
+    } catch {}
     render();
   }
 

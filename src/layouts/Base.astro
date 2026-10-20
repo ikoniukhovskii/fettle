@@ -66,6 +66,7 @@ const showTweaks = import.meta.env.DEV || process.env.VERCEL_ENV === 'preview';
       import { initTracking } from '../data/track';
       initTracking();
     </script>
+    <script is:inline>try{if(localStorage.getItem('fettle-owner')==='1'||!/^(www\.)?fettlelondon\.com$/.test(location.hostname))localStorage.setItem('va-disable','true')}catch(e){}</script>
     <script is:inline defer src="/_vercel/insights/script.js"></script>
   </body>
 </html>

@@ -149,6 +149,7 @@ const anonKey = SUPABASE_ANON_KEY;
 </style>
 
 <script>
+  import { isOwner } from '../data/track';
   type Msg = { id?: number; role: string; content: string };
   const root = document.getElementById('fchat') as HTMLElement;
   const endpoint = root.dataset.endpoint!;
@@ -182,7 +183,7 @@ const anonKey = SUPABASE_ANON_KEY;
     const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ ...body, sessionId }),
+      body: JSON.stringify({ ...body, sessionId, test: isOwner() }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Something went wrong');

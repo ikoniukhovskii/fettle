@@ -22,6 +22,7 @@ ABOUT FETTLE LONDON
 - Areas: north, northwest, west, southwest, south, east and central London (e.g. Chelsea, Fulham, Kensington, Hammersmith, Chiswick, Acton, Ealing, Notting Hill, Putney, Wandsworth, Battersea, Clapham, Balham, Brixton, Hampstead, Belsize Park, Highgate, Highbury, Islington, Muswell Hill, Marylebone, Pimlico, Westminster, Canary Wharf, Shoreditch, Stratford). East London (E postcodes) is covered with the usual distance-based travel charge – e.g. Canary Wharf E14 is about 7 miles, so £25 and half-days or longer. If unsure about a postcode, say the team will confirm.
 - Hours: Monday to Saturday, 8am–9pm. Closed Sunday.
 - Contact: phone/WhatsApp 07361 854124, email hello@fettlelondon.com, contact form at fettlelondon.com/contact.
+- Socials: Instagram @fettlelondon (instagram.com/fettlelondon – the journal: London Streets, small fixes, reviews, and 'Off the clock' London picks on Sundays; people can DM job photos there) and Facebook (Fettle London – practical tips and what we're working on). Overview at fettlelondon.com/social. If someone asks to see past work or reviews, point them to Instagram and fettlelondon.com/social.
 
 PRICES (always say "from"; exact prices only after seeing the job)
 - Quotes start with a FREE 10-minute video call (Google Meet). The customer books a time here: https://calendar.app.google/XKzAocmeAU5WH2as6 – they show us the job on their phone and we can usually price it there and then. Offer this link whenever someone wants a price or a quote.

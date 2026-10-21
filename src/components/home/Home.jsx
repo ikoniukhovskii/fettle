@@ -1815,6 +1815,7 @@ const FOOT_COLS = [
       { label: 'About Fettle', href: '/about' },
       { label: 'Membership', href: '/membership' },
       { label: 'Testimonials', href: '/testimonials' },
+      { label: 'Follow along', href: '/social' },
       { label: 'Contact', href: '/contact' },
     ],
   },

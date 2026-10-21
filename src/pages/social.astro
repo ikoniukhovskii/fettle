@@ -1,0 +1,180 @@
+---
+// "Follow along" – Instagram and Facebook in one place, plus a taste of each:
+// the latest posts, real reviews and this week's London pick. Content lives in src/data/social.ts.
+import Page from '../layouts/Page.astro';
+import StreetSign from '../components/StreetSign.astro';
+import '../styles/signs.css';
+import { FEED, PICK, CHANNELS } from '../data/social';
+import { INSTAGRAM_URL } from '../data/schema';
+// "Start to finish" – real job photos. Turn on once the first ones are in.
+const SHOW_WORK = false;
+---
+
+<Page title="Follow Fettle London on Instagram & Facebook" description="We fix London's homes Monday to Saturday. On Sundays we find you somewhere good for a pint. Follow Fettle on Instagram and Facebook for London Streets, small fixes, kind words and the London we love off the clock.">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Follow along</p>
+      <h1>We fix London's homes Monday to Saturday. On Sundays, we find you somewhere good for a pint.</h1>
+      <p class="lede">Follow along for both &ndash; the streets we work on, the small fixes worth knowing, kind words from the homes we look after, and the London we love off the clock.</p>
+    </div>
+  </section>
+
+  <section class="page-body">
+    <div class="wrap">
+
+      <div class="soc-channels">
+        {CHANNELS.map((c, i) => (
+          <a class={`soc-card soc-${c.key}`} href={c.href} target="_blank" rel="noopener" aria-label={`${c.cta} – ${c.handle}`}>
+            <div class="soc-sign" style={`--rz:${i ? 3 : -4}deg`}>
+              <span class="soc-shadow" aria-hidden="true"></span>
+              <StreetSign sign={{ street: c.handle.replace('@', ''), postcode: 'SW10', borough: c.label, style: 'lb' }} />
+            </div>
+            <p class="soc-kicker">{c.label} &middot; {c.handle}</p>
+            <h2>{c.title}.</h2>
+            <p class="soc-text">{c.text}</p>
+            <span class="btn primary soc-btn">{c.cta} <span aria-hidden="true">&rarr;</span></span>
+          </a>
+        ))}
+      </div>
+
+      <div class="soc-head">
+        <div>
+          <p class="eyebrow">From the feed</p>
+          <h2>Lately on Instagram.</h2>
+        </div>
+        <a class="soc-more" href={INSTAGRAM_URL} target="_blank" rel="noopener">See it all on @fettlelondon &rarr;</a>
+      </div>
+      <div class="soc-feed">
+        {FEED.map((t) => (
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener" class="soc-tile">
+            <img src={t.src} alt={t.alt} width="720" height="900" />
+          </a>
+        ))}
+      </div>
+
+      <div class="soc-otc">
+        <div class="soc-otc-img">
+          <img src={PICK.image} alt={`Off the clock – ${PICK.name}`} width="720" height="1280" />
+        </div>
+        <div class="soc-otc-copy">
+          <p class="soc-script">Off the clock</p>
+          <p class="eyebrow">{PICK.series}</p>
+          <h2>{PICK.name}.</h2>
+          <p class="soc-text">{PICK.text}</p>
+          <span class="soc-addr">{PICK.where}</span>
+          <p class="soc-otc-note">A new London pick most Sundays &ndash; pubs, walks, cafés, markets and the odd bit of hidden history. Mostly in the patches we work in.</p>
+          <a class="btn secondary" href={INSTAGRAM_URL} target="_blank" rel="noopener">More picks on Instagram</a>
+        </div>
+      </div>
+
+      <div class="soc-head" id="kind-words">
+        <div>
+          <p class="eyebrow">Kind words</p>
+          <h2>From the homes we look after.</h2>
+        </div>
+      </div>
+      <div class="quote-grid" id="soc-reviews">
+        <figure class="quote soc-empty" id="soc-reviews-empty">
+          <span class="mark" aria-hidden="true">&ldquo;</span>
+          <p>Our newest reviews land here first, word for word, with the street they came from.</p>
+          <figcaption class="who"><span class="name">Had us round?</span><span class="meta"><a href="/review">Leave a few words &rarr;</a></span></figcaption>
+        </figure>
+      </div>
+
+      {SHOW_WORK && (
+        <div class="soc-head">
+          <div>
+            <p class="eyebrow">Start to finish</p>
+            <h2>Recent work.</h2>
+          </div>
+        </div>
+      )}
+
+      <div class="soc-cta">
+        <p class="soc-script" style="color:var(--cream)">Seen something on your own house?</p>
+        <p class="soc-cta-text">Send us a photo or a quick video &ndash; we'll tell you if it's a five-minute fix or one for us.</p>
+        <div class="soc-cta-row">
+          <a class="btn primary" href="https://wa.me/447361854124">WhatsApp 07361 854124</a>
+          <a class="btn soc-btn-light" href={INSTAGRAM_URL} target="_blank" rel="noopener">DM @fettlelondon</a>
+          <a class="btn soc-btn-light" href="/contact">Contact form</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .soc-channels { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .soc-card {
+    position: relative; display: flex; flex-direction: column; text-decoration: none; color: var(--ink);
+    background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+    padding: clamp(28px, 4vw, 44px); overflow: hidden; transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
+  }
+  .soc-facebook { background: var(--tan-pill); }
+  .soc-card:hover { transform: translateY(-4px); box-shadow: 0 24px 50px -24px rgba(43,39,35,.35); }
+  .soc-sign { position: relative; width: min(100%, 360px); margin: 6px 0 34px 4px; perspective: 1400px; }
+  .soc-sign :global(.ss) { transform: rotate(var(--rz)) rotateY(-8deg) rotateX(3deg); transform-style: preserve-3d; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+  .soc-card:hover .soc-sign :global(.ss) { transform: rotate(calc(var(--rz) * .4)) rotateY(-3deg); }
+  .soc-shadow { position: absolute; inset: 14% 4% -4% 4%; border-radius: 16px; background: rgba(43,30,20,.38); filter: blur(18px); transform: translate(16px, 22px) rotate(var(--rz)); }
+  .soc-kicker { margin: 0; font: 600 12px/1 var(--font-body); letter-spacing: .18em; text-transform: uppercase; color: var(--rust); }
+  .soc-card h2 { margin: 10px 0 0; font: 800 clamp(30px, 3.6vw, 44px)/1 var(--font-display); letter-spacing: -.02em; }
+  .soc-text { margin: 14px 0 0; font-size: 17px; line-height: 1.55; color: var(--ink-60); }
+  .soc-btn { margin-top: 26px; align-self: flex-start; }
+
+  .soc-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: clamp(64px, 8vw, 96px) 0 24px; }
+  .soc-head h2 { margin: 6px 0 0; font: 800 clamp(28px, 3.4vw, 40px)/1.05 var(--font-display); letter-spacing: -.02em; }
+  .soc-head .eyebrow { margin: 0; }
+  .soc-more { color: var(--rust); font-weight: 600; text-decoration: none; }
+  .soc-more:hover { text-decoration: underline; }
+
+  .soc-feed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .soc-tile { display: block; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 24px -16px rgba(43,39,35,.45); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+  .soc-tile:hover { transform: translateY(-3px) rotate(-.4deg); }
+  .soc-tile img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+
+  .soc-otc { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: clamp(28px, 5vw, 64px); align-items: center; margin-top: clamp(64px, 8vw, 96px); background: var(--ink); color: var(--cream); border-radius: var(--radius-lg); padding: clamp(28px, 5vw, 56px); }
+  .soc-otc-img img { display: block; width: 100%; height: auto; border-radius: 16px; transform: rotate(-2deg); box-shadow: 0 30px 60px -30px rgba(0,0,0,.7); }
+  .soc-script { margin: 0; font: clamp(48px, 6vw, 72px)/1 var(--font-script); color: #E9A184; }
+  .soc-otc .eyebrow { color: #E9A184; margin: 10px 0 0; }
+  .soc-otc h2 { margin: 12px 0 0; font: 800 clamp(34px, 4vw, 52px)/1 var(--font-display); letter-spacing: -.02em; color: var(--cream); }
+  .soc-otc .soc-text { color: rgba(241,232,216,.82); max-width: 46ch; }
+  .soc-addr { display: inline-block; margin-top: 18px; border: 1.5px solid rgba(241,232,216,.6); border-radius: 999px; padding: 8px 16px; font: 600 12px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; }
+  .soc-otc-note { margin: 22px 0 22px; font-size: 15px; color: rgba(241,232,216,.6); max-width: 46ch; }
+  .soc-otc .btn.secondary { color: var(--cream); border-color: var(--cream); }
+  .soc-otc .btn.secondary:hover { background: var(--cream); color: var(--ink); }
+
+  .soc-empty { background: var(--tan-pill); box-shadow: none; }
+  .soc-empty a { color: var(--rust); font-weight: 600; text-decoration: none; }
+
+  .soc-cta { margin-top: clamp(64px, 8vw, 96px); background: var(--rust); color: var(--cream); border-radius: var(--radius-lg); padding: clamp(32px, 5vw, 56px); text-align: center; }
+  .soc-cta .soc-script { color: var(--cream); }
+  .soc-cta-text { margin: 12px auto 26px; max-width: 52ch; font-size: 18px; line-height: 1.5; }
+  .soc-cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .soc-cta .btn.primary { background: var(--ink); }
+  .soc-cta .btn.primary:hover { background: #000; }
+  .soc-btn-light { background: transparent; color: var(--cream); border: 1.5px solid rgba(241,232,216,.7); }
+  .soc-btn-light:hover { background: var(--cream); color: var(--rust); }
+
+  @media (max-width: 820px) {
+    .soc-channels { grid-template-columns: 1fr; }
+    .soc-otc { grid-template-columns: 1fr; }
+    .soc-otc-img { max-width: 240px; }
+  }
+  @media (max-width: 560px) { .soc-feed { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+</style>
+
+<script>
+  // Real reviews published from /send-review show here, newest first.
+  import { fetchPublishedReviews } from '../data/published-reviews';
+  const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  fetchPublishedReviews().then((list) => {
+    const grid = document.getElementById('soc-reviews');
+    if (!grid || !list.length) return;
+    grid.insertAdjacentHTML('afterbegin', list.slice(0, 6).map((r) => `
+      <figure class="quote">
+        <span class="mark" aria-hidden="true">&ldquo;</span>
+        <p>${esc(r.q)}</p>
+        <figcaption class="who"><span class="name">${esc(r.who)}</span>${r.meta ? `<span class="meta">${esc(r.meta)}</span>` : ''}</figcaption>
+      </figure>`).join(''));
+  });
+</script>

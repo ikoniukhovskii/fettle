@@ -3,7 +3,7 @@
 import { SERVICES, AREAS } from './services';
 
 export const SITE = 'https://www.fettlelondon.com';
-export const FACEBOOK_URL = 'https://www.facebook.com/people/Fettle-Handyman-Construction-London/61594573065715/';
+export const FACEBOOK_URL = 'https://www.facebook.com/fettlelondon';
 export const INSTAGRAM_URL = 'https://www.instagram.com/fettlelondon/';
 
 export const BUSINESS_SCHEMA = {

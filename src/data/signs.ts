@@ -45,6 +45,7 @@ export const SIGNS = {
   northcote: s('Northcote Road', 'SW11', 'London Borough of Wandsworth', 'lb'),
   batterseaPark: s('Battersea Park Road', 'SW11', 'London Borough of Wandsworth', 'lb'),
   oldYork: s('Old York Road', 'SW18', 'London Borough of Wandsworth', 'lb'),
+  wimbledonHigh: s('Wimbledon High Street', 'SW19', 'London Borough of Merton', 'lb'),
   claphamHigh: s('Clapham High Street', 'SW4', 'London Borough of Lambeth', 'lb'),
   lambethWalk: s('Lambeth Walk', 'SE11', 'London Borough of Lambeth', 'lb'),
   boroughHigh: s('Borough High Street', 'SE1', 'London Borough of Southwark', 'lb'),
@@ -59,7 +60,7 @@ type K = keyof typeof SIGNS;
 
 // One sign per location page, each its own street.
 const HOOD: Record<string, K> = {
-  chelsea: 'kingsRoad', fulham: 'fulhamRoadSW6', battersea: 'batterseaPark', putney: 'putneyHigh', wandsworth: 'oldYork',
+  chelsea: 'kingsRoad', fulham: 'fulhamRoadSW6', battersea: 'batterseaPark', putney: 'putneyHigh', wandsworth: 'oldYork', wimbledon: 'wimbledonHigh',
   clapham: 'claphamHigh', kensington: 'kensingtonChurch', 'south-kensington': 'oldBrompton', 'earls-court': 'earlsCourt',
   'notting-hill': 'portobello', 'holland-park': 'hollandPark', hammersmith: 'kingStreet', pimlico: 'warwickWay',
   belgravia: 'eatonSquare', westminster: 'whitehall',

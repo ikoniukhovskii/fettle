@@ -425,9 +425,13 @@ textarea:focus-visible {
 }
 .foot-top {
   display: grid;
-  grid-template-columns: minmax(200px, 1.1fr) repeat(4, minmax(120px, 0.85fr));
-  gap: clamp(24px, 3.2vw, 48px);
+  grid-template-columns: minmax(180px, 1fr) repeat(6, minmax(100px, 0.8fr));
+  gap: clamp(24px, 3vw, 44px);
   padding-bottom: clamp(40px, 5vw, 60px);
+}
+@media (max-width: 1160px) and (min-width: 861px) {
+  .foot-top { grid-template-columns: repeat(3, 1fr); }
+  .foot-brand { grid-column: 1 / -1; }
 }
 @media (max-width: 860px) {
   .foot-top { grid-template-columns: 1fr 1fr; }
@@ -576,8 +580,8 @@ textarea:focus-visible {
 .area-links li { margin: 0 0 10px; line-height: 1.7; }
 .area-links strong { font-weight: 600; margin-right: 6px; }
 .area-links a { color: var(--brick); text-underline-offset: 3px; }
-.foot-top { grid-template-columns: minmax(200px, 1.1fr) repeat(5, minmax(110px, 0.8fr)); }
-@media (max-width: 1060px) { .foot-top { grid-template-columns: repeat(3, 1fr); } .foot-brand { grid-column: 1 / -1; } }
+.foot-top { grid-template-columns: minmax(180px, 1fr) repeat(6, minmax(100px, 0.8fr)); }
+@media (max-width: 1160px) { .foot-top { grid-template-columns: repeat(3, 1fr); } .foot-brand { grid-column: 1 / -1; } }
 @media (max-width: 860px) { .foot-top { grid-template-columns: 1fr 1fr; } }
 
 /* Coverage map (real streets, Fettle-toned) */
@@ -602,6 +606,8 @@ textarea:focus-visible {
 .cov-canvas .leaflet-tooltip.cov-label.faded { opacity: .55 !important; font-weight: 600; }
 .cov-canvas .leaflet-tooltip.cov-label.big { font-size: 15px; font-weight: 800; background: var(--ink); color: var(--cream, #F1E8D8); }
 .cov-canvas.no-labels .leaflet-tooltip.cov-label:not(.big) { display: none; }
+.cov-canvas.no-outer-labels .leaflet-tooltip.cov-label.outer { display: none; }
+.cov-canvas .leaflet-tooltip.cov-label.outer { font-size: 12px; font-weight: 600; }
 .cov-canvas.pinned .leaflet-tooltip.cov-label { opacity: .45 !important; }
 .cov-canvas.pinned .leaflet-tooltip.cov-label.big { opacity: 1 !important; }
 .cov-ring-label { width: auto !important; height: auto !important; }

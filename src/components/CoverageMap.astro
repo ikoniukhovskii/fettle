@@ -19,8 +19,12 @@ interface Props {
 }
 const { highlight, region, caption, checker = true, compact = false, id = 'cov' } = Astro.props;
 
-const COLORS: Record<string, string> = { 'southwest-london': '#B34426', 'west-london': '#6E8A6B', 'central-london': '#2B2723' };
-const hoods = HOODS.map((h) => ({ slug: h.slug, name: h.name, region: h.region, lat: h.lat, lon: h.lon, url: hoodUrl(h), postcodes: h.postcodes, color: COLORS[h.region] }));
+const COLORS: Record<string, string> = {
+  'southwest-london': '#B34426', 'west-london': '#6E8A6B', 'central-london': '#2B2723',
+  // More areas
+  'north-london': '#97381E', 'northwest-london': '#4E6B4B', 'south-london': '#C76A4B', 'east-london': '#5A524A', 'kingston-sutton': '#8C9F89',
+};
+const hoods = HOODS.map((h) => ({ slug: h.slug, name: h.name, region: h.region, lat: h.lat, lon: h.lon, url: hoodUrl(h), postcodes: h.postcodes, color: COLORS[h.region], outer: !!h.outer }));
 const bands = TRAVEL_BANDS.filter((b) => Number.isFinite(b.maxMiles)).map((b) => ({ miles: b.maxMiles, fee: b.fee }));
 const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? null, region: region ?? null });
 ---
@@ -124,8 +128,10 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
     for (const h of hoods) {
       const on = focus(h);
       const big = h.slug === highlight;
+      // "More areas" are smaller dots, named only when zoomed right in – unless this page is about them.
+      const small = h.outer && !big && !(region && h.region === region);
       const m = L.circleMarker([h.lat, h.lon], {
-        radius: big ? 10 : 7,
+        radius: big ? 10 : small ? 4.5 : 7,
         color: '#FFFFFF',
         weight: 2,
         fillColor: h.color,
@@ -136,7 +142,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
         permanent: true,
         direction: DIR[h.slug] || 'right',
         offset: DIR[h.slug] === 'left' ? [-8, 0] : DIR[h.slug] === 'top' ? [0, -8] : DIR[h.slug] === 'bottom' ? [0, 8] : [8, 0],
-        className: `cov-label${on ? '' : ' faded'}${big ? ' big' : ''}`,
+        className: `cov-label${on ? '' : ' faded'}${big ? ' big' : ''}${small ? ' outer' : ''}`,
       });
       const miles = milesFromBase(h.lat, h.lon);
       m.bindPopup(
@@ -161,17 +167,21 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
     } else if (region) {
       hoods.filter((x: any) => x.region === region).forEach((x: any) => pts.push([x.lat, x.lon]));
     } else {
-      hoods.forEach((x: any) => pts.push([x.lat, x.lon]));
+      // Open on the main patch; the "More areas" dots sit round the edge – zoom out or drag to see them all.
+      hoods.filter((x: any) => !x.outer).forEach((x: any) => pts.push([x.lat, x.lon]));
     }
     const start = L.latLngBounds(pts);
     const fit = () => {
-      if (highlight) map.setView(start.getCenter(), compact ? 12.5 : 13.25);
+      if (highlight) map.fitBounds(start.pad(0.25), { maxZoom: compact ? 12.5 : 13.25 });
       else map.fitBounds(start.pad(compact ? 0.35 : 0.12), { maxZoom: 14 });
     };
     fit();
 
     // Hide names when zoomed far out, so the map doesn't turn into a word cloud.
-    const relabel = () => canvas.classList.toggle('no-labels', map.getZoom() < 12.75);
+    const relabel = () => {
+      canvas.classList.toggle('no-labels', map.getZoom() < 12.75);
+      canvas.classList.toggle('no-outer-labels', map.getZoom() < 13.5);
+    };
     map.on('zoomend', relabel);
     relabel();
 

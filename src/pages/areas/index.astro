@@ -1,16 +1,15 @@
 ---
 import Page from '../../layouts/Page.astro';
 import CoverageMap from '../../components/CoverageMap.astro';
-import { REGIONS, hoodsIn, hoodUrl, hoodTravel } from '../../data/areas';
-import { AREAS } from '../../data/services';
+import { REGIONS, hoodsIn, hoodUrl, hoodTravel, isMoreRegion } from '../../data/areas';
 ---
 
-<Page title="Areas We Cover – Handyman in Chelsea, Kensington, Fulham & London | Fettle London" description="Handyman and home maintenance across southwest, west and central London: Chelsea, Fulham, Kensington, Battersea, Notting Hill, Pimlico and more. No travel charge.">
+<Page title="Areas We Cover – Handyman in Chelsea, Kensington, Fulham & London | Fettle London" description="Handyman and home maintenance across London – Chelsea, Fulham, Kensington, Hampstead, Islington, Wimbledon, Dulwich, Canary Wharf, Kingston and more. No travel charge.">
   <section class="page-hero">
     <div class="wrap">
       <p class="eyebrow">Areas we cover</p>
       <h1>Close to home, mostly.</h1>
-      <p class="lede">We’re based in Chelsea, SW10. Every neighbourhood below is a short drive away – the same small team, and never a travel charge.</p>
+      <p class="lede">We’re based in Chelsea, SW10. From the King’s Road out to Highgate, Canary Wharf and Sutton, it’s the same small team – and never a travel charge.</p>
     </div>
   </section>
 
@@ -19,6 +18,13 @@ import { AREAS } from '../../data/services';
       <CoverageMap id="cov-hub" caption="Tap any dot to see that neighbourhood. Drag and zoom to look around." />
 
       {REGIONS.map((r) => (
+        <>
+        {r.slug === REGIONS.find((x) => isMoreRegion(x.slug))?.slug && (
+          <div class="area-section prose" style="max-width:none;margin-bottom:8px">
+            <h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(26px,3.4vw,36px);margin:0 0 14px">More areas</h2>
+            <p>Further out, the same small team and still no travel charge – from Muswell Hill and Hampstead to Dulwich, Canary Wharf, Kingston and Sutton. For homes more than about 9 miles from our base, we book work as half-days or longer.</p>
+          </div>
+        )}
         <section class="region-block">
           <header>
             <div>
@@ -40,16 +46,12 @@ import { AREAS } from '../../data/services';
             })}
           </div>
         </section>
+        </>
       ))}
 
       <div class="area-section prose" style="max-width:none">
-        <h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(26px,3.4vw,36px);margin:0 0 14px">Further afield</h2>
-        <p>We also look after homes across the rest of London, from Kingston and Sutton to the City – still with no travel charge, and no Congestion Charge passed on. For homes more than about 9 miles from our base, we book work as half-days or longer.</p>
-        <ul class="area-links">
-          {AREAS.filter((a) => !['West London', 'Southwest London', 'Central London'].includes(a.region)).map((a) => (
-            <li><strong>{a.region}:</strong> {a.places}</li>
-          ))}
-        </ul>
+        <h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(26px,3.4vw,36px);margin:0 0 14px">And the places in between</h2>
+        <p>Not listed? We also look after homes in Chiswick, Acton, Ealing, Marylebone, Fitzrovia, Bloomsbury, the City and plenty more – still with no travel charge, and no Congestion Charge passed on. Pop your postcode in the map above, or just ask.</p>
         <p style="margin-top:24px"><a class="btn primary" href="/contact">Check your postcode</a></p>
       </div>
     </div>

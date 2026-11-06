@@ -13,6 +13,7 @@ const hoods = hoodsIn(region);
 const others = REGIONS.filter((r) => r.slug !== region.slug);
 const url = `/areas/${region.slug}`;
 const postcodes = hoods.flatMap((h) => h.postcodes);
+const farthest = Math.ceil(Math.max(...hoods.map((h) => hoodTravel(h).miles)));
 const description = `Handyman and home maintenance across ${region.name}: ${hoods.map((h) => h.name).join(', ')}. No travel charge, free 10-minute video quote.`.slice(0, 160);
 ---
 
@@ -50,7 +51,7 @@ const description = `Handyman and home maintenance across ${region.name}: ${hood
       </div>
 
       <div class="area-section">
-        <CoverageMap id="cov-region" region={region.slug} caption={`${region.name} highlighted – every neighbourhood here is within 4 miles of our base.`} />
+        <CoverageMap id="cov-region" region={region.slug} caption={`${region.name} highlighted – every neighbourhood here is within ${farthest} miles of our base, with no travel charge.`} />
       </div>
 
       <div class="area-section">

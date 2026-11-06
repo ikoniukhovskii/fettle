@@ -55,6 +55,31 @@ export const SIGNS = {
   kewGreen: s('Kew Green', 'TW9', 'Richmond', 'richmond'),
   cheapside: s('Cheapside', 'EC2', 'City of London', 'city'),
   fleetStreet: s('Fleet Street', 'EC4', 'City of London', 'city'),
+  // More areas (Nov 2026)
+  highburyPark: s('Highbury Park', 'N5', 'London Borough of Islington', 'lb'),
+  hollowayRoad: s('Holloway Road', 'N7', 'London Borough of Islington', 'lb'),
+  highgateHigh: s('Highgate High Street', 'N6', 'London Borough of Haringey', 'lb'),
+  crouchEndHill: s('Crouch End Hill', 'N8', 'London Borough of Haringey', 'lb'),
+  muswellBroadway: s('Muswell Hill Broadway', 'N10', 'London Borough of Haringey', 'lb'),
+  haverstockHill: s('Haverstock Hill', 'NW3', 'Camden', 'camden'),
+  regentsParkRoad: s("Regent's Park Road", 'NW1', 'Camden', 'camden'),
+  westEndLane: s('West End Lane', 'NW6', 'Camden', 'camden'),
+  kilburnHigh: s('Kilburn High Road', 'NW6', 'London Borough of Brent', 'lb'),
+  balhamHigh: s('Balham High Road', 'SW12', 'London Borough of Wandsworth', 'lb'),
+  electricAvenue: s('Electric Avenue', 'SW9', 'London Borough of Lambeth', 'lb'),
+  streathamHigh: s('Streatham High Road', 'SW16', 'London Borough of Lambeth', 'lb'),
+  coldharbour: s('Coldharbour Lane', 'SW9', 'London Borough of Lambeth', 'lb'),
+  lordshipLane: s('Lordship Lane', 'SE22', 'London Borough of Southwark', 'lb'),
+  westferry: s('Westferry Road', 'E14', 'London Borough of Tower Hamlets', 'lb'),
+  wappingHigh: s('Wapping High Street', 'E1W', 'London Borough of Tower Hamlets', 'lb'),
+  shoreditchHigh: s('Shoreditch High Street', 'E1', 'London Borough of Hackney', 'lb'),
+  romanRoad: s('Roman Road', 'E3', 'London Borough of Tower Hamlets', 'lb'),
+  stratfordHigh: s('Stratford High Street', 'E15', 'London Borough of Newham', 'lb'),
+  thamesStreet: s('Thames Street', 'KT1', 'Royal Borough of Kingston upon Thames', 'lb'),
+  kingstonHill: s('Kingston Hill', 'KT2', 'Royal Borough of Kingston upon Thames', 'lb'),
+  coombeRoad: s('Coombe Road', 'KT3', 'Royal Borough of Kingston upon Thames', 'lb'),
+  londonRoadMorden: s('London Road', 'SM4', 'London Borough of Merton', 'lb'),
+  cheamRoad: s('Cheam Road', 'SM1', 'London Borough of Sutton', 'lb'),
 } satisfies Record<string, Sign>;
 type K = keyof typeof SIGNS;
 
@@ -64,8 +89,16 @@ const HOOD: Record<string, K> = {
   clapham: 'claphamHigh', kensington: 'kensingtonChurch', 'south-kensington': 'oldBrompton', 'earls-court': 'earlsCourt',
   'notting-hill': 'portobello', 'holland-park': 'hollandPark', hammersmith: 'kingStreet', pimlico: 'warwickWay',
   belgravia: 'eatonSquare', westminster: 'whitehall',
+  // More areas
+  islington: 'upperStreet', highbury: 'highburyPark', highgate: 'highgateHigh', 'crouch-end': 'crouchEndHill', 'muswell-hill': 'muswellBroadway',
+  hampstead: 'flaskWalk', 'belsize-park': 'haverstockHill', 'primrose-hill': 'regentsParkRoad', 'west-hampstead': 'westEndLane', kilburn: 'kilburnHigh',
+  balham: 'balhamHigh', brixton: 'electricAvenue', streatham: 'streathamHigh', dulwich: 'lordshipLane',
+  'canary-wharf': 'westferry', wapping: 'wappingHigh', shoreditch: 'shoreditchHigh', bow: 'romanRoad', stratford: 'stratfordHigh',
+  kingston: 'thamesStreet', 'new-malden': 'coombeRoad', morden: 'londonRoadMorden', sutton: 'cheamRoad',
 };
-const REGION: Record<string, K> = { 'southwest-london': 'northcote', 'west-london': 'kensingtonHigh', 'central-london': 'savileRow' };
+const REGION: Record<string, K> = { 'southwest-london': 'northcote', 'west-london': 'kensingtonHigh', 'central-london': 'savileRow',
+  'north-london': 'hollowayRoad', 'northwest-london': 'camdenHigh', 'south-london': 'coldharbour', 'east-london': 'brickLane', 'kingston-sutton': 'kingstonHill',
+};
 const HUB: K = 'fulhamRoadSW10'; // our base
 
 /** Signs for a page path: the first is the hero sign, the rest float further down. */

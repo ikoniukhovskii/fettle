@@ -38,7 +38,7 @@ import teamSergioAsset from '../../assets/img/team-sergio.webp';
 const teamSergio = teamSergioAsset.src;
 import { SERVICES } from '../../data/services';
 import { SOCIALS } from '../../data/schema';
-import { FOOTER_AREAS, hoodForPostcode, hoodUrl } from '../../data/areas';
+import { FOOTER_AREAS, FOOTER_MORE, hoodForPostcode, hoodUrl } from '../../data/areas';
 
 /* Fettle — photo-led editorial landing page.
    One full-bleed photograph as the entire hero, giant wordmark anchored to
@@ -1819,7 +1819,8 @@ const FOOT_COLS = [
       { label: 'Contact', href: '/contact' },
     ],
   },
-  { head: 'Areas', links: FOOTER_AREAS },
+  { head: 'Main areas', links: FOOTER_AREAS },
+  { head: 'More areas', links: FOOTER_MORE },
   {
     head: 'Legal',
     links: [

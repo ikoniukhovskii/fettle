@@ -4,6 +4,7 @@
 // To add a neighbourhood: add it to HOODS with an existing region slug. Pages, links,
 // footer, sitemap and the postcode-checker link all pick it up automatically.
 import { milesFromBase, travelBand } from './travel';
+import { MORE_REGIONS, MORE_HOODS } from './areas-more';
 
 export type Region = { slug: string; name: string; short: string; lede: string; intro: string };
 export type Job = { title: string; text: string };
@@ -21,10 +22,11 @@ export type Hood = {
   homes: string; // the homes here, 2–3 sentences
   jobs: Job[]; // what we're often asked to do here
   near: string[]; // neighbouring hood slugs
+  outer?: boolean; // "More areas" – drawn as a smaller dot on the map, labelled only when zoomed in
   covers?: string[]; // smaller neighbourhoods this page also answers for (named on the page, for people searching them)
 };
 
-export const REGIONS: Region[] = [
+export const MAIN_REGIONS: Region[] = [
   {
     slug: 'southwest-london',
     name: 'Southwest London',
@@ -51,7 +53,7 @@ export const REGIONS: Region[] = [
   },
 ];
 
-export const HOODS: Hood[] = [
+export const MAIN_HOODS: Hood[] = [
   // ---------------- Southwest ----------------
   {
     slug: 'chelsea',
@@ -418,6 +420,11 @@ export const HOODS: Hood[] = [
   },
 ];
 
+// Every region and neighbourhood, main patch first, then the "More areas" (areas-more.ts).
+export const REGIONS: Region[] = [...MAIN_REGIONS, ...MORE_REGIONS];
+export const HOODS: Hood[] = [...MAIN_HOODS, ...MORE_HOODS];
+export const isMoreRegion = (slug: string) => MORE_REGIONS.some((r) => r.slug === slug);
+
 export const regionOf = (h: Hood) => REGIONS.find((r) => r.slug === h.region)!;
 export const hoodsIn = (r: Region) => HOODS.filter((h) => h.region === r.slug);
 export const hoodUrl = (h: Hood) => `/areas/${h.region}/${h.slug}`;
@@ -438,11 +445,17 @@ export function hoodForPostcode(postcodeOrArea: string): Hood | undefined {
   return HOODS.find((h) => h.postcodes.includes(outward));
 }
 
-// Footer "Areas" column (every page).
+// Footer "Main areas" column (every page).
 export const FOOTER_AREAS: { label: string; href: string }[] = [
   ...['chelsea', 'fulham', 'kensington', 'battersea', 'notting-hill'].map((slug) => {
     const h = hoodBySlug(slug)!;
     return { label: h.name, href: hoodUrl(h) };
   }),
   { label: 'All areas', href: '/areas' },
+];
+
+// Footer "More areas" column: the wider regions, plus Wimbledon.
+export const FOOTER_MORE: { label: string; href: string }[] = [
+  ...MORE_REGIONS.map((r) => ({ label: r.name, href: `/areas/${r.slug}` })),
+  { label: 'Wimbledon', href: hoodUrl(hoodBySlug('wimbledon')!) },
 ];

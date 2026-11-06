@@ -4,7 +4,7 @@
 import Base from './Base.astro';
 import { SERVICES } from '../data/services';
 import { SOCIALS } from '../data/schema';
-import { FOOTER_AREAS } from '../data/areas';
+import { FOOTER_AREAS, FOOTER_MORE } from '../data/areas';
 import StreetSigns from '../components/StreetSigns.astro';
 import '../styles/site.css';
 
@@ -48,7 +48,8 @@ const footerCols = [
       { label: 'Contact', href: '/contact' },
     ],
   },
-  { heading: 'Areas', links: FOOTER_AREAS },
+  { heading: 'Main areas', links: FOOTER_AREAS },
+  { heading: 'More areas', links: FOOTER_MORE },
   {
     heading: 'Legal',
     links: [

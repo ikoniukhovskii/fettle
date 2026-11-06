@@ -3,7 +3,7 @@
 // its postcodes, and a centre point used for the distance / travel-charge line and the hub map.
 // To add a neighbourhood: add it to HOODS with an existing region slug. Pages, links,
 // footer, sitemap and the postcode-checker link all pick it up automatically.
-import { milesFromBase, travelBand, inCongestionZone } from './travel';
+import { milesFromBase, travelBand } from './travel';
 
 export type Region = { slug: string; name: string; short: string; lede: string; intro: string };
 export type Job = { title: string; text: string };
@@ -21,6 +21,7 @@ export type Hood = {
   homes: string; // the homes here, 2–3 sentences
   jobs: Job[]; // what we're often asked to do here
   near: string[]; // neighbouring hood slugs
+  covers?: string[]; // smaller neighbourhoods this page also answers for (named on the page, for people searching them)
 };
 
 export const REGIONS: Region[] = [
@@ -28,7 +29,7 @@ export const REGIONS: Region[] = [
     slug: 'southwest-london',
     name: 'Southwest London',
     short: 'Southwest',
-    lede: 'Home turf. We’re based in Chelsea, so these homes are minutes away – and there’s never a travel charge.',
+    lede: 'Home turf. We’re based in Chelsea, so from the King’s Road down to Wimbledon these homes are a short drive away – and there’s never a travel charge.',
     intro:
       'From the King’s Road to Clapham Common: period terraces, mansion blocks and riverside flats, looked after by the same small team that’s based just around the corner.',
   },
@@ -38,7 +39,7 @@ export const REGIONS: Region[] = [
     short: 'West',
     lede: 'Kensington, Notting Hill and along to Hammersmith – stucco, garden squares and Victorian villas, all within a short drive of our base.',
     intro:
-      'Grand terraces, mansion flats and family houses that reward careful, tidy work. Every neighbourhood here is within our no-travel-charge zone.',
+      'Grand terraces, mansion flats and family houses that reward careful, tidy work. There’s never a travel charge here – or anywhere else we cover.',
   },
   {
     slug: 'central-london',
@@ -129,7 +130,7 @@ export const HOODS: Hood[] = [
     lat: 51.4613,
     lon: -0.216,
     title: 'Handyman in Putney SW15 – Repairs, Gardens & Maintenance | Fettle London',
-    description: 'Handyman services in Putney, SW15: repairs, gardens, painting and plumbing. Within our no-travel-charge zone, with a free 10-minute video quote.',
+    description: 'Handyman services in Putney, SW15: repairs, gardens, painting and plumbing. No travel charge, and a free 10-minute video quote.',
     lede: 'Over Putney Bridge from Fulham – a short hop for us, with no travel charge and the same team every visit.',
     homes:
       'Putney has roomy Edwardian and Victorian houses, riverside mansion flats and homes with proper gardens. More outside space means more fences, gates, decking and gutters to keep on top of.',
@@ -141,7 +142,7 @@ export const HOODS: Hood[] = [
       { title: 'Plumbing', text: 'Taps, toilets, radiators and leaks – everyday plumbing, no gas.' },
       { title: 'Decorating', text: 'Walls, ceilings and woodwork painted with proper prep.' },
     ],
-    near: ['fulham', 'wandsworth', 'hammersmith', 'battersea'],
+    near: ['fulham', 'wandsworth', 'wimbledon', 'hammersmith'],
   },
   {
     slug: 'wandsworth',
@@ -163,7 +164,30 @@ export const HOODS: Hood[] = [
       { title: 'Gardens', text: 'Fence repairs, gate fixes and tidy-ups.' },
       { title: 'Seasonal check', text: 'A look over the house each season so small things stay small.' },
     ],
-    near: ['putney', 'battersea', 'clapham', 'fulham'],
+    near: ['putney', 'battersea', 'clapham', 'wimbledon'],
+  },
+  {
+    slug: 'wimbledon',
+    name: 'Wimbledon',
+    region: 'southwest-london',
+    postcodes: ['SW19', 'SW20'],
+    lat: 51.4214,
+    lon: -0.2064,
+    title: 'Handyman in Wimbledon SW19 & SW20 – Repairs, Gardens & Maintenance | Fettle London',
+    description: 'Handyman and home maintenance in Wimbledon, Raynes Park, Southfields, Earlsfield, Merton Park and Colliers Wood. No travel charge, free 10-minute video quote.',
+    lede: 'Down through Southfields from our base in Chelsea, Wimbledon is a straightforward drive – no travel charge, and the same small team every visit.',
+    homes:
+      'Big Victorian and Edwardian houses around the Village and the Common, the Edwardian terraces of Wimbledon Park and the Southfields “Grid”, and roomy family semis out towards Raynes Park, Merton Park and Colliers Wood. Plenty of them have proper gardens – so fences, gates, gutters and patios come up as often as the jobs indoors.',
+    jobs: [
+      { title: 'Fences & gates', text: 'Wind-damaged panels replaced, posts reset, gates rehung so they close properly.' },
+      { title: 'Gutters & outside', text: 'Gutters cleared and downpipes checked before the leaves come down.' },
+      { title: 'Jet washing', text: 'Patios, paths and driveways cleaned back to the stone.' },
+      { title: 'Half-day list', text: 'Four hours working through the to-do list in one visit.' },
+      { title: 'Bathrooms & plumbing', text: 'Resealing, grout, taps, running toilets and radiators – no gas.' },
+      { title: 'Decorating', text: 'Walls, ceilings and woodwork painted with proper prep, dust sheets down.' },
+    ],
+    near: ['wandsworth', 'putney', 'fulham', 'clapham'],
+    covers: ['Wimbledon Village', 'Wimbledon Park', 'Raynes Park', 'Southfields', 'Earlsfield', 'Merton Park', 'Colliers Wood', 'and nearby Morden, New Malden and Kingston'],
   },
   {
     slug: 'clapham',
@@ -174,7 +198,7 @@ export const HOODS: Hood[] = [
     lon: -0.1384,
     title: 'Handyman in Clapham SW4 – Repairs, Painting & Plumbing | Fettle London',
     description: 'Handyman services in Clapham, SW4: repairs, painting, plumbing and end of tenancy cleans. No travel charge and a free 10-minute video quote.',
-    lede: 'Clapham sits comfortably inside our no-travel-charge zone – book a free video call and we can usually price the job there and then.',
+    lede: 'Clapham is a short drive from our base, with no travel charge – book a free video call and we can usually price the job there and then.',
     homes:
       'Clapham is Victorian terraces around the Common, many converted into flats, and a lot of rented homes. That means plenty of between-tenancy work: repairs, repainting and deep cleans on a deadline.',
     jobs: [
@@ -266,8 +290,8 @@ export const HOODS: Hood[] = [
     lat: 51.5094,
     lon: -0.1963,
     title: 'Handyman in Notting Hill W11 – Repairs & Home Maintenance | Fettle London',
-    description: 'Handyman and home maintenance in Notting Hill, W11. Within our no-travel-charge zone – free 10-minute video quote, same faces every visit.',
-    lede: 'Up through Kensington to Notting Hill – still inside our no-travel-charge zone, with the same small team every time.',
+    description: 'Handyman and home maintenance in Notting Hill, W11. No travel charge, free 10-minute video quote, same faces every visit.',
+    lede: 'Up through Kensington to Notting Hill – no travel charge, with the same small team every time.',
     homes:
       'Notting Hill is pastel stucco terraces, villas backing onto communal gardens and plenty of converted flats. Character homes with original details – and front doors, railings and steps that are on show.',
     jobs: [
@@ -311,7 +335,7 @@ export const HOODS: Hood[] = [
     lon: -0.224,
     title: 'Handyman in Hammersmith W6 – Repairs, Painting & Plumbing | Fettle London',
     description: 'Handyman services in Hammersmith, W6: repairs, painting, plumbing and gardens. No travel charge, free 10-minute video quote, same team every visit.',
-    lede: 'Along the Fulham Palace Road from our base – Hammersmith is inside our no-travel-charge zone.',
+    lede: 'Along the Fulham Palace Road from our base – Hammersmith is a short drive, with no travel charge.',
     homes:
       'Hammersmith is Victorian and Edwardian terraces, riverside houses and newer flats near the Broadway. Family homes with gardens sit next to flats that need quick, tidy repairs.',
     jobs: [
@@ -335,7 +359,7 @@ export const HOODS: Hood[] = [
     lon: -0.1334,
     title: 'Handyman in Pimlico SW1V – Flat Repairs & Maintenance | Fettle London',
     description: 'Handyman and home maintenance in Pimlico, SW1V. No travel charge from our Chelsea base, free 10-minute video quote, careful work in period flats.',
-    lede: 'Along the river from Chelsea, Pimlico is well inside our no-travel-charge zone.',
+    lede: 'Along the river from Chelsea, Pimlico is a short drive away, with no travel charge.',
     homes:
       'Pimlico is long cream stucco terraces, almost all converted into flats, in a conservation area. Shared entrances, steep stairs and period interiors call for a careful, tidy team.',
     jobs: [
@@ -378,8 +402,8 @@ export const HOODS: Hood[] = [
     lat: 51.4995,
     lon: -0.134,
     title: 'Handyman in Westminster SW1 – Flat Repairs & Maintenance | Fettle London',
-    description: 'Handyman services in Westminster, SW1: flat repairs, plumbing, painting and maintenance. No travel charge (Congestion Charge at cost), free 10-minute video quote.',
-    lede: 'Westminster is close enough for no travel charge – just the £18 Congestion Charge, passed on at cost – and we’re used to working around porters, lifts and building hours.',
+    description: 'Handyman services in Westminster, SW1: flat repairs, plumbing, painting and maintenance. No travel charge, nothing added on top, free 10-minute video quote.',
+    lede: 'Westminster is a short drive from our base – no travel charge and no Congestion Charge passed on – and we’re used to working around porters, lifts and building hours.',
     homes:
       'Residential Westminster is mansion blocks, period flats and a few hidden-away houses in conservation squares. Most jobs are in flats, where tidy work and respect for neighbours matter as much as the fix.',
     jobs: [
@@ -402,7 +426,7 @@ export const hoodBySlug = (slug: string) => HOODS.find((h) => h.slug === slug);
 export function hoodTravel(h: Hood) {
   const miles = milesFromBase(h.lat, h.lon);
   const band = travelBand(miles);
-  return { miles: Math.round(miles * 10) / 10, fee: band.fee, halfDayOnly: band.halfDayOnly, congestion: inCongestionZone(h.lat, h.lon) };
+  return { miles: Math.round(miles * 10) / 10, fee: band.fee, halfDayOnly: band.halfDayOnly };
 }
 
 // Postcode checker → area page. Accepts a full postcode or an outward code ("SW10", "SW1X 7AA").

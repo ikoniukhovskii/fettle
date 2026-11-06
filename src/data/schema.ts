@@ -84,7 +84,7 @@ export const SOCIALS: { label: string; href: string }[] = [
 ];
 
 // Neighbourhood pages: the same business, serving one named area (and its postcodes).
-export function areaSchema(h: { name: string; url: string; description: string; postcodes: string[] }, crumbs: { name: string; url: string }[]) {
+export function areaSchema(h: { name: string; url: string; description: string; postcodes: string[]; covers?: string[] }, crumbs: { name: string; url: string }[]) {
   return [
     {
       '@context': 'https://schema.org',
@@ -94,7 +94,10 @@ export function areaSchema(h: { name: string; url: string; description: string; 
       description: h.description,
       url: `${SITE}${h.url}`,
       provider: { '@id': `${SITE}/#business` },
-      areaServed: { '@type': 'Place', name: `${h.name}, London`, address: { '@type': 'PostalAddress', addressLocality: 'London', postalCode: h.postcodes.join(', '), addressCountry: 'GB' } },
+      areaServed: [
+        { '@type': 'Place', name: `${h.name}, London`, address: { '@type': 'PostalAddress', addressLocality: 'London', postalCode: h.postcodes.join(', '), addressCountry: 'GB' } },
+        ...(h.covers ?? []).map((c) => c.replace(/^and nearby /, '')).flatMap((c) => c.split(/, | and /)).map((name) => ({ '@type': 'Place', name: `${name}, London` })),
+      ],
     },
     {
       '@context': 'https://schema.org',

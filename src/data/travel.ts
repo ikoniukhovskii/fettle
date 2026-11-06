@@ -1,9 +1,8 @@
-// Logistics Fee Concept – the travel charge.
-// We're based in Chelsea (SW10). Jobs close to home cost nothing extra to reach; further out,
-// a small flat travel charge covers time on the road and parking. It is added to the job only,
-// never to the £30 visit, and is always shown before anything is booked.
-// Distance is a straight line from SW10 to the postcode (looked up via postcodes.io), so the
-// bands are deliberately generous compared with real road miles.
+// Travel – free everywhere we cover (from 6 November 2026).
+// We're based in Chelsea (SW10). There is no travel charge and no Congestion Charge passed on,
+// anywhere in our patch. The one rule left: homes more than about 9 miles away (straight line)
+// are booked as half-days or longer, so a long drive is never for a ten-minute job.
+// Distance is a straight line from SW10 to the postcode (looked up via postcodes.io).
 
 export const BASE = { lat: 51.4835, lon: -0.183 }; // Chelsea, SW10
 
@@ -11,11 +10,10 @@ export type TravelBand = { maxMiles: number; fee: number; halfDayOnly: boolean }
 
 // Edit these to change the charge. Keep them in step with the chat function's KNOWLEDGE.
 export const TRAVEL_BANDS: TravelBand[] = [
-  { maxMiles: 4, fee: 0, halfDayOnly: false },
-  { maxMiles: 6, fee: 15, halfDayOnly: false },
-  { maxMiles: 9, fee: 25, halfDayOnly: true },
-  { maxMiles: Infinity, fee: 40, halfDayOnly: true },
+  { maxMiles: 9, fee: 0, halfDayOnly: false },
+  { maxMiles: Infinity, fee: 0, halfDayOnly: true },
 ];
+export const HALF_DAY_MILES = 9;
 
 export function milesFromBase(lat: number, lon: number): number {
   const R = 3958.8; // earth radius in miles
@@ -49,12 +47,7 @@ export async function lookupCoords(postcodeOrArea: string): Promise<{ lat: numbe
   }
 }
 
-// Congestion Charge (TfL): £18 a day from 2 January 2026, charged 7am–6pm weekdays and
-// 12–6pm weekends – so any working day inside the zone pays it. We pass it on at cost, once for
-// each day we drive into the zone (an in-person quote visit included), on top of any travel band.
-// Keep in step with the chat function's KNOWLEDGE and the Travel Charge PDF.
-export const CONGESTION_CHARGE = 18;
-
+// Congestion Charge: we absorb it ourselves – customers never see it on a quote.
 // The zone's boundary (the Inner Ring Road), traced closely enough to tell Mayfair from
 // Belgravia or Pimlico. [lat, lon] pairs, clockwise from Marble Arch.
 export const CONGESTION_ZONE: [number, number][] = [
@@ -74,19 +67,14 @@ export function inCongestionZone(lat: number, lon: number): boolean {
   return inside;
 }
 
-export const congestionLine = `It’s inside the Congestion Charge zone, so £${CONGESTION_CHARGE} is added for each day we drive in – at cost, and on your quote first.`;
-
 // The one line we show a visitor. Calm and plain – a fact about distance, not a sales line.
-export function travelNote(area: string, band: TravelBand, congestion = false): string {
-  const cc = congestion ? ` ${congestionLine}` : '';
-  if (band.fee === 0) return `${area} is close to our base in Chelsea, so there’s no travel charge.${cc}`;
-  if (!band.halfDayOnly)
-    return `${area} is a little way from our base in Chelsea, so a £${band.fee} travel charge is added to the job – never to the £30 visit.${cc}`;
-  return `${area} is a fair way from our base in Chelsea, so we book work here as half-days or longer, with a £${band.fee} travel charge on the job. It’s all on your quote before anything starts.${cc}`;
+export function travelNote(area: string, band: TravelBand): string {
+  if (!band.halfDayOnly) return `No travel charge to ${area} – and nothing else added on top.`;
+  return `${area} is a fair way from our base in Chelsea, so we book work here as half-days or longer – still with no travel charge.`;
 }
 
 // The postcode areas we cover (same list as the homepage checker). Anything else gets a polite "too far".
-export const COVERED_AREAS = ['N', 'NW', 'W', 'SW', 'SE', 'E', 'TW', 'EC', 'WC'];
+export const COVERED_AREAS = ['N', 'NW', 'W', 'SW', 'SE', 'E', 'TW', 'EC', 'WC', 'KT', 'SM'];
 export function isCoveredArea(outwardOrPostcode: string): boolean {
   const letters = outwardOrPostcode.trim().toUpperCase().match(/^[A-Z]{1,2}/)?.[0] ?? '';
   return COVERED_AREAS.includes(letters);

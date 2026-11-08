@@ -5,6 +5,7 @@ import { HOODS, regionOf, hoodUrl, hoodBySlug, hoodTravel } from '../../../data/
 import { SERVICES } from '../../../data/services';
 import { VIDEO_CALL_URL } from '../../../data/booking';
 import { areaSchema } from '../../../data/schema';
+import { areaServicesForHood, areaServiceUrl } from '../../../data/area-services';
 
 export function getStaticPaths() {
   return HOODS.map((hood) => ({ params: { region: hood.region, hood: hood.slug }, props: { hood } }));
@@ -15,6 +16,7 @@ const region = regionOf(hood);
 const travel = hoodTravel(hood);
 const near = hood.near.map(hoodBySlug).filter(Boolean) as typeof HOODS;
 const url = hoodUrl(hood);
+const local = areaServicesForHood(hood.slug).map((a) => ({ a, s: SERVICES.find((x) => x.slug === a.service)! }));
 const crumbs = [
   { name: 'Areas we cover', url: '/areas' },
   { name: region.name, url: `/areas/${region.slug}` },
@@ -81,6 +83,11 @@ const travelLine = travel.halfDayOnly ? 'No travel charge · half-days or longer
 
       <div class="area-section">
         <h2>Everything we do in {hood.name}</h2>
+        {local.length > 0 && (
+          <div class="svc-links" style="margin-bottom:14px">
+            {local.map(({ a, s }) => <a href={areaServiceUrl(a)}><strong>{s.name} in {hood.name}</strong> <span aria-hidden="true">→</span></a>)}
+          </div>
+        )}
         <div class="svc-links">
           {SERVICES.map((s) => <a href={`/services/${s.slug}`}>{s.name} <span aria-hidden="true">→</span></a>)}
           <a href="/membership">Home maintenance membership <span aria-hidden="true">→</span></a>

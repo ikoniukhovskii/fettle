@@ -1,0 +1,206 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { SERVICES } from '../../../data/services';
+import { hoodBySlug, hoodUrl, hoodTravel, regionOf } from '../../../data/areas';
+import { AREA_SERVICES, AREA_REVIEWS, areaServiceUrl } from '../../../data/area-services';
+import { VIDEO_CALL_URL } from '../../../data/booking';
+import { SITE, faqSchema } from '../../../data/schema';
+
+import drawingAsset from '../../../assets/img/carousel-drawing-room.webp';
+import hallwayAsset from '../../../assets/img/carousel-hallway.webp';
+import kitchenAsset from '../../../assets/img/carousel-kitchen.webp';
+import livingAsset from '../../../assets/img/living-room.webp';
+import blueAsset from '../../../assets/img/carousel-blue-living.webp';
+import greenAsset from '../../../assets/img/carousel-green-living.webp';
+import diningAsset from '../../../assets/img/dining-skylight.webp';
+import gardenAsset from '../../../assets/img/kitchen-garden.webp';
+import sergioAsset from '../../../assets/img/team-sergio.webp';
+
+export function getStaticPaths() {
+  return AREA_SERVICES.map((a) => ({ params: { slug: a.service, hood: a.hood }, props: { a } }));
+}
+
+const PHOTOS = {
+  drawing: { src: drawingAsset.src, alt: 'A tall drawing room with period details', caption: 'Lansdowne Road, Holland Park · W11' },
+  hallway: { src: hallwayAsset.src, alt: 'A freshly decorated period hallway and stairs', caption: 'Fitzjohn’s Avenue, Hampstead · NW3' },
+  kitchen: { src: kitchenAsset.src, alt: 'A clean, bright kitchen', caption: 'Wadham Gardens, Primrose Hill · NW3' },
+  living: { src: livingAsset.src, alt: 'A drawing room with parquet floors', caption: 'Wadham Gardens, Primrose Hill · NW3' },
+  blue: { src: blueAsset.src, alt: 'A living room, cleaned and ready', caption: 'Church Crescent, Muswell Hill · N10' },
+  green: { src: greenAsset.src, alt: 'A family living room in a Victorian terrace', caption: 'Plimsoll Road, Highbury · N5' },
+  dining: { src: diningAsset.src, alt: 'A freshly painted dining room under a skylight', caption: 'Mount View Road, Crouch End · N4' },
+  garden: { src: gardenAsset.src, alt: 'A kitchen extension opening onto a garden', caption: 'Plimsoll Road, Highbury · N5' },
+  sergio: { src: sergioAsset.src, alt: 'Sergio, Fettle’s plumber', caption: 'Sergio · our plumber' },
+} as const;
+
+const { a } = Astro.props;
+const service = SERVICES.find((s) => s.slug === a.service)!;
+const hood = hoodBySlug(a.hood)!;
+const region = regionOf(hood);
+const travel = hoodTravel(hood);
+const url = areaServiceUrl(a);
+const photo = PHOTOS[a.photo];
+const isPortrait = a.photo === 'sergio';
+const review = AREA_REVIEWS[a.review];
+const sameHood = AREA_SERVICES.filter((x) => x.hood === a.hood && x.service !== a.service).map((x) => ({ x, s: SERVICES.find((s) => s.slug === x.service)! }));
+const sameService = AREA_SERVICES.filter((x) => x.service === a.service && x.hood !== a.hood).map((x) => ({ x, h: hoodBySlug(x.hood)! }));
+
+const crumbs = [
+  { name: 'Services', url: '/services' },
+  { name: service.name, url: `/services/${service.slug}` },
+  { name: hood.name, url },
+];
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `${service.name} in ${hood.name}`,
+    serviceType: service.name,
+    description: a.description,
+    url: `${SITE}${url}`,
+    provider: { '@id': `${SITE}/#business` },
+    areaServed: { '@type': 'Place', name: `${hood.name}, London`, address: { '@type': 'PostalAddress', addressLocality: 'London', postalCode: hood.postcodes.join(', '), addressCountry: 'GB' } },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: `${SITE}${c.url}` })),
+  },
+  faqSchema(a.faqs),
+];
+const eot = service.slug === 'end-of-tenancy-cleaning';
+---
+
+<Page title={a.title} description={a.description}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow crumbs">
+        <a href="/services">Services</a><span class="sep">/</span><a href={`/services/${service.slug}`}>{service.name}</a><span class="sep">/</span><a href={hoodUrl(hood)}>{hood.name}</a>
+      </p>
+      <h1>{a.h1}</h1>
+      <p class="lede">{a.lede}</p>
+      <div class="area-facts">
+        <span class="pill rust"><span class="dot"></span>{hood.postcodes.join(' · ')}</span>
+        <span class="pill"><span class="dot"></span>{travel.miles} miles from our base</span>
+        <span class="pill"><span class="dot"></span>No travel charge</span>
+        <span class="pill"><span class="dot"></span>Same faces every visit</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-body">
+    <div class="wrap">
+      <div class="area-split">
+        <div class="area-homes">
+          <h2>{service.name} in {hood.name} homes</h2>
+          <p>{a.intro}</p>
+          <p class="muted" style="color:var(--ink-60)">One small, permanent team – no subcontracted strangers, dust sheets down and a tidy finish.</p>
+        </div>
+        <aside class="area-panel">
+          <h3>{service.name} prices in {hood.name}</h3>
+          {eot ? (
+            <dl>
+              <dt>Studio</dt><dd>from £180</dd>
+              <dt>One-bed</dt><dd>from £220</dd>
+              <dt>Two-bed</dt><dd>from £280</dd>
+              <dt>Carpets</dt><dd>Included</dd>
+              <dt>Re-clean</dt><dd>Free within 48h</dd>
+              <dt>Travel</dt><dd>Free</dd>
+            </dl>
+          ) : (
+            <dl>
+              <dt>Video call quote</dt><dd>Free</dd>
+              <dt>Visit &amp; quote</dt><dd>£30, off the job</dd>
+              <dt>Half day</dt><dd>from £140</dd>
+              <dt>Full day</dt><dd>from £260</dd>
+              <dt>Materials</dt><dd>At cost</dd>
+              <dt>Travel</dt><dd>Free</dd>
+            </dl>
+          )}
+          <a class="btn primary" href={VIDEO_CALL_URL} target="_blank" rel="noopener">Book a free 10-minute video call</a>
+          <a class="btn secondary" href={`/contact?postcode=${encodeURIComponent(hood.postcodes[0])}`}>Get a quote</a>
+        </aside>
+      </div>
+
+      <div class="area-section">
+        <h2>What we do in {hood.name}</h2>
+        <p class="sub">The {service.name.toLowerCase()} jobs that come up most in {hood.name}. Anything else, just ask.</p>
+        <div class="grid three">
+          {a.jobs.map((j) => (
+            <div class="card">
+              <h3>{j.title}</h3>
+              <p>{j.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="area-section as-proof">
+        <figure class={isPortrait ? 'as-photo portrait' : 'as-photo'}>
+          <img src={photo.src} alt={photo.alt} loading="lazy" decoding="async" />
+          <figcaption>{photo.caption}</figcaption>
+        </figure>
+        <div class="as-side">
+          <h2>{a.local.title}</h2>
+          <p>{a.local.text}</p>
+          <blockquote class="as-quote">
+            <p>“{review.q}”</p>
+            <footer><strong>{review.who}</strong> · {review.where} · <a href="/testimonials">More reviews →</a></footer>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="area-section">
+        <h2>Questions from {hood.name}</h2>
+        <div class="as-faqs">
+          {a.faqs.map((f) => (
+            <details>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
+      <div class="area-section">
+        <h2>More in {hood.name}</h2>
+        <div class="svc-links">
+          {sameHood.map(({ x, s }) => <a href={areaServiceUrl(x)}>{s.name} in {hood.name} <span aria-hidden="true">→</span></a>)}
+          <a href={hoodUrl(hood)}>Everything we do in {hood.name} <span aria-hidden="true">→</span></a>
+        </div>
+        <h2 style="margin-top:36px">{service.name} nearby</h2>
+        <div class="svc-links">
+          {sameService.map(({ x, h }) => <a href={areaServiceUrl(x)}>{service.name} in {h.name} <span aria-hidden="true">→</span></a>)}
+          <a href={`/services/${service.slug}`}>{service.name} across London <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+
+      <div class="area-section" style="text-align:center">
+        <p style="margin:0 0 18px;color:var(--ink-60)">Show us the job on a free 10-minute video call and we’ll give you a price there and then.</p>
+        <p style="margin:0"><a class="btn primary" href="/contact">Get a quote</a> &nbsp; <a class="btn secondary" href={`/areas/${region.slug}`}>More in {region.name}</a></p>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .as-proof { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(28px, 5vw, 64px); align-items: center; }
+  @media (max-width: 860px) { .as-proof { grid-template-columns: 1fr; } }
+  .as-photo { margin: 0; }
+  .as-photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-lg); }
+  .as-photo.portrait { max-width: 340px; justify-self: center; }
+  .as-photo.portrait img { aspect-ratio: 1 / 1; border-radius: 50%; }
+  .as-photo figcaption { margin-top: 10px; font-size: 13px; color: var(--ink-60); text-align: center; }
+  .as-side h2 { margin-top: 0; }
+  .as-quote { margin: 22px 0 0; background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); padding: 22px 24px; }
+  .as-quote p { margin: 0 0 10px; font-size: 17px; line-height: 1.55; }
+  .as-quote footer { font-size: 14px; color: var(--ink-60); }
+  .as-faqs details { border-bottom: 1px solid var(--ink-12); padding: 16px 0; }
+  .as-faqs details:first-child { border-top: 1px solid var(--ink-12); }
+  .as-faqs summary { cursor: pointer; font-weight: 600; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  .as-faqs summary::-webkit-details-marker { display: none; }
+  .as-faqs summary::after { content: '+'; color: var(--rust); font-weight: 700; }
+  .as-faqs details[open] summary::after { content: '–'; }
+  .as-faqs details p { margin: 10px 0 0; color: var(--ink-80, var(--ink)); line-height: 1.6; max-width: 70ch; }
+</style>

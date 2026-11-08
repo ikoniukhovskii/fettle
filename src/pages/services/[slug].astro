@@ -2,7 +2,8 @@
 import Page from '../../layouts/Page.astro';
 import { SERVICES, AREAS } from '../../data/services';
 import { serviceSchema } from '../../data/schema';
-import { REGIONS, hoodsIn, hoodUrl } from '../../data/areas';
+import { REGIONS, hoodsIn, hoodUrl, hoodBySlug } from '../../data/areas';
+import { areaServicesForService, areaServiceUrl } from '../../data/area-services';
 
 export function getStaticPaths() {
   return SERVICES.map((service) => ({ params: { slug: service.slug }, props: { service } }));
@@ -10,6 +11,7 @@ export function getStaticPaths() {
 
 const { service } = Astro.props;
 const others = SERVICES.filter((s) => s.slug !== service.slug);
+const local = areaServicesForService(service.slug).map((a) => ({ a, h: hoodBySlug(a.hood)! }));
 ---
 
 <Page title={service.title} description={service.description}>
@@ -53,6 +55,15 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
               <span class="pill"><span class="dot"></span>Half-day · from £140</span>
               <span class="pill"><span class="dot"></span>Same faces each visit</span>
               <span class="pill"><span class="dot"></span>Insured</span>
+            </div>
+          </>
+        )}
+
+        {local.length > 0 && (
+          <>
+            <h2 style="margin-top:40px">{service.name} close to our base</h2>
+            <div class="svc-links">
+              {local.map(({ a, h }) => <a href={areaServiceUrl(a)}>{service.name} in {h.name} <span aria-hidden="true">→</span></a>)}
             </div>
           </>
         )}

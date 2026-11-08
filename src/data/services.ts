@@ -102,12 +102,12 @@ const ALL_SERVICES: Service[] = [
   {
     slug: 'electrical',
     homeTitle: 'Lighting & sockets',
-    homeLine: 'New lights, extra sockets and fittings swapped, by a qualified electrician.',
+    homeLine: 'New lights, extra sockets and fittings swapped, by a certified electrician.',
     name: 'Lighting & sockets',
     title: 'Electrician in London – Lighting & Socket Installation | Fettle London',
-    description: 'Lighting and socket installation across London by a qualified electrician: new lights, extra sockets, dimmers, outdoor lights and fittings swapped. Free 10-minute video quote.',
+    description: 'Lighting and socket installation across London by a certified electrician: new lights, extra sockets, dimmers, outdoor lights and fittings swapped. Free 10-minute video quote.',
     h1: 'Lighting and sockets in London.',
-    lede: 'New lights where you want them and sockets where you need them, fitted by a qualified electrician and made good by the same team afterwards.',
+    lede: 'New lights where you want them and sockets where you need them, fitted by our certified electrician and made good by the same team afterwards.',
     jobs: [
       { title: 'Light fittings', text: 'Pendants, spotlights and wall lights fitted or swapped, old fittings taken down.' },
       { title: 'Extra sockets', text: 'New sockets added where the furniture actually goes, including USB sockets.' },
@@ -116,7 +116,11 @@ const ALL_SERVICES: Service[] = [
       { title: 'Kitchen & under-cabinet', text: 'Under-cabinet strips and extractor connections.' },
       { title: 'Made good after', text: 'Holes and chases filled and painted by our own team, so there is nothing left to tidy.' },
     ],
-    note: 'Electrical work is carried out by a qualified electrician to the wiring regulations (BS 7671), with the right certificate for the job. We don’t do gas or boiler work.',
+    note: 'Electrical work is carried out by our qualified, certified electrician to the wiring regulations (BS 7671), with a certificate for the work. We don’t do gas or boiler work.',
+    pricing: {
+      text: 'A new or swapped light fitting starts from £65, a new pendant or wall light from £80, an outdoor light from £90 and an extra socket from £120, including the wiring and making good. Several items in one visit are priced item by item, and you’ll know the total before we start.',
+      pills: ['Light swap · from £65', 'New light · from £80', 'Extra socket · from £120', 'Certified electrician'],
+    },
   },
   {
     slug: 'end-of-tenancy-cleaning',
@@ -180,6 +184,10 @@ const ALL_SERVICES: Service[] = [
       { title: 'Repairs & re-stretching', text: 'Rucked carpet re-stretched, burns and stains patched in.' },
     ],
     note: 'Bring your own carpet, or we can source it for you at cost.',
+    pricing: {
+      text: 'Fitting starts from £65 for a standard room and from £95 for stairs and a landing, with gripper and underlay fitting included. Bring your own carpet or we can source it at cost. Measured on a free video call or a £30 visit that comes off the job.',
+      pills: ['Room · from £65', 'Stairs & landing · from £95', 'Old carpet lifted', 'Insured'],
+    },
   },
   {
     slug: 'fences-gardens',
@@ -216,6 +224,10 @@ const ALL_SERVICES: Service[] = [
       { title: 'Patios & paths', text: 'Weeds pulled from paving, moss cleared and jet washed.' },
       { title: 'Green waste', text: 'Cuttings bagged and taken away, so the garden is left clear.' },
     ],
+    pricing: {
+      text: 'A half-day in the garden starts from £95, and regular visits from £40 each, with cuttings bagged and taken away. Book it with other jobs and it’s done in the same visit.',
+      pills: ['Half-day · from £95', 'Regular visits · from £40', 'Green waste taken', 'Same faces each visit'],
+    },
   },
   {
     slug: 'tree-surgery',
@@ -235,6 +247,10 @@ const ALL_SERVICES: Service[] = [
       { title: 'Clearing up', text: 'Branches cut down, bagged and taken away, and the garden swept.' },
     ],
     note: 'Many London trees sit in conservation areas or have Tree Preservation Orders. We check before we cut and handle the council notice where it’s needed. Large trees go to an arborist we know by name.',
+    pricing: {
+      text: 'Pruning or reducing a small tree starts from £160, and taking down a small tree from £200, with all the branches cleared away. If a council notice is needed, we handle it before we start.',
+      pills: ['Pruning · from £160', 'Small tree removal · from £200', 'Waste cleared', 'Insured'],
+    },
   },
   {
     slug: 'moving-help',
@@ -253,6 +269,10 @@ const ALL_SERVICES: Service[] = [
       { title: 'Leaving the old place', text: 'Holes filled, scuffs touched up and an end of tenancy clean if you need one.' },
       { title: 'Heavy lifting', text: 'Single heavy items moved within the house or up the stairs.' },
     ],
+    pricing: {
+      text: 'Moving help starts from £50 an hour for one of us with the van, or £65 an hour for two, with a two-hour minimum. Furniture assembly and setting up the new place are included at the same rate.',
+      pills: ['One person + van · £50/hr', 'Two people · £65/hr', 'Two-hour minimum', 'Insured'],
+    },
   },
   {
     slug: 'flooring-tiling',
@@ -289,6 +309,10 @@ const ALL_SERVICES: Service[] = [
       { title: 'Repairs & re-grouting', text: 'Cracked tiles swapped and tired grout raked out and renewed.' },
       { title: 'Sealant', text: 'Baths, showers and worktops resealed with a clean, even line.' },
     ],
+    pricing: {
+      text: 'A kitchen splashback starts from £160. Bigger areas are priced by the square metre: wall tiling from £30 per m² and floor tiling from £25 per m², with preparation and grouting included and tiles at cost.',
+      pills: ['Splashback · from £160', 'Walls · from £30/m²', 'Floors · from £25/m²', 'Re-grouting'],
+    },
   },
   {
     slug: 'home-maintenance',

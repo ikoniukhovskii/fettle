@@ -1615,7 +1615,7 @@ export const FAQS = [
   },
   {
     q: 'What sort of jobs do you take on?',
-    a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, lighting and sockets, floors and tiling, carpet cleaning and fitting, fences, gardening and small tree work, moving help, end of tenancy cleans, and the odd jobs that never quite get done. Electrical work is done by a qualified electrician, and rendering or large trees go to someone we know by name and have used before.',
+    a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, lighting and sockets, floors and tiling, carpet cleaning and fitting, fences, gardening and small tree work, moving help, end of tenancy cleans, and the odd jobs that never quite get done. Electrical work is done by a certified electrician, and rendering or large trees go to someone we know by name and have used before.',
   },
   {
     q: 'Do you do end of tenancy and carpet cleaning?',

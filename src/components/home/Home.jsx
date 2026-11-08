@@ -833,7 +833,7 @@ function WhatWeDo({ t, m }) {
             color: 'var(--ink-60)',
           }}
         >
-          Handyman services and home maintenance across London. One team for the whole house &ndash; painting and decorating, plastering, plumbing, carpet and end of tenancy cleaning, fences, floors, and the odd jobs in between.
+          Handyman services and home maintenance across London. One team for the whole house &ndash; painting and decorating, plastering, plumbing, lighting and sockets, carpets, tiling, fences, gardens, small tree work, moving help, and the odd jobs in between.
         </p>
         <p style={{ margin: '18px auto 0', textAlign: 'center' }}>
           <span
@@ -1607,7 +1607,7 @@ function Close({ t, m }) {
 export const FAQS = [
   {
     q: 'How much does a quote cost?',
-    a: 'Nothing to start. Most jobs begin with a free 10-minute video call: show us the job on your phone and we can usually price it there and then. If we need to see it in person, a visit is £30, it comes straight off the cost whenever you go ahead, and if it turns out not to be a job for us, you don’t pay it. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or tree surgery, is quoted job by job once we have seen it.',
+    a: 'Nothing to start. Most jobs begin with a free 10-minute video call: show us the job on your phone and we can usually price it there and then. If we need to see it in person, a visit is £30, it comes straight off the cost whenever you go ahead, and if it turns out not to be a job for us, you don’t pay it. A half-day starts at £140, a full day at £260, materials on top at cost. You will know the price before we lift a tool. Specialist work, such as rendering or large trees, is quoted job by job once we have seen it.',
   },
   {
     q: 'Do you charge for travel?',
@@ -1615,7 +1615,7 @@ export const FAQS = [
   },
   {
     q: 'What sort of jobs do you take on?',
-    a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, floors, fences, carpet cleaning, end of tenancy cleans, and the odd jobs that never quite get done. Specialist work, such as rendering or tree surgery, goes to someone we know by name and have used before.',
+    a: 'From a wonky fence to a fresh coat of paint, one team does the lot: painting, plastering, plumbing, lighting and sockets, floors and tiling, carpet cleaning and fitting, fences, gardening and small tree work, moving help, end of tenancy cleans, and the odd jobs that never quite get done. Electrical work is done by a qualified electrician, and rendering or large trees go to someone we know by name and have used before.',
   },
   {
     q: 'Do you do end of tenancy and carpet cleaning?',

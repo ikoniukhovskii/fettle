@@ -38,11 +38,17 @@ SERVICES
 - Painting and decorating: walls, ceilings, woodwork, period rooms, hallways and stairs, touch-ups, exterior woodwork.
 - Plastering: cracks and holes, patch plastering, skimming, making good after other trades, ceilings, cornicing repairs.
 - Plumbing (by our own plumber): dripping taps, leaks, running toilets, new taps/sinks/toilets, radiators bled and valves swapped, blockages, washing machines and dishwashers plumbed in, shower fixes and resealing. NO gas or boiler work – that needs a Gas Safe registered engineer.
-- Flooring and tiling: floorboards and creaks, skirting and thresholds, cracked tiles, grout and sealant, small laminate jobs.
-- Fences, gates and gardens: fence and post repairs, gates rehung, decking, jet washing, garden tidy-ups, sheds.
+- Flooring: floorboards and creaks, skirting and thresholds, laminate and click flooring laid, period floors, levelling.
+- Fencing and gates: new fences, fence and post repairs, gates rehung or fitted, decking, jet washing, sheds.
+- Gardening: lawns, hedges, beds and borders, seasonal tidy-ups, patios weeded, green waste taken away.
+- Small tree surgery: pruning, crown lifting and reduction, dead wood, small trees taken down, all waste cleared. We check conservation areas and Tree Preservation Orders and handle the council notice. Large trees go to an arborist we know.
+- Moving help: furniture dismantled and rebuilt, small moves in our van, new home set up (curtains, blinds, shelves, TV), old place made good.
+- Lighting and sockets: light fittings, extra sockets (incl. USB), switches and dimmers, outdoor lights, under-cabinet lights – done by a qualified electrician to BS 7671 with the right certificate, holes made good by our team.
+- Carpet fitting: measuring, rooms and stairs laid on new underlay and gripper, stair runners, old carpet lifted, doors trimmed, re-stretching. Customer can supply carpet or we source it at cost.
+- Tiling: kitchen splashbacks, bathroom walls and floors, shower areas tanked and tiled, re-grouting, sealant.
 - Home maintenance: gutter clearing, damp checks, the once-a-season look-over.
 - Cleaning: carpet cleaning and end of tenancy cleaning (above).
-- NOT done in-house: gas, boilers, electrical work, roofing. Rendering and tree surgery go to trusted specialists we know by name.
+- NOT done: gas, boilers, roofing. Rendering and large trees go to trusted specialists we know by name. Electrical work (lighting and sockets) is done by a qualified electrician.
 
 HOW IT WORKS
 1. Check the postcode or get in touch. 2. A free 10-minute video call (or a £30 visit if we need to see it in person). 3. A plain fixed price before any work starts. 4. The work, done tidily by the same team.

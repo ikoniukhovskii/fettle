@@ -2,6 +2,7 @@
 // We're based in Chelsea (SW10). There is no travel charge and no Congestion Charge passed on,
 // anywhere in our patch. The one rule left: homes more than about 9 miles away (straight line)
 // are booked as half-days or longer, so a long drive is never for a ten-minute job.
+// Exception (9 Nov 2026): small electrical jobs (lights, sockets) stand alone – priced item by item anywhere.
 // Distance is a straight line from SW10 to the postcode (looked up via postcodes.io).
 
 export const BASE = { lat: 51.4835, lon: -0.183 }; // Chelsea, SW10

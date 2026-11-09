@@ -1611,7 +1611,7 @@ export const FAQS = [
   },
   {
     q: 'Do you charge for travel?',
-    a: 'No. There is no travel charge anywhere we cover, and no Congestion Charge passed on either – the price on your quote is the price you pay. We are based in Chelsea, and for homes more than about 9 miles away we book work as half-days or longer, so the drive is worth it for both of us.',
+    a: 'No. There is no travel charge anywhere we cover, and no Congestion Charge passed on either – the price on your quote is the price you pay. We are based in Chelsea, and for homes more than about 9 miles away we book work as half-days or longer, so the drive is worth it for both of us. Small electrical jobs – lights and sockets by our certified electrician – are the exception: they are priced on their own wherever you are.',
   },
   {
     q: 'What sort of jobs do you take on?',

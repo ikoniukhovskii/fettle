@@ -118,7 +118,7 @@ const ALL_SERVICES: Service[] = [
     ],
     note: 'Electrical work is carried out by our qualified, certified electrician to the wiring regulations (BS 7671), with a certificate for the work. We don’t do gas or boiler work.',
     pricing: {
-      text: 'A new or swapped light fitting starts from £65, a new pendant or wall light from £80, an outdoor light from £90 and an extra socket from £120, including the wiring and making good. Several items in one visit are priced item by item, and you’ll know the total before we start.',
+      text: 'A new or swapped light fitting starts from £65, a new pendant or wall light from £80, an outdoor light from £90 and an extra socket from £120, including the wiring and making good. Several items in one visit are priced item by item, and you’ll know the total before we start. No half-day minimum for electrical jobs, wherever you are in London.',
       pills: ['Light swap · from £65', 'New light · from £80', 'Extra socket · from £120', 'Certified electrician'],
     },
   },

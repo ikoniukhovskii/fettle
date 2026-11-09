@@ -45,7 +45,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
   </div>
   <figcaption class="map-key">
     {!compact && REGIONS.map((r) => <span><i style={`background:${COLORS[r.slug]}`}></i>{r.name}</span>)}
-    <span><i class="ring"></i>No travel charge, anywhere we cover · half-days or longer beyond {HALF_DAY_MILES} miles</span>
+    <span><i class="ring"></i>No travel charge, anywhere we cover · half-days or longer beyond {HALF_DAY_MILES} miles (small electrical jobs excepted)</span>
     {caption && <span class="cap">{caption}</span>}
   </figcaption>
 </figure>
@@ -254,7 +254,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
           compact ? '' : `<a class="btn secondary" href="/contact">Ask anyway</a>`);
         return;
       }
-      const travel = band.halfDayOnly ? 'no travel charge, and we book work here as half-days or longer' : 'no travel charge';
+      const travel = band.halfDayOnly ? 'no travel charge, and we book work here as half-days or longer (small electrical jobs are priced on their own)' : 'no travel charge';
       const head = 'Yes – we can get to you.';
       const links = compact ? '' :
         (hood ? `<a class="btn secondary" href="${esc(hood.url)}">Handyman in ${esc(hood.name)}</a>` : '') + `<a class="btn primary" href="${quote}">Get a quote</a>`;

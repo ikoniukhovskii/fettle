@@ -16,8 +16,9 @@ interface Props {
   checker?: boolean; // show the postcode box (default true)
   compact?: boolean; // smaller, for the contact page sidebar
   id?: string;
+  label?: string; // the checker's heading (default "Can we get to you?")
 }
-const { highlight, region, caption, checker = true, compact = false, id = 'cov' } = Astro.props;
+const { highlight, region, caption, checker = true, compact = false, id = 'cov', label = 'Can we get to you?' } = Astro.props;
 
 const COLORS: Record<string, string> = {
   'southwest-london': '#B34426', 'west-london': '#6E8A6B', 'central-london': '#2B2723',
@@ -32,7 +33,7 @@ const conf = JSON.stringify({ hoods, bands, base: BASE, highlight: highlight ?? 
 <figure class:list={['cov-map', { compact }]} data-conf={conf} id={id}>
   {checker && (
     <form class="cov-form" novalidate>
-      <label for={`${id}-pc`}>Can we get to you?</label>
+      <label for={`${id}-pc`}>{label}</label>
       <div class="cov-row">
         <input id={`${id}-pc`} name="postcode" type="text" inputmode="text" autocomplete="postal-code" placeholder="Postcode or area, e.g. SW6 2AB or Fulham" aria-describedby={`${id}-res`} />
         <button class="btn primary" type="submit">Check</button>

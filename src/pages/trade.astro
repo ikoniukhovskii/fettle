@@ -1,5 +1,6 @@
 ---
 import Page from '../layouts/Page.astro';
+import CoverageMap from '../components/CoverageMap.astro';
 
 const groups = [
   {
@@ -83,8 +84,16 @@ const terms = [
       <hr class="divider" />
 
       <div class="prose">
-        <h2>Where we work</h2>
-        <p>Our base is in Chelsea, and one of the team lives in Wimbledon, so Chelsea, Fulham, Kensington, Battersea, Clapham, Putney, Wandsworth and Wimbledon are home turf. We cover the rest of London too.</p>
+        <h2>See if we work around your office</h2>
+        <p>Our base is in Chelsea, and one of the team lives in Wimbledon, so Chelsea, Fulham, Kensington, Battersea, Clapham, Putney, Wandsworth and Wimbledon are home turf. We cover most of London. Type your office or building postcode to check.</p>
+      </div>
+      <div style="margin-top:20px">
+        <CoverageMap id="cov-trade" label="See if we work around your office" />
+      </div>
+
+      <hr class="divider" />
+
+      <div class="prose">
         <h2>Book the free check</h2>
         <p>Tell us the address and a day that suits. Call or WhatsApp <a href="tel:+447361854124">07361 854124</a>, email <a href="mailto:hello@fettlelondon.com">hello@fettlelondon.com</a>, or use the contact form.</p>
         <p><a class="btn primary" href="/contact">Book a free check</a></p>

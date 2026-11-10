@@ -1,0 +1,94 @@
+---
+import Page from '../layouts/Page.astro';
+
+const groups = [
+  {
+    title: 'Letting agents & property managers',
+    offer: 'A free ready-to-let check',
+    body: 'We go through the next property you have between tenants, send photos and fixed prices the same day, and fix anything that takes under an hour there and then, free.',
+    jobs: 'Sticking doors and windows, dripping taps, tired sealant, scuffed walls before photos and viewings, loose handrails and shelves.',
+  },
+  {
+    title: 'Block managers',
+    offer: 'A free block walk-round',
+    body: 'We walk the communal areas of one of your blocks and send photos with a fixed-price list of small works the same day – useful for your next update to residents, whether or not you book us.',
+    jobs: 'Communal decorating, door closers and latches, letterplates, dead fittings and timers in halls and stairwells, damp, cracks and sealant.',
+  },
+  {
+    title: 'Short-let hosts & serviced apartments',
+    offer: 'A free guest-ready check',
+    body: 'We go through one of your homes and send photos and fixed prices the same day. Anything under an hour we fix on the spot, free, and we work between check-out and check-in.',
+    jobs: 'Showers and taps, blinds and curtain poles, handles and locks, marks on walls before the next listing photos.',
+  },
+  {
+    title: 'Offices & workspaces',
+    offer: 'A free 30-minute walk-round',
+    body: 'We walk your building with you and leave a written list of the small fixes we spot, each with a fixed price – yours to keep whether or not you ever book us.',
+    jobs: 'Door closers, blinds, lights and sockets (by our certified electrician), scuffed corridors and meeting rooms, kitchens and washrooms.',
+  },
+];
+
+const terms = [
+  ['Half price on your first job', 'After the free check, the first job you book with us is half price. The same goes for anyone you send our way.'],
+  ['Fixed prices, agreed first', 'Every job is priced before we start. No day rates that drift, no surprises on the invoice.'],
+  ['Photos before and after', 'Every job comes with photos, so you can show landlords, residents or your team without driving over to check.'],
+  ['One monthly invoice', 'If it is easier for your accounts, we bill everything once a month.'],
+  ['No minimum for agents', 'A single tap washer is fine. Small jobs are the point.'],
+  ['Early or evening work', 'For offices and occupied buildings we can work before or after hours so nobody is disturbed.'],
+];
+---
+
+<Page title="Fettle for Agents, Landlords & Offices – Small Works in London" description="A small permanent maintenance team for letting agents, block managers, short-let hosts and offices in London. Free check or walk-round, fixed prices, photos before and after, half price on your first job.">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Fettle for business</p>
+      <h1>The small jobs between tenants, guests and Monday mornings – sorted.</h1>
+      <p class="lede">A small permanent team based on Fulham Road in Chelsea, looking after London properties since 2023. We work for letting agents, block managers, short-let hosts and offices: fully insured, the same faces each visit, and no travel charge.</p>
+      <div class="badge-row" style="margin-top:20px">
+        <span class="pill"><span class="dot"></span>Free check or walk-round</span>
+        <span class="pill"><span class="dot"></span>Fixed prices</span>
+        <span class="pill"><span class="dot"></span>Photos with every job</span>
+        <span class="pill"><span class="dot"></span>Half price first job</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-body">
+    <div class="wrap">
+      <h2 class="prose" style="margin-top:0">Start with something free</h2>
+      <p class="prose" style="color:var(--ink-60); margin-top:-8px">Pick the one that fits. No catch and no obligation – you keep the list either way.</p>
+      <div class="grid two" style="margin-top:24px">
+        {groups.map((g) => (
+          <div class="card">
+            <p class="eyebrow" style="margin-bottom:6px">{g.title}</p>
+            <h3>{g.offer}</h3>
+            <p>{g.body}</p>
+            <p style="color:var(--ink-60); font-size:0.95em"><strong>Typical jobs:</strong> {g.jobs}</p>
+          </div>
+        ))}
+      </div>
+
+      <hr class="divider" />
+
+      <h2 class="prose" style="margin-top:0">How we work with businesses</h2>
+      <div class="grid three" style="margin-top:20px">
+        {terms.map(([h, p]) => (
+          <div class="card">
+            <h3>{h}</h3>
+            <p>{p}</p>
+          </div>
+        ))}
+      </div>
+
+      <hr class="divider" />
+
+      <div class="prose">
+        <h2>Where we work</h2>
+        <p>Our base is in Chelsea, and one of the team lives in Wimbledon, so Chelsea, Fulham, Kensington, Battersea, Clapham, Putney, Wandsworth and Wimbledon are home turf. We cover the rest of London too.</p>
+        <h2>Book the free check</h2>
+        <p>Tell us the address and a day that suits. Call or WhatsApp <a href="tel:+447361854124">07361 854124</a>, email <a href="mailto:hello@fettlelondon.com">hello@fettlelondon.com</a>, or use the contact form.</p>
+        <p><a class="btn primary" href="/contact">Book a free check</a></p>
+      </div>
+    </div>
+  </section>
+</Page>

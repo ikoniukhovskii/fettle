@@ -35,8 +35,27 @@ const terms = [
   ['Photos before and after', 'Every job comes with photos, so you can show landlords, residents or your team without driving over to check.'],
   ['One monthly invoice', 'If it is easier for your accounts, we bill everything once a month.'],
   ['No minimum for agents', 'A single tap washer is fine. Small jobs are the point.'],
-  ['Early or evening work', 'For offices and occupied buildings we can work before or after hours so nobody is disturbed.'],
+  ['Next day, 7am to 9pm', 'Small fixes are booked in the same or next working day. We work 7am to 9pm, seven days, so offices and occupied buildings aren’t disturbed.'],
 ];
+
+const plans = [
+  { name: 'Monthly', price: 149, line: 'One 3-hour visit a month', fit: 'Small offices and single floors' },
+  { name: 'Fortnightly', price: 279, line: 'A 3-hour visit every two weeks', fit: 'Busy offices and coworking floors' },
+  { name: 'Weekly', price: 499, line: 'A 3-hour visit every week', fit: 'Business centres and multi-floor buildings' },
+];
+const perks = [
+  'Same or next working day call-outs between visits',
+  'Extra work at 10% off',
+  'A photo report after every visit',
+  'One monthly invoice',
+];
+const paperwork = [
+  ['Insurance', '£5m public liability insurance – certificate sent on request.'],
+  ['RAMS', 'Risk assessments and method statements for the work we do, ready before we start.'],
+  ['Electrical certificates', 'Lights and sockets by our certified electrician, with the paperwork to match.'],
+];
+const moves = 'Shelving, screens and whiteboards, TV and monitor mounting, making good after old fittings come out, and decorating between tenants.';
+const notDo = 'Gas work, full office fit-outs, roofing and large building projects. If you need one of those, we will tell you straight away rather than take it on.';
 ---
 
 <Page title="Fettle for Agents, Landlords & Offices – Small Works in London" description="A small permanent maintenance team for letting agents, block managers, short-let hosts and offices in London. Free check or walk-round, fixed prices, photos before and after, half price on your first job.">
@@ -74,6 +93,46 @@ const terms = [
       <h2 class="prose" style="margin-top:0">How we work with businesses</h2>
       <div class="grid three" style="margin-top:20px">
         {terms.map(([h, p]) => (
+          <div class="card">
+            <h3>{h}</h3>
+            <p>{p}</p>
+          </div>
+        ))}
+      </div>
+
+      <hr class="divider" />
+
+      <p class="eyebrow">For offices &amp; workspaces</p>
+      <h2 class="prose" style="margin-top:0">Office maintenance plans</h2>
+      <p class="prose" style="color:var(--ink-60); margin-top:-8px">A regular visit from the same small team, who work through your list of small fixes before anyone has to report them. Paid monthly.</p>
+      <div class="grid three" style="margin-top:20px">
+        {plans.map((p) => (
+          <div class="card">
+            <p class="eyebrow" style="margin-bottom:6px">{p.name}</p>
+            <h3 style="font-size:2rem; margin:0">&pound;{p.price}<span style="font-size:1rem; font-weight:500; color:var(--ink-60)"> a month</span></h3>
+            <p><strong>{p.line}</strong></p>
+            <p style="color:var(--ink-60)">{p.fit}</p>
+          </div>
+        ))}
+      </div>
+      <div class="badge-row" style="margin-top:18px">
+        {perks.map((x) => <span class="pill"><span class="dot"></span>{x}</span>)}
+      </div>
+
+      <div class="grid two" style="margin-top:28px">
+        <div class="card">
+          <h3>Moving in, moving out</h3>
+          <p>{moves}</p>
+        </div>
+        <div class="card">
+          <h3>What we don’t do</h3>
+          <p>{notDo}</p>
+        </div>
+      </div>
+
+      <h2 class="prose" style="margin-top:36px">Paperwork, ready when you need it</h2>
+      <div class="grid three" style="margin-top:16px">
+        {paperwork.map(([h, p]) => (
           <div class="card">
             <h3>{h}</h3>
             <p>{p}</p>

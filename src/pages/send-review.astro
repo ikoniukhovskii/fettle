@@ -80,6 +80,8 @@ import Page from '../layouts/Page.astro';
   .sr-empty { color: var(--ink-60); font-size: 14px; }
   .sr-pub { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
   .sr-area { width: 70px; padding: 6px 8px; border-radius: 8px; border: 1.5px solid var(--ink-12); background: var(--cream); font: inherit; font-size: 13px; text-transform: uppercase; }
+  .sr-gask { margin-top: 10px; font-size: 13.5px; }
+  .sr-gask textarea { width: 100%; margin-top: 6px; font: 13px/1.45 var(--font-body); border-radius: 10px; border: 1px solid var(--ink-12); padding: 8px; box-sizing: border-box; }
   .sr-pubbtn { padding: 7px 14px !important; font-size: 13px !important; min-height: 0 !important; }
 </style>
 
@@ -121,8 +123,24 @@ import Page from '../layouts/Page.astro';
       <button type="button" class="btn primary sr-pubbtn" data-publish="${r.id}">Publish</button></div>`;
   }
 
+  // "Post it on Google too": a personal link carrying the customer's own words, plus a ready message.
+  const b64url = (t: string) => btoa(String.fromCharCode(...new TextEncoder().encode(t))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const firstName = (n: string) => String(n || '').trim().split(/\s+/)[0] || '';
+  function googleAsk(r: any) {
+    const n = firstName(r.name);
+    const link = `${location.origin}/review/google?${n ? `n=${encodeURIComponent(n)}&` : ''}w=${b64url(String(r.feedback || '').trim())}`;
+    const msg = `Hi${n ? ` ${n}` : ''}, thank you so much for your lovely review – it genuinely made our week! Would you mind popping the same words on Google too? It's the biggest help to a small local team like ours. One tap copies your words and opens Google – just pick your stars, paste and post:\n${link}\n\nThank you!\nIlia, Fettle London`;
+    return { link, msg };
+  }
+  function googleCell(r: any) {
+    if (!r.feedback || !(r.rating >= 4)) return '';
+    return `<div class="sr-pub"><button type="button" class="btn secondary sr-pubbtn" data-gask="${r.id}">Ask to post on Google</button></div>`;
+  }
+  let rows: any[] = [];
+
   async function list() {
     const { requests } = await call({ action: 'list' });
+    rows = requests;
     $('sr-login').hidden = true; $('sr-body').hidden = false;
     if (!requests.length) { $('sr-list').innerHTML = '<tr><td class="sr-empty">No requests yet – your first one will show here.</td></tr>'; return; }
     $('sr-list').innerHTML = '<tr><th>When</th><th>Customer</th><th>Status</th><th>Rating</th><th>What they said</th><th></th></tr>' + requests.map((r: any) => `
@@ -131,7 +149,7 @@ import Page from '../layouts/Page.astro';
         <td><b>${esc(r.name || '–')}</b><br><span class="fb">${esc(r.email || '')}${r.job ? `<br>${esc(r.job)}` : ''}</span></td>
         <td>${statusTag(r)}${r.google_clicked_at ? '<br><span class="tag good">Went to Google</span>' : ''}</td>
         <td class="stars">${r.rating ? '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating) : ''}</td>
-        <td class="fb">${esc(r.feedback || '')}${publishCell(r)}</td>
+        <td class="fb">${esc(r.feedback || '')}${publishCell(r)}${googleCell(r)}</td>
         <td>${r.status === 'scheduled' || (r.status === 'sent' && !r.rating) ? `<button type="button" class="sr-link" data-cancel="${r.id}">Cancel</button>` : ''}</td>
       </tr>`).join('');
   }
@@ -139,6 +157,19 @@ import Page from '../layouts/Page.astro';
   $('sr-list').addEventListener('click', async (e: Event) => {
     const d = (e.target as HTMLElement).dataset || {};
     try {
+      if (d.gask) {
+        const r = rows.find((x) => String(x.id) === d.gask);
+        if (!r) return;
+        const { msg } = googleAsk(r);
+        try { await navigator.clipboard.writeText(msg); } catch {}
+        const wa = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        const box = document.createElement('div');
+        box.className = 'sr-gask';
+        box.innerHTML = `<p><b>✓ Message copied.</b> Paste it to ${esc(firstName(r.name) || 'them')} by text, email or Taskrabbit – or <a href="${wa}" target="_blank" rel="noopener">open it in WhatsApp</a>.</p><textarea rows="6" readonly>${esc(msg)}</textarea>`;
+        (e.target as HTMLElement).closest('td')!.appendChild(box);
+        (e.target as HTMLElement).remove();
+        return;
+      }
       if (d.cancel) await call({ action: 'cancel', id: Number(d.cancel) });
       else if (d.unpublish) await call({ action: 'unpublish', id: Number(d.unpublish) });
       else if (d.publish) {

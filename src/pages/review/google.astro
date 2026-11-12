@@ -1,0 +1,72 @@
+---
+// "Post it on Google too" – the link we send a happy customer who already left a review on our
+// own page. Their words travel in the link itself (?n=Name&w=base64url-text), so they only have
+// to tap once: we copy their words and open our Google review box, they paste and pick stars.
+// Google only accepts reviews posted by the customer from their own Google account – we never post for them.
+import Page from '../../layouts/Page.astro';
+import { GOOGLE_REVIEW_URL } from '../../data/reviews';
+---
+
+<Page title="One last favour | Fettle London" description="Post your Fettle review on Google." noindex>
+  <section class="gr">
+    <div class="wrap gr-wrap">
+      <p class="eyebrow">Your Fettle review</p>
+      <h1 class="gr-h1" id="gr-h1">One last favour?</h1>
+      <p class="gr-lede">Thank you for the lovely words. Would you pop them on Google too? It's the single biggest help to a small local team like ours – and it takes about 30 seconds.</p>
+
+      <div class="gr-card" id="gr-quote-card" hidden>
+        <p class="gr-label">What you wrote</p>
+        <blockquote class="gr-quote" id="gr-quote"></blockquote>
+      </div>
+
+      <div class="gr-card">
+        <ol class="gr-steps">
+          <li><b>Tap the button</b> – your words are copied for you and Google opens.</li>
+          <li><b>Pick your stars</b> and <b>paste</b> into the box (press and hold, then Paste).</li>
+          <li><b>Tap Post.</b> That's it – thank you!</li>
+        </ol>
+        <button type="button" class="btn primary gr-btn" id="gr-go">Copy my words &amp; open Google</button>
+        <p class="gr-done" id="gr-done" hidden>✓ Copied. If Google didn't open, <a href={GOOGLE_REVIEW_URL} target="_blank" rel="noopener">tap here</a>.</p>
+      </div>
+
+      <p class="sc gr-sign">your home, in fine fettle</p>
+    </div>
+  </section>
+</Page>
+
+<style is:global>
+  .gr { padding: clamp(44px, 7vw, 88px) 0 clamp(64px, 8vw, 110px); }
+  .gr-wrap { max-width: 640px; }
+  .gr-h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 6vw, 56px); line-height: 1.04; letter-spacing: -.02em; margin: 0; }
+  .gr-lede { color: var(--ink-60); margin: 14px 0 26px; font-size: 17px; }
+  .gr-card { background: var(--white); border-radius: 22px; padding: clamp(18px, 4vw, 28px); border: 1px solid var(--ink-08); margin-bottom: 16px; }
+  .gr-card[hidden] { display: none; }
+  .gr-label { font-weight: 600; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--rust); margin: 0 0 10px; }
+  .gr-quote { margin: 0; font-size: 18px; line-height: 1.55; white-space: pre-line; }
+  .gr-steps { margin: 0 0 20px; padding-left: 22px; line-height: 1.6; font-size: 16px; }
+  .gr-steps li { margin-bottom: 6px; }
+  .gr-btn { width: 100%; justify-content: center; }
+  .gr-done { margin: 14px 0 0; font-size: 15px; color: var(--ink-60); }
+  .gr-sign { font-family: var(--font-script); color: var(--rust); font-size: 34px; text-align: center; margin: 26px 0 0; }
+</style>
+
+<script>
+  import { GOOGLE_REVIEW_URL } from '../../data/reviews';
+  const qs = new URLSearchParams(location.search);
+  const name = (qs.get('n') || '').slice(0, 40);
+  let words = '';
+  try {
+    const b = (qs.get('w') || '').replace(/-/g, '+').replace(/_/g, '/');
+    if (b) words = new TextDecoder().decode(Uint8Array.from(atob(b), (c) => c.charCodeAt(0))).slice(0, 2000);
+  } catch {}
+  const el = (id: string) => document.getElementById(id)!;
+  if (name) el('gr-h1').textContent = `One last favour, ${name}?`;
+  if (words) { el('gr-quote').textContent = words; el('gr-quote-card').hidden = false; }
+  else el('gr-go').textContent = 'Open Google';
+  el('gr-go').addEventListener('click', async () => {
+    const tab = window.open(GOOGLE_REVIEW_URL, '_blank', 'noopener'); // open inside the tap so it isn't blocked
+    if (words) { try { await navigator.clipboard.writeText(words); } catch {} }
+    el('gr-done').hidden = false;
+    if (!tab) location.href = GOOGLE_REVIEW_URL;
+  });
+</script>

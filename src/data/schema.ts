@@ -5,6 +5,8 @@ import { SERVICES, AREAS } from './services';
 export const SITE = 'https://www.fettlelondon.com';
 export const FACEBOOK_URL = 'https://www.facebook.com/fettlelondon';
 export const INSTAGRAM_URL = 'https://www.instagram.com/fettlelondon/';
+export const GOOGLE_PROFILE_URL = 'https://g.page/r/CdVop1lj3_3NEBM';
+export const GOOGLE_MAPS_URL = 'https://maps.google.com/?cid=14843265564681922773';
 
 export const BUSINESS_SCHEMA = {
   '@context': 'https://schema.org',
@@ -25,7 +27,8 @@ export const BUSINESS_SCHEMA = {
   address: { '@type': 'PostalAddress', streetAddress: '356A Fulham Road', addressLocality: 'London', postalCode: 'SW10 9UH', addressCountry: 'GB' },
   geo: { '@type': 'GeoCoordinates', latitude: 51.4835, longitude: -0.183 },
   areaServed: AREAS.flatMap((a) => [a.region, ...a.places.split(', ')]).map((name) => ({ '@type': 'Place', name })),
-  sameAs: [FACEBOOK_URL, INSTAGRAM_URL],
+  sameAs: [FACEBOOK_URL, INSTAGRAM_URL, GOOGLE_PROFILE_URL, GOOGLE_MAPS_URL],
+  hasMap: GOOGLE_MAPS_URL,
   openingHoursSpecification: {
     '@type': 'OpeningHoursSpecification',
     dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -80,6 +83,7 @@ export function faqSchema(faqs: { q: string; a: string }[]) {
 // Social profiles shown in the footers (and on /social). Add LinkedIn here if it ever exists.
 export const SOCIALS: { label: string; href: string }[] = [
   { label: 'Instagram', href: INSTAGRAM_URL },
+  { label: 'Google', href: GOOGLE_PROFILE_URL },
   { label: 'Facebook', href: FACEBOOK_URL },
 ];
 

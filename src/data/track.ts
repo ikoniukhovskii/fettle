@@ -83,9 +83,11 @@ export function initTracking() {
   });
   // Clicks on the booking link, phone numbers and WhatsApp.
   document.addEventListener('click', (e) => {
-    const a = (e.target as HTMLElement)?.closest?.('a') as HTMLAnchorElement | null;
+    const a = (e.target as Element)?.closest?.('a');
     if (!a) return;
-    const h = a.href || '';
+    // SVG links (map pins) have an object for .href, so read the attribute as text.
+    const raw = (a as HTMLAnchorElement).href;
+    const h = typeof raw === 'string' ? raw : a.getAttribute('href') || a.getAttribute('xlink:href') || '';
     if (h.includes('calendar.app.google')) logEvent('video_call_click');
     else if (h.startsWith('tel:')) logEvent('call_click');
     else if (h.includes('wa.me')) logEvent('whatsapp_click');

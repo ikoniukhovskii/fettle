@@ -53,6 +53,7 @@ const paperwork = [
   ['Insurance', '£5m public liability insurance – certificate sent on request.'],
   ['RAMS', 'Risk assessments and method statements for the work we do, ready before we start.'],
   ['Electrical certificates', 'Lights and sockets by our certified electrician, with the paperwork to match.'],
+  ['Your contractor form', 'On an approved list already? Send us your contractor or supplier form and we’ll return it within a day.'],
 ];
 const moves = 'Shelving, screens and whiteboards, TV and monitor mounting, making good after old fittings come out, and decorating between tenants.';
 const notDo = 'Gas work, full office fit-outs, roofing and large building projects. If you need one of those, we will tell you straight away rather than take it on.';
@@ -139,6 +140,19 @@ const notDo = 'Gas work, full office fit-outs, roofing and large building projec
           </div>
         ))}
       </div>
+
+      <div class="card" style="margin-top:20px; display:flex; flex-wrap:wrap; gap:14px 24px; align-items:center; justify-content:space-between">
+        <div>
+          <h3 style="margin:0 0 4px">Trade price list</h3>
+          <p style="margin:0; color:var(--ink-60)">Our prices for agents and managers on one page, plus a sample Fettle Report and our RAMS template.</p>
+        </div>
+        <div class="badge-row">
+          <a class="btn primary" href="/trade/fettle-trade-price-list.pdf" download>Download price list (PDF)</a>
+          <a class="btn" href="/trade/fettle-report-sample.pdf" target="_blank" rel="noopener">Sample report</a>
+          <a class="btn" href="/trade/fettle-rams-template.pdf" target="_blank" rel="noopener">RAMS template</a>
+        </div>
+      </div>
+      <p class="prose" style="margin-top:14px">Send your contractor form to <a href="mailto:hello@fettlelondon.com?subject=Contractor%20form">hello@fettlelondon.com</a> and we’ll fill it in and send it back.</p>
 
       <hr class="divider" />
 

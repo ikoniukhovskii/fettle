@@ -2,6 +2,7 @@
 import Page from '../layouts/Page.astro';
 import { VIDEO_CALL_URL } from '../data/booking';
 import CoverageMap from '../components/CoverageMap.astro';
+import { GOOGLE_PROFILE_URL } from '../data/schema';
 ---
 
 <Page title="Contact a London Handyman – Get a Quote | Fettle London" description="If you’ve something that needs doing, drop us a line. We’ll answer plainly, and if there’s room on the list near you, we’ll say so.">
@@ -132,7 +133,7 @@ import CoverageMap from '../components/CoverageMap.astro';
                 </span>
                 <h3>Rather just call?</h3>
               </div>
-              <p><a href="tel:+447361854124">+44 7361 854124</a> &middot; <a href="https://wa.me/447361854124">WhatsApp</a> &middot; <a href="https://www.instagram.com/fettlelondon/" target="_blank" rel="noopener">Instagram</a><br />Photos of the job? DM them to <a href="https://www.instagram.com/fettlelondon/" target="_blank" rel="noopener">@fettlelondon</a> on Instagram.<br />Monday to Saturday, 8am&ndash;9pm. Covering north, northwest, west, southwest, south, east and central London.</p>
+              <p><a href="tel:+447361854124">+44 7361 854124</a> &middot; <a href="https://wa.me/447361854124">WhatsApp</a> &middot; <a href="https://www.instagram.com/fettlelondon/" target="_blank" rel="noopener">Instagram</a> &middot; <a href={GOOGLE_PROFILE_URL} target="_blank" rel="noopener">Find us on Google</a><br />Photos of the job? DM them to <a href="https://www.instagram.com/fettlelondon/" target="_blank" rel="noopener">@fettlelondon</a> on Instagram.<br />Monday to Saturday, 8am&ndash;9pm. Covering north, northwest, west, southwest, south, east and central London.</p>
             </div>
           </div>
         </div>

@@ -124,6 +124,10 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
         ))}
       </div>
       <MadeToMeasure />
+      <div class="mem-oneoff">
+        <p><strong>Just need one job doing?</strong> No plan needed – send a photo and get a fixed price the same day.</p>
+        <p class="mem-oneoff-btns"><a class="plan-btn solid" href="https://wa.me/447361854124?text=Hi%20Fettle%2C%20I%27d%20like%20a%20price%20for%20a%20job" target="_blank" rel="noopener">WhatsApp a photo</a> <a class="plan-btn" href="/services">See services &amp; prices</a></p>
+      </div>
       <p class="mem-note">Plans run for twelve months, paid monthly or once for the year. Materials at cost. No travel charge and no Congestion Charge, ever. We don’t do gas or boiler work; electrical jobs are done by a certified electrician.</p>
     </div>
   </section>
@@ -410,6 +414,9 @@ const featured = PLANS.find((p) => p.featured) ?? PLANS[0];
     .months { grid-template-columns: repeat(4, 1fr); }
     .seg button { padding: 9px 13px; font-size: 13px; }
   }
+  .mem-oneoff { margin: 28px auto 0; max-width: 720px; text-align: center; padding: 20px 22px; border-radius: 16px; background: rgba(179,68,38,.07); }
+  .mem-oneoff p { margin: 0; font-size: 1.05rem; }
+  .mem-oneoff-btns { margin-top: 14px !important; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 </style>
 
 <script>

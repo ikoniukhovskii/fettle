@@ -345,3 +345,10 @@ input:focus-visible {
 .kw-all a { font: 600 14px var(--font-body); letter-spacing: .04em; color: var(--ink); text-decoration: underline; text-underline-offset: 5px; text-decoration-color: var(--ink-40); }
 .kw-all a:hover { color: var(--rust); text-decoration-color: var(--rust); }
 @media (max-width: 640px) { .kw-card { flex-basis: 78vw; } }
+
+/* One-off job prompt under the services grid */
+.oneoff-box { margin: 32px auto 0; max-width: 720px; text-align: center; padding: 22px 24px; border-radius: 16px; background: rgba(179,68,38,.07); }
+.oneoff-h { margin: 0; font-size: 1.1rem; line-height: 1.5; color: var(--ink, #2B2723); }
+.oneoff-btns { margin: 14px 0 0; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.oneoff-btn { display: inline-flex; align-items: center; height: 46px; padding: 0 22px; border-radius: 23px; font-weight: 600; text-decoration: none; border: 1.5px solid var(--rust, #B34426); color: var(--rust, #B34426); }
+.oneoff-btn.solid { background: var(--rust, #B34426); color: var(--cream, #F1E8D8); }

@@ -867,6 +867,13 @@ function WhatWeDo({ t, m }) {
         <p className="svc-all">
           <a href="/services">All our services and prices</a>
         </p>
+        <div className="oneoff-box">
+          <p className="oneoff-h"><strong>Only one job needs doing?</strong> No plan needed &ndash; send a photo and get a fixed price the same day.</p>
+          <p className="oneoff-btns">
+            <a className="oneoff-btn solid" href="https://wa.me/447361854124?text=Hi%20Fettle%2C%20I%27d%20like%20a%20price%20for%20a%20job" target="_blank" rel="noopener">WhatsApp a photo</a>
+            <a className="oneoff-btn" href="tel:+447361854124">Call 07361 854124</a>
+          </p>
+        </div>
       </Reveal>
     </section>
   );

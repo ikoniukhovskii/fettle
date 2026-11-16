@@ -157,6 +157,28 @@ const notDo = 'Gas work, full office fit-outs, roofing and large building projec
 
       <hr class="divider" />
 
+      <h2 class="prose" style="margin-top:0">What customers say</h2>
+      <div class="quote-grid" id="trade-quotes" style="margin-top:16px">
+        <figure class="quote">
+          <span class="mark" aria-hidden="true">&ldquo;</span>
+          <p>We have a period house that does not forgive shortcuts. Fettle treat it the way you would hope, quietly and properly, and the price was the price we were told.</p>
+          <figcaption class="who"><span class="name">Eleanor W.</span><span class="meta">Wadham Gardens &middot; NW3 &middot; Client since 2023</span></figcaption>
+        </figure>
+        <figure class="quote">
+          <span class="mark" aria-hidden="true">&ldquo;</span>
+          <p>What sold me was the once a season look over. They spotted the gutters going before it became a proper job, which is exactly the sort of thing I never get round to.</p>
+          <figcaption class="who"><span class="name">Tom H.</span><span class="meta">Highbury New Park &middot; N5 &middot; Client since 2024</span></figcaption>
+        </figure>
+        <figure class="quote">
+          <span class="mark" aria-hidden="true">&ldquo;</span>
+          <p>A wonky gate, a dripping tap, and a wall that needed making good. One visit, one team, all of it done by lunch and swept up after.</p>
+          <figcaption class="who"><span class="name">James &amp; Priya K.</span><span class="meta">Bishopswood Road &middot; N6 &middot; Client since 2023</span></figcaption>
+        </figure>
+      </div>
+      <p class="prose" style="margin-top:12px"><a href="/testimonials">More reviews</a> &middot; <a href={GOOGLE_PROFILE_URL} target="_blank" rel="noopener">See us on Google</a></p>
+
+      <hr class="divider" />
+
       <div class="prose">
         <h2>See if we work around your office</h2>
         <p>Our base is in Chelsea, and one of the team lives in Wimbledon, so Chelsea, Fulham, Kensington, Battersea, Clapham, Putney, Wandsworth and Wimbledon are home turf. We cover most of London. Type your office or building postcode to check.</p>
@@ -175,3 +197,20 @@ const notDo = 'Gas work, full office fit-outs, roofing and large building projec
     </div>
   </section>
 </Page>
+
+<script>
+  // Google reviews (and ones published from our own review page) go first; six cards at most.
+  import { fetchPublishedReviews } from '../data/published-reviews';
+  const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  fetchPublishedReviews().then((list) => {
+    const grid = document.getElementById('trade-quotes');
+    if (!grid || !list.length) return;
+    grid.insertAdjacentHTML('afterbegin', list.slice(0, 6).map((r) => `
+      <figure class="quote">
+        <span class="mark" aria-hidden="true">&ldquo;</span>
+        <p>${esc(r.q)}</p>
+        <figcaption class="who"><span class="name">${esc(r.who)}</span>${r.meta ? `<span class="meta">${esc(r.meta)}</span>` : ''}</figcaption>
+      </figure>`).join(''));
+    while (grid.children.length > 6) grid.lastElementChild!.remove();
+  });
+</script>

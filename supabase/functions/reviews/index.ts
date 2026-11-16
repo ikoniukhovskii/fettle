@@ -81,6 +81,38 @@ async function telegram(text: string) {
     body: JSON.stringify({ chat_id: chat, text, disable_web_page_preview: true }),
   }).catch(() => {});
 }
+
+// ---------- Google reviews (shown on the website next to our own) ----------
+// Needs two Supabase secrets: GOOGLE_PLACES_KEY (Places API (New), restricted to that API)
+// and GOOGLE_PLACE_ID (Fettle London's place id). Cached for 6 hours per function instance.
+let gCache: { at: number; reviews: Array<Record<string, unknown>>; rating: number; count: number; url: string } | null = null;
+async function googleReviews() {
+  const key = Deno.env.get('GOOGLE_PLACES_KEY'), place = Deno.env.get('GOOGLE_PLACE_ID');
+  if (!key || !place) return null;
+  if (gCache && Date.now() - gCache.at < 6 * 3600_000) return gCache;
+  try {
+    const res = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(place)}?languageCode=en-GB`, {
+      headers: { 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': 'rating,userRatingCount,googleMapsUri,reviews' },
+    });
+    if (!res.ok) return gCache;
+    const j = await res.json();
+    const reviews = (j.reviews ?? [])
+      .filter((r: any) => (r.text?.text || r.originalText?.text))
+      .map((r: any) => ({
+        q: String(r.originalText?.text || r.text?.text).trim(),
+        who: String(r.authorAttribution?.displayName || 'A Google reviewer'),
+        meta: [`${'★'.repeat(Math.round(Number(r.rating) || 5))} on Google`, r.publishTime ? new Date(r.publishTime).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'Europe/London' }) : ''].filter(Boolean).join(' · '),
+        stars: Number(r.rating) || 5,
+        source: 'google',
+        link: r.authorAttribution?.uri || j.googleMapsUri || '',
+      }));
+    gCache = { at: Date.now(), reviews, rating: Number(j.rating) || 0, count: Number(j.userRatingCount) || 0, url: j.googleMapsUri || '' };
+    return gCache;
+  } catch {
+    return gCache;
+  }
+}
+
 const stars = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
 
 // ---------- the email (same look as the other Fettle emails) ----------
@@ -278,7 +310,10 @@ async function handle(b: Body) {
         who: firstName(r.name) || 'A Fettle customer',
         meta: [r.area, new Date(r.published_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'Europe/London' })].filter(Boolean).join(' · '),
       }));
-      return { status: 200, body: { reviews } };
+      // Google reviews first (all of them, any star rating), then ones published from our own page.
+      const g = await googleReviews();
+      const all = [...(g?.reviews ?? []), ...reviews];
+      return { status: 200, body: { reviews: all, google: g ? { rating: g.rating, count: g.count, url: g.url } : null } };
     }
 
     case 'view': {

@@ -140,8 +140,8 @@ const ALL_SERVICES: Service[] = [
       { title: 'Re-clean guarantee', text: 'If your agent or landlord flags anything within 48 hours, we come back and put it right at no charge.' },
     ],
     pricing: {
-      text: 'Priced by the size of the property: a studio from £180, a one-bed from £220 and a two-bed from £280, with carpets included. Larger homes are quoted after a £30 visit, which comes off the cost when you go ahead. Repairs and touch-ups are agreed and priced with you before we start.',
-      pills: ['Studio · from £180', '1-bed · from £220', '2-bed · from £280', 'Re-clean guarantee'],
+      text: 'Priced by the size of the property: a studio from £180, a one-bed from £220, a two-bed from £280 and a three-bed from £360, with carpets included. A garden, garage or loft is priced on top, and four beds and larger are quoted after a £30 visit, which comes off the cost when you go ahead. Repairs and touch-ups are agreed and priced with you before we start.',
+      pills: ['Studio · from £180', '1-bed · from £220', '2-bed · from £280', '3-bed · from £360', 'Re-clean guarantee'],
     },
   },
   {

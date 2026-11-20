@@ -140,7 +140,7 @@ export const AREA_SERVICES: AreaService[] = [
       text: 'We’ll fit around your block’s rules on lifts and working hours, and can let ourselves in with keys left at the porter’s desk if you’ve already moved. Send us your inventory and we’ll work to it.',
     },
     faqs: [
-      { q: 'How much does it cost?', a: 'A studio from £180, a one-bed from £220 and a two-bed from £280, carpets included. Bigger homes are priced after a £30 visit, which comes off the cost.' },
+      { q: 'How much does it cost?', a: 'A studio from £180, a one-bed from £220, a two-bed from £280 and a three-bed from £360, carpets included. Four beds and larger are priced after a £30 visit, which comes off the cost.' },
       { q: 'Can you fix things as well as clean?', a: 'Yes – that’s the point. We agree and price the repairs and touch-ups with you before we start, and do them in the same visit.' },
       { q: 'Do I need to be there?', a: 'No. Leave keys with the porter or agent and we’ll send photos when it’s done.' },
     ],
@@ -258,7 +258,7 @@ export const AREA_SERVICES: AreaService[] = [
       text: 'We work to your inventory and send photos when we’re done. If your agent or landlord flags anything within 48 hours, we come back and put it right at no charge.',
     },
     faqs: [
-      { q: 'How much is an end of tenancy clean in Fulham?', a: 'A studio from £180, a one-bed from £220 and a two-bed from £280, carpets included. Bigger homes are quoted after a £30 visit that comes off the cost.' },
+      { q: 'How much is an end of tenancy clean in Fulham?', a: 'A studio from £180, a one-bed from £220, a two-bed from £280 and a three-bed from £360, carpets included. Four beds and larger are quoted after a £30 visit that comes off the cost.' },
       { q: 'Do you do the garden as well?', a: 'Yes. Lawns, beds and patios can be tidied in the same visit – we’ll price it with the clean.' },
       { q: 'What if the agent isn’t happy?', a: 'Tell us within 48 hours and we’ll come back and fix it at no charge.' },
     ],
@@ -376,7 +376,7 @@ export const AREA_SERVICES: AreaService[] = [
       text: 'We work to your inventory, fit around porters and building hours, and can collect keys from the desk if you’ve already moved out. Photos are sent when we finish.',
     },
     faqs: [
-      { q: 'How much does it cost in Kensington?', a: 'A studio from £180, a one-bed from £220 and a two-bed from £280, carpets included. Larger flats and houses are priced after a £30 visit that comes off the cost.' },
+      { q: 'How much does it cost in Kensington?', a: 'A studio from £180, a one-bed from £220, a two-bed from £280 and a three-bed from £360, carpets included. Four beds and larger are priced after a £30 visit that comes off the cost.' },
       { q: 'Do you clean furnished flats?', a: 'Yes – furniture is cleaned, moved to clean under and behind, and put back to match the inventory.' },
       { q: 'Can you fix small damage too?', a: 'Yes. We agree and price any repairs and touch-ups with you before we start, and do them in the same visit.' },
     ],
